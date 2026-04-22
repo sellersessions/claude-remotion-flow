@@ -8,19 +8,37 @@ Remotion composition rendering SSL 2026 promotional reel. 1920×1080, 30fps. 8 s
 
 ## Next Up
 
-1. **Wait for ElevenLabs validation** (ETA by end 18 Apr, worst case end 19 Apr). Voice: "Danny Raw Voice 2026" in ElevenCreative workspace. Check: https://elevenlabs.io/app/voice-lab
-2. **Generate 3 SSL opener lines** via ElevenLabs once validated: vo-intro, vo-session, vo-cta. Compare against F5-TTS outputs to confirm quality lift.
-3. **Wire VO back into FormatExplainer** at f105/f720/f940 with music ducking (0.55→0.2)
-4. **Canvas-only-during-transition bug** — TreatmentExplainer (or similar comp) canvas only renders during transition; empty at rest. Deferred from Session 6. Needs repro + likely tied to known Trail motion-blur bug (collapses static layers to 0,0).
-5. Danny scrubs TreatmentExplainer in Studio → feedback on 6 scenes
-6. Wire remaining SFX: glitch-tail stingers at transitions, whooshes at cuts
-7. Beat-sync scene cuts to cyberpunk music bed
-8. Scene 6 CTA button restyle (Danny flagged, deferred)
-9. **Park F5-TTS pipeline** — keep venv + tuning-ui.py on disk as fallback, but stop iterating. Pivot locked to ElevenLabs.
+1. [ ] **Write 8 scene scripts** for FormatExplainer VO (scene-opener, scene-0-agenda, scene-1-title, scene-2-problem, scene-3-container, scene-4-interview, scene-5-delegate, scene-6-outro). Apply em-dash cadence rules from the house preset. Danny drafts copy.
+2. [ ] **Generate 8 VO MP3s** via `generate-vo.ts` using `scripts/voice/presets/ssl-2026-house-voice.json`. Drop into `public/voiceover/FormatExplainer/`.
+3. [ ] **Test FormatExplainer render** — calculateMetadata auto-sizes scenes to VO lengths; music ducks 0.55→0.2 during each VO sequence. Infrastructure already in place (Session 7).
+4. [ ] **Round 3 voice polish** — per-word pitch bump on "guys" in "Hey guys" tune-in. Requires DSP post-processing (pedalboard). See task #13.
+5. [ ] **Canvas-only-during-transition bug** — TreatmentExplainer renders canvas only during transitions, empty at rest. Suspected tie to Trail motion-blur bug. Not voice-related.
+6. [ ] Danny scrubs TreatmentExplainer in Studio → feedback on 6 scenes
+7. [ ] Wire remaining SFX: glitch-tail stingers at transitions, whooshes at cuts
+8. [ ] Beat-sync scene cuts to cyberpunk music bed
+9. [ ] Scene 6 CTA button restyle (Danny flagged, deferred)
+10. [x] **Park F5-TTS pipeline** — keep venv + tuning-ui.py on disk as fallback, but stop iterating. Pivot locked to ElevenLabs.
 
 ---
 
 ## Session Log
+
+### Session 7 — ElevenLabs house voice locked + FormatExplainer refactor (22 Apr)
+
+- **Clone validated:** "Danny Raw Voice 2026" (`jQOgcOzmmipekvxJN09W`), all v2 models fine-tuned, verified on `/v1/voices` call. ElevenCreative workspace.
+- **Danny's tuned UI settings pulled:** stability 0.31, similarity_boost 1.0, style 0.0, speaker_boost ON, **speed 0.80**. These became the starting baseline.
+- **`generate-vo.ts` built** at `scripts/voice/generate-vo.ts` — TypeScript wrapper, native fetch + dotenv, JSON config schema, per-scene `voice_settings` overrides, dry-run mode, cost estimate. Replaces the parked F5-TTS Python generator.
+- **FormatExplainer refactored** (`src/FormatExplainer.tsx`): kicked out hardcoded f105/f720/f940 timings. Now uses `calculateMetadata` + `getAudioDurationInSeconds` from `@remotion/media-utils` to auto-size each of 8 scenes to its VO MP3. Missing-file fallback logs warn + uses hardcoded scene duration so build never breaks. Music bed volume is now a frame-callback that ramps 0.55 → 0.2 over 15 frames at each VO start, holds, ramps back. Typecheck clean on `src/`.
+- **Round 1 A/B/C on tune-in line** — "Hey guys, welcome back to Seller Sessions. In today's episode, we are going to be talking about Claude Code and particularly the work around Claude Code using Remotion."
+  - A (clean text, stability 0.31) / B (em-dash + comma pacing, stability 0.31) / C (clean text, stability 0.20).
+  - Danny picked **B**. Dismissed A + C.
+- **Round 2 speed ladder on B:** 0.80 / 0.85 / 0.90 / 0.95. Danny picked **0.90** as the pocket. Speed 0.80 felt sluggish; 0.95 rushed; 0.85 too close to 0.80 to matter.
+- **House voice preset locked:** `scripts/voice/presets/ssl-2026-house-voice.json` — reusable config for all future SSL 2026 Remotion VO. Reference MP3: `voice-box-generations/elevenlabs/ssl-2026-opener/LOCKED-ssl-2026-tune-in.mp3`.
+- **Picker UI built:** `voice-box-generations/elevenlabs/ssl-2026-opener/index.html` — dark SS palette, 4-card layout, audio players + mailto pick buttons. Used for round 2 speed pick.
+- **Rule locked (into MEMORY.md + preset JSON):** text cadence via em-dashes + extra commas. NO SSML `<break>` tags. Danny explicitly rejected them 22 Apr.
+- **Credits used:** ~1,024 of 121k Creator tier.
+- **Round 3 parked:** per-word pitch bump on "guys" — ElevenLabs has no per-word pitch API; needs DSP post-processing. Task #13 logged.
+- **Security note:** API key Danny pasted in-session lives in `claude-remotion-flow/.env` (gitignored). To rotate after session: ElevenLabs → Profile → API Keys → regenerate.
 
 ### Session 6 — ElevenLabs Pro pivot + fresh clone upload (17 Apr)
 - **F5-TTS ceiling reached:** After Session 5's 5 tuning rounds, similarity stalled at 0.949 and pitch variance remained at ±45 (vs real ±14). Root cause = formants/resonance, not something EQ/pedalboard can reshape. Decision: park F5-TTS, pivot to ElevenLabs Professional Voice Clone.
