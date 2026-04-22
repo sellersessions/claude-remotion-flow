@@ -10,7 +10,7 @@
  *      - Intercept .mp3 requests via route-abort so we capture the URL
  *        without playing audio or wasting bandwidth
  *      - Click each play button in sequence, harvest metadata per row
- *   3. Second pass: curl each captured URL with Referer header → _inbox/<category>/
+ *   3. Second pass: curl each captured URL with Referer header → library/<category>/
  *   4. Append rows to MANIFEST.json (dedupe on id)
  *
  * Usage:
@@ -81,9 +81,9 @@ async function downloadMp3(url, outPath, referer) {
 }
 
 async function scrape({ query, category, pages, headful, connect }) {
-  const inboxDir = join(PROJECT_ROOT, 'public', 'assets', 'sfx', '_inbox', category);
+  const outDir = join(PROJECT_ROOT, 'public', 'assets', 'sfx', 'library', category);
   const manifestPath = join(PROJECT_ROOT, 'public', 'assets', 'sfx', 'MANIFEST.json');
-  await mkdir(inboxDir, { recursive: true });
+  await mkdir(outDir, { recursive: true });
   const manifest = await loadManifest(manifestPath);
   const existingIds = new Set(manifest.items.map(i => i.id));
 
@@ -208,11 +208,11 @@ async function scrape({ query, category, pages, headful, connect }) {
     if (existingIds.has(r.id)) { dlSkip++; continue; }
     const slugParts = [r.author, r.title, r.id.replace(/^pixabay-/, '')].filter(Boolean).map(slugify);
     const filename = `pixabay-${slugParts.join('-').slice(0, 90)}.mp3`;
-    const outPath = join(inboxDir, filename);
+    const outPath = join(outDir, filename);
     try {
       await downloadMp3(r.cdn_url, outPath, 'https://pixabay.com/');
       const s = await stat(outPath);
-      r.local_path = `public/assets/sfx/_inbox/${r.category}/${filename}`;
+      r.local_path = `public/assets/sfx/library/${r.category}/${filename}`;
       r.bytes = s.size;
       bytesTotal += s.size;
       dlOk++;
@@ -231,7 +231,7 @@ async function scrape({ query, category, pages, headful, connect }) {
   console.log(`downloaded: ${dlOk}   skipped(dupe): ${dlSkip}   failed: ${dlFail}`);
   console.log(`bytes: ${(bytesTotal / 1024).toFixed(1)} KB`);
   console.log(`manifest: ${manifestPath}`);
-  console.log(`inbox: ${inboxDir}`);
+  console.log(`out: ${outDir}`);
 }
 
 const opts = parseArgs();

@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 /**
- * MANIFEST.json schema migration — v1 → v2.
+ * MANIFEST.json schema migration — v1 → v2 → v3.
  *
- * v1 fields (scraper capture): id, source, query, category, page, cdn_url,
- * detail_url, title, author, author_url, duration, tags, license,
- * captured_at, local_path, bytes.
+ * v1 (scraper capture): id, source, query, category, page, cdn_url, detail_url,
+ * title, author, author_url, duration, tags, license, captured_at, local_path,
+ * bytes.
  *
- * v2 adds curation fields so the auditioner + LIBRARY.md can do their job:
- *   + subcategory     string|null    finer bucket inside category
- *   + mood            string[]       ["dramatic","playful","tense","calm"]
- *   + bpm             number|null    for music; null for SFX
- *   + key             string|null    for music; null for SFX
- *   + energy          number|null    1–5 manual at curate time
- *   + approved        boolean        Danny's sign-off
- *   + approved_at     string|null    ISO timestamp when approved flipped true
- *   + used_in         string[]       compositions referencing it
- *   + notes           string         free-text notes
+ * v2 added curation fields: subcategory, mood[], bpm, key, energy, approved,
+ * approved_at, used_in[], notes.
+ *
+ * v3 — schema v3 says every scraped file IS the library; shortlist is a bookmark;
+ * selection is ephemeral (client-side). New fields:
+ *   + shortlisted     boolean        Danny's bookmark
+ *   + shortlisted_at  string|null    ISO timestamp when shortlisted flipped true
+ *
+ * Deprecated v2 fields (approved, approved_at) are KEPT for rollback safety and
+ * ignored by the UI. Not deleted.
  *
  * Idempotent — re-runs leave existing curation untouched.
  *
@@ -31,16 +31,20 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = resolve(__dirname, '..', '..');
 const MANIFEST_PATH = resolve(PROJECT_ROOT, 'public/assets/sfx/MANIFEST.json');
 
-const V2_DEFAULTS = {
+const DEFAULTS = {
+  // v2 fields (kept so fresh manifests without migration still match full shape)
   subcategory: null,
   mood: [],
   bpm: null,
   key: null,
   energy: null,
-  approved: false,
-  approved_at: null,
+  approved: false,      // deprecated in v3; retained for rollback
+  approved_at: null,    // deprecated in v3; retained for rollback
   used_in: [],
   notes: '',
+  // v3 fields
+  shortlisted: false,
+  shortlisted_at: null,
 };
 
 async function main() {
@@ -54,7 +58,7 @@ async function main() {
 
   for (const item of data.items ?? []) {
     let changed = false;
-    for (const [k, v] of Object.entries(V2_DEFAULTS)) {
+    for (const [k, v] of Object.entries(DEFAULTS)) {
       if (!(k in item)) {
         item[k] = Array.isArray(v) ? [...v] : v;
         added++;
@@ -64,9 +68,10 @@ async function main() {
     if (changed) touched++;
   }
 
-  data.schema_version = 2;
+  data.schema_version = 3;
+  data._comment = 'schema v3 — all scraped files are library; shortlist is a bookmark; selection is ephemeral (client-side). approved/approved_at deprecated but retained for rollback.';
 
-  console.log(`MANIFEST: v${before} → v2`);
+  console.log(`MANIFEST: v${before} → v3`);
   console.log(`  items: ${data.items?.length ?? 0}`);
   console.log(`  touched: ${touched}`);
   console.log(`  fields added: ${added}`);

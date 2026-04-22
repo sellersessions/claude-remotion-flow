@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SFX Auditioner — SSL 2026</title>
+<title>SFX + Music Auditioner — SSL 2026</title>
 <style>
   :root {
     --bg: #0b0f14;
@@ -13,12 +13,11 @@
     --ink-muted: #8b9aaa;
     --line: #243041;
     --accent: #ffb11d;
-    --accent-dim: #8a6410;
-    --approve: #1fbf5b;
-    --reject: #e5484d;
+    --star: #ffb11d;
     --chip-bg: #1f2836;
     --chip-on: #ffb11d;
     --chip-on-ink: #0b0f14;
+    --copy: #56a8ff;
     --radius: 6px;
     --font: -apple-system, "SF Pro Text", Inter, system-ui, sans-serif;
   }
@@ -37,10 +36,20 @@
   .filter-group label { color: var(--ink-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; margin-right: 4px; }
   .chip { background: var(--chip-bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--ink); cursor: pointer; font-size: 11px; }
   .chip.on { background: var(--chip-on); color: var(--chip-on-ink); border-color: var(--chip-on); }
+  .tray { position: sticky; top: 0; z-index: 9; background: var(--panel-2); border-bottom: 1px solid var(--line); padding: 8px 20px; display: flex; gap: 10px; align-items: center; font-size: 12px; }
+  .tray.empty { opacity: 0.55; }
+  .tray .count-pill { background: var(--accent); color: var(--chip-on-ink); border-radius: 999px; padding: 2px 10px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tray button { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); color: var(--ink); padding: 4px 10px; font-size: 12px; cursor: pointer; }
+  .tray button:hover:not(:disabled) { background: var(--chip-bg); }
+  .tray button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .tray button.primary { background: var(--accent); border-color: var(--accent); color: var(--chip-on-ink); font-weight: 500; }
   .content { padding: 14px 20px 60px; }
-  .row { display: grid; grid-template-columns: 30px 1fr 250px 50px 40px 40px; gap: 12px; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--line); }
-  .row.approved { background: rgba(31, 191, 91, 0.06); }
-  .row.rejected { opacity: 0.5; }
+  .sub-heading { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 16px 0 6px; padding: 0 10px; }
+  .row { display: grid; grid-template-columns: 26px 22px 1fr 260px 48px 34px 34px; gap: 10px; align-items: center; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  .row.shortlisted { background: rgba(255, 177, 29, 0.06); }
+  .row.selected { box-shadow: inset 3px 0 0 var(--copy); }
+  .row .sel { width: 14px; height: 14px; accent-color: var(--copy); cursor: pointer; margin: 0; }
+  .idx { color: var(--ink-muted); font-variant-numeric: tabular-nums; font-size: 11px; text-align: right; }
   .meta-cell { display: flex; flex-direction: column; min-width: 0; }
   .title { font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sub { color: var(--ink-muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -49,104 +58,161 @@
   .duration { font-variant-numeric: tabular-nums; color: var(--ink-muted); font-size: 12px; text-align: right; }
   button.act { background: transparent; border: 1px solid var(--line); border-radius: var(--radius); color: var(--ink-muted); width: 32px; height: 28px; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
   button.act:hover { background: var(--panel-2); color: var(--ink); }
-  button.act.approve.on { background: var(--approve); border-color: var(--approve); color: white; }
-  button.act.reject.on { background: var(--reject); border-color: var(--reject); color: white; }
+  button.act.star.on { background: var(--star); border-color: var(--star); color: var(--chip-on-ink); }
+  button.act.copy:hover { color: var(--copy); border-color: var(--copy); }
+  button.act.copy.flash { background: var(--copy); color: white; border-color: var(--copy); }
   .empty { padding: 80px 20px; text-align: center; color: var(--ink-muted); }
-  .note { grid-column: 2 / -1; margin-top: 2px; }
+  .note { grid-column: 3 / -1; margin-top: 2px; }
   .note input { width: 100%; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); padding: 4px 8px; font-size: 11px; font-family: var(--font); }
   .note input:focus { outline: none; border-color: var(--accent); }
-  .row.expanded { grid-template-columns: 30px 1fr 250px 50px 40px 40px; grid-auto-rows: auto; }
-  .idx { color: var(--ink-muted); font-variant-numeric: tabular-nums; font-size: 11px; text-align: right; }
-  .count-pill { display: inline-block; background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; font-size: 11px; color: var(--ink-muted); }
-  .count-pill.on { background: var(--approve); color: white; border-color: var(--approve); }
   .save-indicator { font-size: 11px; color: var(--ink-muted); margin-left: 8px; }
   .save-indicator.saving { color: var(--accent); }
-  .save-indicator.saved { color: var(--approve); }
+  .save-indicator.saved { color: #1fbf5b; }
+  .save-indicator.error { color: #e5484d; }
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; }
+  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; max-width: 90%; width: 600px; }
+  .modal h3 { margin: 0 0 8px; font-size: 13px; }
+  .modal textarea { width: 100%; min-height: 160px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); padding: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  .modal .close-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
   @media (max-width: 900px) {
-    .row { grid-template-columns: 1fr 40px 40px; gap: 8px; }
-    .meta-cell { grid-column: 1 / -1; }
+    .row { grid-template-columns: 20px 1fr 38px 34px 34px; gap: 8px; }
+    .idx { display: none; }
+    .meta-cell { grid-column: span 1; }
     audio { grid-column: 1 / -1; }
     .duration { display: none; }
-    .idx { display: none; }
   }
 </style>
 </head>
 <body>
 <header>
-  <h1>SFX Auditioner <span class="save-indicator" id="saveIndicator"></span></h1>
+  <h1>SFX + Music Auditioner <span class="save-indicator" id="saveIndicator"></span></h1>
   <div class="meta" id="meta">loading…</div>
   <div class="tabs" id="tabs"></div>
   <div class="filters">
     <div class="filter-group">
-      <label>Status</label>
-      <button class="chip" data-status="all">all</button>
-      <button class="chip" data-status="unreviewed">unreviewed</button>
-      <button class="chip" data-status="approved">approved</button>
-      <button class="chip" data-status="rejected">rejected</button>
+      <label>Show</label>
+      <button class="chip on" data-status="all">all</button>
+      <button class="chip" data-status="shortlisted">⭐ shortlisted</button>
+      <button class="chip" data-status="unshortlisted">unshortlisted</button>
     </div>
     <div class="filter-group">
       <label>Duration</label>
-      <button class="chip" data-dur="all">any</button>
+      <button class="chip on" data-dur="all">any</button>
       <button class="chip" data-dur="short">≤ 3s</button>
       <button class="chip" data-dur="mid">3–15s</button>
       <button class="chip" data-dur="long">15s+</button>
     </div>
     <div class="filter-group">
       <label>Search</label>
-      <input id="search" type="search" placeholder="title or author" style="background:var(--panel-2);border:1px solid var(--line);border-radius:4px;color:var(--ink);padding:4px 8px;font-size:12px;min-width:180px;">
+      <input id="search" type="search" placeholder="title, author, tag" style="background:var(--panel-2);border:1px solid var(--line);border-radius:4px;color:var(--ink);padding:4px 8px;font-size:12px;min-width:180px;">
     </div>
   </div>
 </header>
+<div class="tray empty" id="tray">
+  <span class="count-pill" id="trayCount">0</span>
+  <span id="trayLabel">nothing selected — tick boxes to stage for copy</span>
+  <button id="trayClear">Clear</button>
+  <button id="trayCopy" class="primary">Copy selection</button>
+  <button id="trayPromote">Promote to ⭐ shortlist</button>
+</div>
 <main class="content" id="content">
   <div class="empty">loading manifest…</div>
 </main>
-
 <script>
-// ──────────────────────────────────────────────────────────────
-// State
-// ──────────────────────────────────────────────────────────────
+// ── State ──────────────────────────────────────────────────────
+const SELECTION_KEY = 'sfx-auditioner-selection-v1';
 const state = {
   manifest: null,
   byCat: new Map(),
   activeCat: null,
   filter: { status: 'all', dur: 'all', search: '' },
-  pending: new Map(), // id → timer for debounced save
+  pending: new Map(),
+  selection: new Set(loadSelection()),
 };
 
-// ──────────────────────────────────────────────────────────────
-// Data helpers
-// ──────────────────────────────────────────────────────────────
+function loadSelection() {
+  try { return JSON.parse(localStorage.getItem(SELECTION_KEY) || '[]'); } catch { return []; }
+}
+function saveSelection() {
+  localStorage.setItem(SELECTION_KEY, JSON.stringify([...state.selection]));
+}
+
+// ── Helpers ────────────────────────────────────────────────────
 function durationSeconds(s) {
   if (!s) return 0;
   const m = String(s).match(/(\d+):(\d{2})/);
   return m ? parseInt(m[1]) * 60 + parseInt(m[2]) : 0;
 }
-
 function durationBucket(s) {
   const sec = durationSeconds(s);
   if (sec <= 3) return 'short';
   if (sec <= 15) return 'mid';
   return 'long';
 }
-
 function matchesFilter(item) {
   const st = state.filter.status;
-  if (st === 'approved' && !item.approved) return false;
-  if (st === 'rejected' && item.rejected !== true) return false;
-  if (st === 'unreviewed' && (item.approved || item.rejected)) return false;
+  if (st === 'shortlisted' && !item.shortlisted) return false;
+  if (st === 'unshortlisted' && item.shortlisted) return false;
   const d = state.filter.dur;
   if (d !== 'all' && durationBucket(item.duration) !== d) return false;
   const q = state.filter.search.trim().toLowerCase();
   if (q) {
-    const hay = `${item.title||''} ${item.author||''} ${(item.tags||[]).join(' ')}`.toLowerCase();
+    const hay = `${item.title || ''} ${item.author || ''} ${(item.tags || []).join(' ')}`.toLowerCase();
     if (!hay.includes(q)) return false;
   }
   return true;
 }
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
 
-// ──────────────────────────────────────────────────────────────
-// Save — debounced PATCH per item
-// ──────────────────────────────────────────────────────────────
+// Path strings used by the UI.
+//   item.local_path is e.g. "public/assets/sfx/library/transitions/<file>.mp3"
+//                   or     "public/assets/music/ssl-live-beds/<file>.mp3"
+// Remotion consumes the prefix after "public/" via staticFile().
+function relFromPublic(item) {
+  return (item.local_path || '').replace(/^public\//, '');
+}
+function audioUrl(item) {
+  // Server mounts /audio/<rel> under public/assets/; strip that prefix + url-encode each segment.
+  const rel = (item.local_path || '').replace(/^public\/assets\//, '');
+  return '/audio/' + rel.split('/').map(encodeURIComponent).join('/');
+}
+function barePath(item) { return relFromPublic(item); }
+function wrappedPath(item) { return `staticFile("${relFromPublic(item)}")`; }
+
+// ── Clipboard ──────────────────────────────────────────────────
+async function copyToClipboard(text) {
+  try {
+    if (navigator.clipboard && window.isSecureContext !== false) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (e) { /* fall through */ }
+  showClipboardModal(text);
+  return false;
+}
+function showClipboardModal(text) {
+  const back = document.createElement('div');
+  back.className = 'modal-backdrop';
+  back.innerHTML = `
+    <div class="modal">
+      <h3>Copy manually — clipboard not available</h3>
+      <textarea readonly></textarea>
+      <div class="close-row"><button>Close</button></div>
+    </div>`;
+  const ta = back.querySelector('textarea');
+  ta.value = text;
+  back.querySelector('button').onclick = () => back.remove();
+  back.onclick = (e) => { if (e.target === back) back.remove(); };
+  document.body.appendChild(back);
+  ta.focus();
+  ta.select();
+}
+function flashButton(btn) {
+  btn.classList.add('flash');
+  setTimeout(() => btn.classList.remove('flash'), 600);
+}
+
+// ── Save — debounced PATCH ─────────────────────────────────────
 function scheduleSave(item, patch) {
   Object.assign(item, patch);
   setIndicator('saving');
@@ -158,53 +224,53 @@ function scheduleSave(item, patch) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(patch),
       });
-      if (!res.ok) throw new Error('PATCH failed: ' + res.status);
+      if (!res.ok) throw new Error('PATCH ' + res.status);
       setIndicator('saved');
     } catch (e) {
-      console.error(e);
-      setIndicator('error: ' + e.message, true);
+      console.error(e); setIndicator('error: ' + e.message, true);
     }
     state.pending.delete(item.id);
   }, 250);
   state.pending.set(item.id, t);
 }
-
 function setIndicator(text, isError = false) {
   const el = document.getElementById('saveIndicator');
   el.textContent = text;
   el.className = 'save-indicator ' + (isError ? 'error' : (text === 'saved' ? 'saved' : text ? 'saving' : ''));
-  if (!isError && text === 'saved') setTimeout(() => { el.textContent = ''; el.className = 'save-indicator'; }, 1200);
+  if (!isError && text === 'saved') setTimeout(() => { el.textContent = ''; el.className = 'save-indicator'; }, 1000);
 }
 
-// ──────────────────────────────────────────────────────────────
-// Render
-// ──────────────────────────────────────────────────────────────
-function render() {
-  renderTabs();
-  renderFilters();
-  renderContent();
+// ── Audio: only one playing at a time ──────────────────────────
+let currentAudio = null;
+function wireAudio(audio) {
+  audio.addEventListener('play', () => {
+    if (currentAudio && currentAudio !== audio) currentAudio.pause();
+    currentAudio = audio;
+  });
 }
+
+// ── Render ─────────────────────────────────────────────────────
+const CATEGORY_ORDER = ['transitions', 'stingers', 'risers', 'impacts', 'ambience', 'music'];
+
+function render() { renderTabs(); renderContent(); renderTray(); }
 
 function renderTabs() {
   const tabs = document.getElementById('tabs');
   tabs.innerHTML = '';
-  for (const [cat, items] of state.byCat) {
+  const cats = [...state.byCat.keys()].sort((a, b) => {
+    const ia = CATEGORY_ORDER.indexOf(a);
+    const ib = CATEGORY_ORDER.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+  for (const cat of cats) {
+    const items = state.byCat.get(cat);
     const btn = document.createElement('button');
     btn.className = 'tab' + (cat === state.activeCat ? ' on' : '');
-    const approved = items.filter(i => i.approved).length;
-    btn.innerHTML = `${cat}<span class="count">${approved}/${items.length}</span>`;
+    const shortlisted = items.filter(i => i.shortlisted).length;
+    btn.innerHTML = `${cat}<span class="count">${shortlisted}/${items.length}</span>`;
     btn.onclick = () => { state.activeCat = cat; render(); };
     tabs.appendChild(btn);
   }
-}
-
-function renderFilters() {
-  document.querySelectorAll('.chip[data-status]').forEach(el => {
-    el.classList.toggle('on', el.dataset.status === state.filter.status);
-  });
-  document.querySelectorAll('.chip[data-dur]').forEach(el => {
-    el.classList.toggle('on', el.dataset.dur === state.filter.dur);
-  });
 }
 
 function renderContent() {
@@ -215,20 +281,51 @@ function renderContent() {
   const filtered = all.filter(matchesFilter);
   if (filtered.length === 0) { content.innerHTML = '<div class="empty">no matches — loosen filters</div>'; return; }
   const sorted = [...filtered].sort((a, b) => {
-    if (a.approved !== b.approved) return a.approved ? -1 : 1;
+    if (!!a.shortlisted !== !!b.shortlisted) return a.shortlisted ? -1 : 1;
     return durationSeconds(a.duration) - durationSeconds(b.duration);
   });
+
+  // Music: group by subcategory
+  if (state.activeCat === 'music') {
+    const groups = new Map();
+    for (const it of sorted) {
+      const sub = it.subcategory || 'unsorted';
+      if (!groups.has(sub)) groups.set(sub, []);
+      groups.get(sub).push(it);
+    }
+    let idx = 1;
+    for (const [sub, items] of groups) {
+      const h = document.createElement('div');
+      h.className = 'sub-heading';
+      h.textContent = `${sub} · ${items.length}`;
+      content.appendChild(h);
+      for (const it of items) content.appendChild(renderRow(it, idx++));
+    }
+    return;
+  }
   sorted.forEach((it, i) => content.appendChild(renderRow(it, i + 1)));
 }
 
 function renderRow(item, idx) {
   const row = document.createElement('div');
-  row.className = 'row' + (item.approved ? ' approved' : '') + (item.rejected ? ' rejected' : '');
+  row.className = 'row' + (item.shortlisted ? ' shortlisted' : '') + (state.selection.has(item.id) ? ' selected' : '');
 
   const idxCell = document.createElement('div');
   idxCell.className = 'idx';
   idxCell.textContent = idx;
   row.appendChild(idxCell);
+
+  const selBox = document.createElement('input');
+  selBox.type = 'checkbox';
+  selBox.className = 'sel';
+  selBox.title = 'Add to selection tray';
+  selBox.checked = state.selection.has(item.id);
+  selBox.onchange = () => {
+    if (selBox.checked) state.selection.add(item.id); else state.selection.delete(item.id);
+    saveSelection(); renderTray();
+    row.classList.toggle('selected', selBox.checked);
+  };
+  row.appendChild(selBox);
 
   const meta = document.createElement('div');
   meta.className = 'meta-cell';
@@ -239,10 +336,8 @@ function renderRow(item, idx) {
   const audio = document.createElement('audio');
   audio.controls = true;
   audio.preload = 'none';
-  // MANIFEST.local_path is "public/assets/sfx/_inbox/<cat>/<file>"; server mounts
-  // /audio/<rel> under public/assets/sfx/, so strip that prefix.
-  const rel = (item.local_path || '').replace(/^public\/assets\/sfx\//, '');
-  audio.src = '/audio/' + rel;
+  audio.src = audioUrl(item);
+  wireAudio(audio);
   row.appendChild(audio);
 
   const dur = document.createElement('div');
@@ -250,29 +345,28 @@ function renderRow(item, idx) {
   dur.textContent = item.duration || '—';
   row.appendChild(dur);
 
-  const approveBtn = document.createElement('button');
-  approveBtn.className = 'act approve' + (item.approved ? ' on' : '');
-  approveBtn.textContent = '✓';
-  approveBtn.title = 'Approve';
-  approveBtn.onclick = () => {
-    const next = !item.approved;
-    scheduleSave(item, { approved: next, rejected: next ? false : item.rejected });
+  const starBtn = document.createElement('button');
+  starBtn.className = 'act star' + (item.shortlisted ? ' on' : '');
+  starBtn.textContent = '⭐';
+  starBtn.title = 'Toggle shortlist';
+  starBtn.onclick = () => {
+    const next = !item.shortlisted;
+    scheduleSave(item, { shortlisted: next });
     render();
   };
-  row.appendChild(approveBtn);
+  row.appendChild(starBtn);
 
-  const rejectBtn = document.createElement('button');
-  rejectBtn.className = 'act reject' + (item.rejected ? ' on' : '');
-  rejectBtn.textContent = '✗';
-  rejectBtn.title = 'Reject';
-  rejectBtn.onclick = () => {
-    const next = !item.rejected;
-    scheduleSave(item, { rejected: next, approved: next ? false : item.approved });
-    render();
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'act copy';
+  copyBtn.textContent = '📋';
+  copyBtn.title = 'Click = copy path · Alt-click = copy staticFile(…) wrapper';
+  copyBtn.onclick = async (e) => {
+    const text = e.altKey ? wrappedPath(item) : barePath(item);
+    const ok = await copyToClipboard(text);
+    if (ok) flashButton(copyBtn);
   };
-  row.appendChild(rejectBtn);
+  row.appendChild(copyBtn);
 
-  // Notes — inline row below
   const noteDiv = document.createElement('div');
   noteDiv.className = 'note';
   const noteInput = document.createElement('input');
@@ -286,27 +380,89 @@ function renderRow(item, idx) {
   return row;
 }
 
-function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
+// ── Tray ───────────────────────────────────────────────────────
+function findById(id) {
+  for (const items of state.byCat.values()) {
+    const it = items.find(i => i.id === id);
+    if (it) return it;
+  }
+  return null;
+}
+function renderTray() {
+  const tray = document.getElementById('tray');
+  const count = state.selection.size;
+  document.getElementById('trayCount').textContent = count;
+  const label = document.getElementById('trayLabel');
+  tray.classList.toggle('empty', count === 0);
+  label.textContent = count === 0
+    ? 'nothing selected — tick boxes to stage for copy'
+    : `${count} item${count === 1 ? '' : 's'} staged`;
+  document.getElementById('trayClear').disabled = count === 0;
+  document.getElementById('trayCopy').disabled = count === 0;
+  document.getElementById('trayPromote').disabled = count === 0;
+}
+document.getElementById('trayClear').onclick = () => {
+  state.selection.clear(); saveSelection(); render();
+};
+document.getElementById('trayCopy').onclick = async () => {
+  const lines = [];
+  for (const id of state.selection) {
+    const it = findById(id);
+    if (!it) continue;
+    const dur = it.duration ? `, ${it.duration}` : '';
+    const note = it.notes ? ` — ${it.notes}` : '';
+    lines.push(`- \`${barePath(it)}\`${note}${dur}`);
+  }
+  await copyToClipboard(lines.join('\n') + '\n');
+  const btn = document.getElementById('trayCopy');
+  btn.textContent = 'Copied ✓';
+  setTimeout(() => { btn.textContent = 'Copy selection'; }, 1200);
+};
+document.getElementById('trayPromote').onclick = async () => {
+  const ids = [...state.selection];
+  setIndicator('saving');
+  try {
+    for (const id of ids) {
+      const it = findById(id);
+      if (!it || it.shortlisted) continue;
+      const res = await fetch(`/api/item/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shortlisted: true }),
+      });
+      if (!res.ok) throw new Error('PATCH ' + res.status);
+      const out = await res.json();
+      Object.assign(it, out.item);
+    }
+    setIndicator('saved');
+    state.selection.clear();
+    saveSelection();
+    render();
+  } catch (e) {
+    console.error(e); setIndicator('error: ' + e.message, true);
+  }
+};
 
-// ──────────────────────────────────────────────────────────────
-// Wire filters
-// ──────────────────────────────────────────────────────────────
+// ── Filter wires ───────────────────────────────────────────────
 document.querySelectorAll('.chip[data-status]').forEach(el => {
-  el.onclick = () => { state.filter.status = el.dataset.status; render(); };
+  el.onclick = () => {
+    document.querySelectorAll('.chip[data-status]').forEach(x => x.classList.remove('on'));
+    el.classList.add('on');
+    state.filter.status = el.dataset.status; render();
+  };
 });
 document.querySelectorAll('.chip[data-dur]').forEach(el => {
-  el.onclick = () => { state.filter.dur = el.dataset.dur; render(); };
+  el.onclick = () => {
+    document.querySelectorAll('.chip[data-dur]').forEach(x => x.classList.remove('on'));
+    el.classList.add('on');
+    state.filter.dur = el.dataset.dur; render();
+  };
 });
 document.getElementById('search').oninput = (e) => {
-  state.filter.search = e.target.value;
-  render();
+  state.filter.search = e.target.value; render();
 };
-document.querySelector('.chip[data-status="all"]').classList.add('on');
-document.querySelector('.chip[data-dur="all"]').classList.add('on');
 
-// ──────────────────────────────────────────────────────────────
-// Boot
-// ──────────────────────────────────────────────────────────────
+// ── Boot ───────────────────────────────────────────────────────
 async function boot() {
   const res = await fetch('/api/manifest');
   const data = await res.json();
@@ -317,13 +473,19 @@ async function boot() {
     if (!state.byCat.has(c)) state.byCat.set(c, []);
     state.byCat.get(c).push(item);
   }
+  // Prune selection of ids no longer in manifest.
+  const allIds = new Set(data.items.map(i => i.id));
+  for (const id of state.selection) if (!allIds.has(id)) state.selection.delete(id);
+  saveSelection();
+
   const total = data.items.length;
-  const approved = data.items.filter(i => i.approved).length;
-  document.getElementById('meta').textContent = `${total} files · ${approved} approved · ${state.byCat.size} categories · schema v${data.schema_version ?? 1}`;
-  state.activeCat = state.byCat.keys().next().value;
+  const shortlisted = data.items.filter(i => i.shortlisted).length;
+  document.getElementById('meta').textContent =
+    `${total} files · ${shortlisted} shortlisted · ${state.byCat.size} categories · schema v${data.schema_version ?? 1}`;
+  // Default tab: first in CATEGORY_ORDER that exists.
+  state.activeCat = CATEGORY_ORDER.find(c => state.byCat.has(c)) || state.byCat.keys().next().value;
   render();
 }
-
 boot().catch(e => {
   document.getElementById('content').innerHTML = `<div class="empty">failed to load manifest: ${esc(e.message)}</div>`;
 });

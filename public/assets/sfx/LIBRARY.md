@@ -1,53 +1,53 @@
-# SFX Library — sign-off sheet
+# SFX + Music Library — sign-off sheet
 
-> Generated 2026-04-22 20:08:35 UTC from MANIFEST.json.
-> **289 files · 0 approved** across 5 categories.
+> Generated 2026-04-22 21:17:43 UTC from MANIFEST.json.
+> **378 files · 18 shortlisted** across 6 categories.
 > Re-run `node scripts/sfx/render-library-md.mjs` after curation to refresh.
 
 ---
-## transitions (58 files · 0 approved)
+## transitions (58 files · 9 shortlisted)
 
-| # | Title | Author | Duration | Mood | Tags | ✓ | Notes |
+| # | Title | Author | Duration | Mood | Tags | ⭐ | Notes |
 |---|-------|--------|----------|------|------|---|-------|
-| 1 | Dramatic Whoosh Swing | DRAGON-STUDIO | 0:01 | — | Film & special effects, Dramatic, Whoosh |  |  |
-| 2 | Whoosh Effect | DRAGON-STUDIO | 0:01 | — | Film & special effects, Whoosh, Whoosh … |  |  |
-| 3 | Whoosh Motion | DRAGON-STUDIO | 0:01 | — | Film & special effects, Whoosh Motion, … |  |  |
-| 4 | Brief Whoosh | DRAGON-STUDIO | 0:01 | — | Whoosh, Swoosh |  |  |
-| 5 | Whoosh Cinematic | DRAGON-STUDIO | 0:02 | — | Film & special effects, Whoosh Sound Ef… |  |  |
-| 6 | Epic Whoosh | DRAGON-STUDIO | 0:02 | — | Film & special effects, Epic, Whoosh, E… |  |  |
-| 7 | Whoosh Cinematic 5 | DRAGON-STUDIO | 0:02 | — | Film & special effects, Whoosh Sound Ef… |  |  |
-| 8 | Long Whoosh | LordSonny | 0:02 | — | Film & special effects, Whoosh, Swipe |  |  |
-| 9 | Whoosh Cinematic | DRAGON-STUDIO | 0:02 | — | Film & special effects, Whoosh Sound Ef… |  |  |
-| 10 | Whoosh Short Realistic | Virtual_Vibes | 0:02 | — | Film & special effects, Whoosh Sound Ef… |  |  |
-| 11 | Car Drive By Whoosh | DRAGON-STUDIO | 0:02 | — | City, Car, Drive, By |  |  |
-| 12 | Whoosh Classic Clear Cinematic | VirtualZero | 0:02 | — | Film & special effects, Whoosh Sound Ef… |  |  |
-| 13 | Whoosh Cinematic HD | Virtual_Vibes | 0:02 | — | Film & special effects, Whoosh Sound Ef… |  |  |
-| 14 | Whoosh Cinematic Sound Effect | DRAGON-STUDIO | 0:03 | — | Whoosh Sound Effect |  |  |
-| 15 | Whoosh Cinematic | LordSonny | 0:03 | — | Film & special effects, Cinematic, Whoo… |  |  |
-| 16 | 8D Whoosh SFX | DRAGON-STUDIO | 0:03 | — | Film & special effects, Whoosh, Wind, S… |  |  |
-| 17 | Magic Teleport Whoosh | Universfield | 0:03 | — | Film & special effects, Teleport Whoosh |  |  |
-| 18 | Whoosh 8 | ksjsbwuil | 0:03 | — | Technology, Whoosh, Effect, Fx |  |  |
-| 19 | Simple Whoosh 02 | DRAGON-STUDIO | 0:04 | — | Film & special effects, Whoosh, Whooshi… |  |  |
-| 20 | Simple Whoosh 03 | DRAGON-STUDIO | 0:04 | — | Film & special effects, Whoosh, Transit… |  |  |
-| 21 | Cinematic Whoosh 2 | DRAGON-STUDIO | 0:04 | — | Cinematic, Whoosh |  |  |
-| 22 | Cinematic Whoosh 4 | DRAGON-STUDIO | 0:04 | — | Cinematic, Whoosh |  |  |
-| 23 | Cinematic Whoosh Reverse | LordSonny | 0:05 | — | Film & special effects, Cinematic, Whoo… |  |  |
-| 24 | Christmas Whoosh Transition | DRAGON-STUDIO | 0:05 | — | Musical, Christmas Whoosh, Whoosh |  |  |
-| 25 | Whoosh Bamboo | SoundReality | 0:06 | — | Film & special effects, Whoosh, Cinemat… |  |  |
-| 26 | Whoosh Velocity | SoundReality | 0:06 | — | Film & special effects, Whoosh, Cinemat… |  |  |
-| 27 | 062864_ESE | freesound_community | 0:06 | — | Film & special effects, Whoosh, Impact,… |  |  |
-| 28 | Whoosh Super Cape | SoundReality | 0:06 | — | Film & special effects, Whoosh, Cinemat… |  |  |
-| 29 | Dramatic Whoosh Trailer | DRAGON-STUDIO | 0:07 | — | Dramatic, Whoosh |  |  |
-| 30 | Elemental Whoosh Trailer | DRAGON-STUDIO | 0:07 | — | Horror, Elemental, Whoosh |  |  |
-| 31 | Whoosh Hit | LordSonny | 0:07 | — | Film & special effects, Whoosh, Whoosh … |  |  |
-| 32 | Whoosh End | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
-| 33 | Whoosh Large Sub | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
-| 34 | Whoosh Take Flight | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
-| 35 | Whoosh Flame | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
-| 36 | Whoosh Rheostatic | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
-| 37 | Whoosh Dark Tension | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
-| 38 | Whoosh Vortex 2 | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
-| 39 | Whoosh Motion 2 | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
+| 1 | Whoosh Cinematic 5 | DRAGON-STUDIO | 0:02 | — | Film & special effects, Whoosh Sound Ef… | ⭐ |  |
+| 2 | Long Whoosh | LordSonny | 0:02 | — | Film & special effects, Whoosh, Swipe | ⭐ |  |
+| 3 | Whoosh Cinematic Sound Effect | DRAGON-STUDIO | 0:03 | — | Whoosh Sound Effect | ⭐ |  |
+| 4 | Cinematic Whoosh 4 | DRAGON-STUDIO | 0:04 | — | Cinematic, Whoosh | ⭐ |  |
+| 5 | Christmas Whoosh Transition | DRAGON-STUDIO | 0:05 | — | Musical, Christmas Whoosh, Whoosh | ⭐ |  |
+| 6 | Whoosh Take Flight | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… | ⭐ |  |
+| 7 | Whoosh Rheostatic | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… | ⭐ |  |
+| 8 | Whoosh Dark Tension | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… | ⭐ |  |
+| 9 | Whoosh Motion 2 | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… | ⭐ |  |
+| 10 | Dramatic Whoosh Swing | DRAGON-STUDIO | 0:01 | — | Film & special effects, Dramatic, Whoosh |  |  |
+| 11 | Whoosh Effect | DRAGON-STUDIO | 0:01 | — | Film & special effects, Whoosh, Whoosh … |  |  |
+| 12 | Whoosh Motion | DRAGON-STUDIO | 0:01 | — | Film & special effects, Whoosh Motion, … |  |  |
+| 13 | Brief Whoosh | DRAGON-STUDIO | 0:01 | — | Whoosh, Swoosh |  |  |
+| 14 | Whoosh Cinematic | DRAGON-STUDIO | 0:02 | — | Film & special effects, Whoosh Sound Ef… |  |  |
+| 15 | Epic Whoosh | DRAGON-STUDIO | 0:02 | — | Film & special effects, Epic, Whoosh, E… |  |  |
+| 16 | Whoosh Cinematic | DRAGON-STUDIO | 0:02 | — | Film & special effects, Whoosh Sound Ef… |  |  |
+| 17 | Whoosh Short Realistic | Virtual_Vibes | 0:02 | — | Film & special effects, Whoosh Sound Ef… |  |  |
+| 18 | Car Drive By Whoosh | DRAGON-STUDIO | 0:02 | — | City, Car, Drive, By |  |  |
+| 19 | Whoosh Classic Clear Cinematic | VirtualZero | 0:02 | — | Film & special effects, Whoosh Sound Ef… |  |  |
+| 20 | Whoosh Cinematic HD | Virtual_Vibes | 0:02 | — | Film & special effects, Whoosh Sound Ef… |  |  |
+| 21 | Whoosh Cinematic | LordSonny | 0:03 | — | Film & special effects, Cinematic, Whoo… |  |  |
+| 22 | 8D Whoosh SFX | DRAGON-STUDIO | 0:03 | — | Film & special effects, Whoosh, Wind, S… |  |  |
+| 23 | Magic Teleport Whoosh | Universfield | 0:03 | — | Film & special effects, Teleport Whoosh |  |  |
+| 24 | Whoosh 8 | ksjsbwuil | 0:03 | — | Technology, Whoosh, Effect, Fx |  |  |
+| 25 | Simple Whoosh 02 | DRAGON-STUDIO | 0:04 | — | Film & special effects, Whoosh, Whooshi… |  |  |
+| 26 | Simple Whoosh 03 | DRAGON-STUDIO | 0:04 | — | Film & special effects, Whoosh, Transit… |  |  |
+| 27 | Cinematic Whoosh 2 | DRAGON-STUDIO | 0:04 | — | Cinematic, Whoosh |  |  |
+| 28 | Cinematic Whoosh Reverse | LordSonny | 0:05 | — | Film & special effects, Cinematic, Whoo… |  |  |
+| 29 | Whoosh Bamboo | SoundReality | 0:06 | — | Film & special effects, Whoosh, Cinemat… |  |  |
+| 30 | Whoosh Velocity | SoundReality | 0:06 | — | Film & special effects, Whoosh, Cinemat… |  |  |
+| 31 | 062864_ESE | freesound_community | 0:06 | — | Film & special effects, Whoosh, Impact,… |  |  |
+| 32 | Whoosh Super Cape | SoundReality | 0:06 | — | Film & special effects, Whoosh, Cinemat… |  |  |
+| 33 | Dramatic Whoosh Trailer | DRAGON-STUDIO | 0:07 | — | Dramatic, Whoosh |  |  |
+| 34 | Elemental Whoosh Trailer | DRAGON-STUDIO | 0:07 | — | Horror, Elemental, Whoosh |  |  |
+| 35 | Whoosh Hit | LordSonny | 0:07 | — | Film & special effects, Whoosh, Whoosh … |  |  |
+| 36 | Whoosh End | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
+| 37 | Whoosh Large Sub | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
+| 38 | Whoosh Flame | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
+| 39 | Whoosh Vortex 2 | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
 | 40 | Dramatic Whoosh | DRAGON-STUDIO | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
 | 41 | Whoosh Torch | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
 | 42 | Whoosh Epic Explosion | SoundReality | 0:08 | — | Film & special effects, Whoosh, Cinemat… |  |  |
@@ -68,28 +68,28 @@
 | 57 | Clean Whoosh | DRAGON-STUDIO |  | — | Film & special effects, Whoosh Sound |  |  |
 | 58 | Clean Whoosh Effect | DRAGON-STUDIO |  | — | Film & special effects, Whoosh Sound |  |  |
 
-## stingers (59 files · 0 approved)
+## stingers (59 files · 1 shortlisted)
 
-| # | Title | Author | Duration | Mood | Tags | ✓ | Notes |
+| # | Title | Author | Duration | Mood | Tags | ⭐ | Notes |
 |---|-------|--------|----------|------|------|---|-------|
-| 1 | Uplifting Logo Piano | Universfield | 0:02 | — | Film & special effects, Cool, Piano, Re… |  |  |
-| 2 | Elegant Piano Logo | Universfield | 0:02 | — | Musical, Reveal, Piano, Sweet |  |  |
-| 3 | Podcast Outro Stinger – Short Clean End… | OpenMindAudio | 0:02 | — | Podcast Outro |  |  |
-| 4 | Elegant Corporate Logo | Universfield | 0:03 | — | Musical, Reveal, Piano, Sweet |  |  |
-| 5 | Modern Logo Reveal & Transition Sound –… | DesiFreeMusic | 0:04 | — | Musical, Logo Reveal |  |  |
-| 6 | Dawn Logo | KRNBEATZ | 0:05 | — | Film & special effects, Audio Logo, Sou… |  |  |
-| 7 | Corporate Technology Logo | BreakzStudios | 0:05 | — | Musical, Drums, Guitar, Synth |  |  |
-| 8 | Pleasing (5 sec edit) stinger | Grumpynora | 0:05 | — | Musical, Short, Logo, Ident |  |  |
-| 9 | Short Logo Intro Sound-Clean Transition… | tajuddinahemed | 0:06 | — | Musical, Short Intro, Audio Logo |  |  |
-| 10 | Epic Whoosh Transition Logo | Alex_Kizenkov | 0:06 | — | Trailer, Intro, Whoosh |  |  |
-| 11 | Cyber Punk Logo | Alex_Kizenkov | 0:06 | — | Film & special effects, Trailer, Intro,… |  |  |
-| 12 | Tech Glitch Whoosh Logo | Alex_Kizenkov | 0:06 | — | Technology, Trailer, Intro, Whoosh |  |  |
-| 13 | Aggressive Tech Cyber Logo | Alex_Kizenkov | 0:06 | — | Trailer, Intro, Whoosh |  |  |
-| 14 | Relaxing Guitar Intro Logo | BreakzStudios | 0:06 | — | Musical, Drums, Guitar, Synth |  |  |
-| 15 | Reverse Acoustic Guitar Logo | BreakzStudios | 0:06 | — | Musical, Drums, Guitar, Synth |  |  |
-| 16 | Electronic Reveal Logo | BreakzStudios | 0:06 | — | Musical, Drums, Guitar, Synth |  |  |
-| 17 | Relaxing Piano and Ocean Waves Logo | BreakzStudios | 0:07 | — | Musical, Drums, Guitar, Synth |  |  |
-| 18 | Short Logo | LiteSaturation | 0:08 | — | Ambient, Atmospheric |  |  |
+| 1 | Short Logo | LiteSaturation | 0:08 | — | Ambient, Atmospheric | ⭐ |  |
+| 2 | Uplifting Logo Piano | Universfield | 0:02 | — | Film & special effects, Cool, Piano, Re… |  |  |
+| 3 | Elegant Piano Logo | Universfield | 0:02 | — | Musical, Reveal, Piano, Sweet |  |  |
+| 4 | Podcast Outro Stinger – Short Clean End… | OpenMindAudio | 0:02 | — | Podcast Outro |  |  |
+| 5 | Elegant Corporate Logo | Universfield | 0:03 | — | Musical, Reveal, Piano, Sweet |  |  |
+| 6 | Modern Logo Reveal & Transition Sound –… | DesiFreeMusic | 0:04 | — | Musical, Logo Reveal |  |  |
+| 7 | Dawn Logo | KRNBEATZ | 0:05 | — | Film & special effects, Audio Logo, Sou… |  |  |
+| 8 | Corporate Technology Logo | BreakzStudios | 0:05 | — | Musical, Drums, Guitar, Synth |  |  |
+| 9 | Pleasing (5 sec edit) stinger | Grumpynora | 0:05 | — | Musical, Short, Logo, Ident |  |  |
+| 10 | Short Logo Intro Sound-Clean Transition… | tajuddinahemed | 0:06 | — | Musical, Short Intro, Audio Logo |  |  |
+| 11 | Epic Whoosh Transition Logo | Alex_Kizenkov | 0:06 | — | Trailer, Intro, Whoosh |  |  |
+| 12 | Cyber Punk Logo | Alex_Kizenkov | 0:06 | — | Film & special effects, Trailer, Intro,… |  |  |
+| 13 | Tech Glitch Whoosh Logo | Alex_Kizenkov | 0:06 | — | Technology, Trailer, Intro, Whoosh |  |  |
+| 14 | Aggressive Tech Cyber Logo | Alex_Kizenkov | 0:06 | — | Trailer, Intro, Whoosh |  |  |
+| 15 | Relaxing Guitar Intro Logo | BreakzStudios | 0:06 | — | Musical, Drums, Guitar, Synth |  |  |
+| 16 | Reverse Acoustic Guitar Logo | BreakzStudios | 0:06 | — | Musical, Drums, Guitar, Synth |  |  |
+| 17 | Electronic Reveal Logo | BreakzStudios | 0:06 | — | Musical, Drums, Guitar, Synth |  |  |
+| 18 | Relaxing Piano and Ocean Waves Logo | BreakzStudios | 0:07 | — | Musical, Drums, Guitar, Synth |  |  |
 | 19 | Podcast Stinger — Signal Before the Sto… | OpenMindAudio | 0:08 | — | Film & special effects, Podcast Stinger… |  |  |
 | 20 | Playful Comical Stinger | Sonican | 0:08 | — | Film & special effects, Comical, Playfu… |  |  |
 | 21 | Logo Reveal (Bass Drop + Echo) | PWLPL | 0:08 | — | Film & special effects, Logo Reveal, Ba… |  |  |
@@ -132,40 +132,40 @@
 | 58 | Dark Pulse Rising Logo | Alex_Kizenkov | 0:30 | — | Technology, Trailer, Intro, Whoosh |  |  |
 | 59 | Trailer Epic Hits Pulse Logo | Alex_Kizenkov | 0:42 | — | Technology, Trailer, Intro, Whoosh |  |  |
 
-## risers (57 files · 0 approved)
+## risers (57 files · 5 shortlisted)
 
-| # | Title | Author | Duration | Mood | Tags | ✓ | Notes |
+| # | Title | Author | Duration | Mood | Tags | ⭐ | Notes |
 |---|-------|--------|----------|------|------|---|-------|
-| 1 | Sharp Riser | CreatorsHome | 0:01 | — | Film & special effects, Riser Shot, Ris… |  |  |
-| 2 | Long Riser | CreatorsHome | 0:02 | — | Film & special effects, Riser Shot, Ris… |  |  |
-| 3 | Riser (3) | u_1pruylktlg | 0:02 | — | Film & special effects, Riser |  |  |
-| 4 | Riser (1) | u_1pruylktlg | 0:02 | — | Film & special effects, Riser |  |  |
-| 5 | Riser Horror | CreatorsHome | 0:02 | — | Horror, Riser, Horror, To Arrive |  |  |
-| 6 | Riser (2) | u_1pruylktlg | 0:02 | — | Film & special effects, Riser |  |  |
-| 7 | Cinematic Whoosh Riser | DRAGON-STUDIO | 0:02 | — | Film & special effects, Movie Trailer W… |  |  |
-| 8 | Dramatic Riser | DRAGON-STUDIO | 0:03 | — | Film & special effects, Dramatic Riser |  |  |
-| 9 | Scary Riser | DRAGON-STUDIO | 0:03 | — | Horror, Riser, Scary, Scary Riser |  |  |
-| 10 | Wind Whoosh Riser | DRAGON-STUDIO | 0:03 | — | Technology, Wind, Whoosh, Riser |  |  |
-| 11 | Riser Swoosh Reverb | ALEXIS_GAMING_CAM | 0:03 | — | Film & special effects, Riser, Reverb, … |  |  |
-| 12 | Riser (5) | u_1pruylktlg | 0:03 | — | Film & special effects, Riser |  |  |
-| 13 | Heavy Whoosh 06 | DRAGON-STUDIO | 0:03 | — | Film & special effects, Cinematic, Boom |  |  |
-| 14 | SFX - Pulsing Cinematic Riser | Fronbondi_Skegs | 0:03 | — | Film & special effects, Riser, Cinematic |  |  |
-| 15 | Noise Riser | DRAGON-STUDIO | 0:03 | — | Film & special effects, Noise, Noise Ri… |  |  |
-| 16 | Cinematic Riser 03 | DRAGON-STUDIO | 0:04 | — | Film & special effects, Cinematic, Boom |  |  |
-| 17 | Cinematic Riser 01 | DRAGON-STUDIO | 0:04 | — | Film & special effects, Cinematic, Boom |  |  |
-| 18 | Cinematic Riser 04 | DRAGON-STUDIO | 0:04 | — | Film & special effects, Cinematic, Boom |  |  |
-| 19 | Riser Hit sfx 001 | AudioPapkin | 0:04 | — | Film & special effects, Deep, Movement,… |  |  |
-| 20 | Cinematic Riser 02 | DRAGON-STUDIO | 0:04 | — | Film & special effects, Cinematic, Boom |  |  |
-| 21 | Glitch Riser | DRAGON-STUDIO | 0:04 | — | Film & special effects, Glitch, Glitch … |  |  |
-| 22 | Riser (7) | u_1pruylktlg | 0:05 | — | Film & special effects, Riser |  |  |
-| 23 | Riser Paper | ALEXIS_GAMING_CAM | 0:05 | — | Film & special effects, Riser, Paper, V… |  |  |
-| 24 | 360-RISER IMPACT | ALEXIS_GAMING_CAM | 0:05 | — | Film & special effects, Riser, Impact, … |  |  |
-| 25 | Christmas Themed Riser | DRAGON-STUDIO | 0:05 | — | Musical, Christmas Riser |  |  |
-| 26 | Riser Tranche | ALEXIS_GAMING_CAM | 0:05 | — | Film & special effects, Riser, Slice, M… |  |  |
-| 27 | Ethereal Riser | freesound_community | 0:05 | — | Film & special effects, Riser, Peaceful… |  |  |
-| 28 | Swoosh Riser Reverb | DRAGON-STUDIO | 0:06 | — | Film & special effects, Reverb Swoosh |  |  |
-| 29 | Riser 4 | ksjsbwuil | 0:06 | — | Film & special effects, Riser, Fx, Epic |  |  |
-| 30 | Riser Swoosh Reverb | DRAGON-STUDIO | 0:06 | — | Film & special effects, Riser Swoosh Re… |  |  |
+| 1 | Riser Swoosh Reverb | ALEXIS_GAMING_CAM | 0:03 | — | Film & special effects, Riser, Reverb, … | ⭐ |  |
+| 2 | Cinematic Riser 03 | DRAGON-STUDIO | 0:04 | — | Film & special effects, Cinematic, Boom | ⭐ |  |
+| 3 | Cinematic Riser 01 | DRAGON-STUDIO | 0:04 | — | Film & special effects, Cinematic, Boom | ⭐ |  |
+| 4 | Christmas Themed Riser | DRAGON-STUDIO | 0:05 | — | Musical, Christmas Riser | ⭐ |  |
+| 5 | Riser Swoosh Reverb | DRAGON-STUDIO | 0:06 | — | Film & special effects, Riser Swoosh Re… | ⭐ |  |
+| 6 | Sharp Riser | CreatorsHome | 0:01 | — | Film & special effects, Riser Shot, Ris… |  |  |
+| 7 | Long Riser | CreatorsHome | 0:02 | — | Film & special effects, Riser Shot, Ris… |  |  |
+| 8 | Riser (3) | u_1pruylktlg | 0:02 | — | Film & special effects, Riser |  |  |
+| 9 | Riser (1) | u_1pruylktlg | 0:02 | — | Film & special effects, Riser |  |  |
+| 10 | Riser Horror | CreatorsHome | 0:02 | — | Horror, Riser, Horror, To Arrive |  |  |
+| 11 | Riser (2) | u_1pruylktlg | 0:02 | — | Film & special effects, Riser |  |  |
+| 12 | Cinematic Whoosh Riser | DRAGON-STUDIO | 0:02 | — | Film & special effects, Movie Trailer W… |  |  |
+| 13 | Dramatic Riser | DRAGON-STUDIO | 0:03 | — | Film & special effects, Dramatic Riser |  |  |
+| 14 | Scary Riser | DRAGON-STUDIO | 0:03 | — | Horror, Riser, Scary, Scary Riser |  |  |
+| 15 | Wind Whoosh Riser | DRAGON-STUDIO | 0:03 | — | Technology, Wind, Whoosh, Riser |  |  |
+| 16 | Riser (5) | u_1pruylktlg | 0:03 | — | Film & special effects, Riser |  |  |
+| 17 | Heavy Whoosh 06 | DRAGON-STUDIO | 0:03 | — | Film & special effects, Cinematic, Boom |  |  |
+| 18 | SFX - Pulsing Cinematic Riser | Fronbondi_Skegs | 0:03 | — | Film & special effects, Riser, Cinematic |  |  |
+| 19 | Noise Riser | DRAGON-STUDIO | 0:03 | — | Film & special effects, Noise, Noise Ri… |  |  |
+| 20 | Cinematic Riser 04 | DRAGON-STUDIO | 0:04 | — | Film & special effects, Cinematic, Boom |  |  |
+| 21 | Riser Hit sfx 001 | AudioPapkin | 0:04 | — | Film & special effects, Deep, Movement,… |  |  |
+| 22 | Cinematic Riser 02 | DRAGON-STUDIO | 0:04 | — | Film & special effects, Cinematic, Boom |  |  |
+| 23 | Glitch Riser | DRAGON-STUDIO | 0:04 | — | Film & special effects, Glitch, Glitch … |  |  |
+| 24 | Riser (7) | u_1pruylktlg | 0:05 | — | Film & special effects, Riser |  |  |
+| 25 | Riser Paper | ALEXIS_GAMING_CAM | 0:05 | — | Film & special effects, Riser, Paper, V… |  |  |
+| 26 | 360-RISER IMPACT | ALEXIS_GAMING_CAM | 0:05 | — | Film & special effects, Riser, Impact, … |  |  |
+| 27 | Riser Tranche | ALEXIS_GAMING_CAM | 0:05 | — | Film & special effects, Riser, Slice, M… |  |  |
+| 28 | Ethereal Riser | freesound_community | 0:05 | — | Film & special effects, Riser, Peaceful… |  |  |
+| 29 | Swoosh Riser Reverb | DRAGON-STUDIO | 0:06 | — | Film & special effects, Reverb Swoosh |  |  |
+| 30 | Riser 4 | ksjsbwuil | 0:06 | — | Film & special effects, Riser, Fx, Epic |  |  |
 | 31 | Riser Swoosh SFX | DRAGON-STUDIO | 0:06 | — | Film & special effects, Reverb Swoosh |  |  |
 | 32 | Riser Swoosh Reverb Effect | DRAGON-STUDIO | 0:06 | — | Film & special effects, Reverb Swoosh |  |  |
 | 33 | Riser (6) | u_1pruylktlg | 0:06 | — | Film & special effects, Riser |  |  |
@@ -194,71 +194,71 @@
 | 56 | C# Guitar Riser Swell | Black_Kumuzhi | 0:24 | — | Film & special effects, Guitar Riser |  |  |
 | 57 | Riser Swoosh Transition | DRAGON-STUDIO |  | — | Film & special effects, Riser Swoosh |  |  |
 
-## impacts (57 files · 0 approved)
+## impacts (57 files · 3 shortlisted)
 
-| # | Title | Author | Duration | Mood | Tags | ✓ | Notes |
+| # | Title | Author | Duration | Mood | Tags | ⭐ | Notes |
 |---|-------|--------|----------|------|------|---|-------|
-| 1 | Ground Impact | Universfield | 0:01 | — | Film & special effects, Ground Impact |  |  |
-| 2 | Wet Squelchy Impact | Universfield | 0:01 | — | Film & special effects, Wet Impact |  |  |
-| 3 | Slime Impact | Universfield | 0:01 | — | Film & special effects, Slime Impact |  |  |
-| 4 | Sound Design Elements Impact SFX PS 140 | AudioPapkin | 0:01 | — | Film & special effects, Impact Sfx, Sou… |  |  |
-| 5 | Sound Design Elements Impact SFX PS 139 | AudioPapkin | 0:01 | — | Technology, Impact Sfx, Sound Effects |  |  |
-| 6 | Sound Design Elements Impact SFX PS 142 | AudioPapkin | 0:01 | — | Horror, Impact Sfx, Sound Effects |  |  |
-| 7 | Sound Design Elements Impact SFX PS 138 | AudioPapkin | 0:01 | — | Film & special effects, Impact Sfx, Sou… |  |  |
-| 8 | Impact – Cinematic Boom | Universfield | 0:02 | — | Film & special effects, Cinematic Boom |  |  |
-| 9 | Boulder Impact | DRAGON-STUDIO | 0:02 | — | Horror, Boulder, Impact |  |  |
-| 10 | Hard Heavy Impact | DRAGON-STUDIO | 0:02 | — | Film & special effects, Impact, Heavy, … |  |  |
-| 11 | Impact – Cinematic Boom 02 | Universfield | 0:02 | — | Household, Cinematic Boom |  |  |
-| 12 | Impact | freesound_community | 0:02 | — | Film & special effects, Impact, Move, F… |  |  |
-| 13 | Epic Spell Impact | DRAGON-STUDIO | 0:02 | — | Film & special effects, Epic, Spell, Im… |  |  |
-| 14 | Cinamatic Impact | mleckert82 | 0:02 | — | Film & special effects, Cinematic Impac… |  |  |
-| 15 | Impact Sound Effect | Recordx_media | 0:02 | — | Film & special effects, Sfx, Sound, Imp… |  |  |
-| 16 | Thud Impact Sound SFX | Virtual_Vibes | 0:02 | — | Film & special effects, Thud, Impact, H… |  |  |
-| 17 | Impact | DRAGON-STUDIO | 0:02 | — | Film & special effects, Impact, Move, T… |  |  |
-| 18 | Sound Design Elements Impact SFX PS 141 | AudioPapkin | 0:02 | — | Technology, Impact Sfx, Sound Effects |  |  |
-| 19 | Cinematic Impact Boom 03 | Universfield | 0:02 | — | Film & special effects, Cinematic Impac… |  |  |
-| 20 | Sound Design Elements Impact SFX PS 101 | AudioPapkin | 0:02 | — | Film & special effects, Impact Sfx, Sou… |  |  |
-| 21 | Heavy Impact (LOUD) | DRAGON-STUDIO | 0:03 | — | Film & special effects, Impact, Heavy, … |  |  |
-| 22 | Cinematic Impact Hit | Universfield | 0:03 | — | Film & special effects, Impact Sound |  |  |
-| 23 | Deep Sea Impact | DRAGON-STUDIO | 0:03 | — | Film & special effects, Impact, Impact … |  |  |
-| 24 | Impact FX | freesound_community | 0:03 | — | Musical, Impact, Transition, Boom |  |  |
-| 25 | Impact | Liecio | 0:03 | — | Film & special effects, Impact, Snap, S… |  |  |
-| 26 | IMPACT | Liecio | 0:03 | — | Film & special effects, Transition Effe… |  |  |
-| 27 | Fx Impact Short 16 (140BPM - Eminor) | juniorsoundays | 0:03 | — | Film & special effects, Fx, Effect, Sou… |  |  |
-| 28 | Sound Design Elements Impact SFX PS 060 | AudioPapkin | 0:03 | — | Film & special effects, Impact Sfx, Sou… |  |  |
-| 29 | Sound Design Elements Impact SFX PS 094 | AudioPapkin | 0:03 | — | Film & special effects, Impact Sfx, Sou… |  |  |
-| 30 | Sound Design Elements Impact SFX PS 144 | AudioPapkin | 0:03 | — | Horror, Impact Sfx, Sound Effects |  |  |
-| 31 | Sound Design Elements Impact SFX PS 059 | AudioPapkin | 0:03 | — | Film & special effects, Impact Sfx, Sou… |  |  |
-| 32 | Electric Impact | freesound_community | 0:03 | — | Film & special effects, Impact, Percuss… |  |  |
-| 33 | Powerful Cinematic Hit | Universfield | 0:03 | — | Impact Sound |  |  |
-| 34 | Cinematic Impact | lucadialessandro | 0:04 | — | Film & special effects, Impact, Cinemat… |  |  |
-| 35 | Impact Transition Impact Dramatic Boom | ALEXIS_GAMING_CAM | 0:04 | — | Film & special effects, Transition, Imp… |  |  |
-| 36 | Bass Impact | UnderPixel1475 | 0:04 | — | Film & special effects, Bass, Sound Eff… |  |  |
-| 37 | Frost Spell Impact | DRAGON-STUDIO | 0:04 | — | Film & special effects, Frost Spell Imp… |  |  |
-| 38 | Elemental Spell Impact (Wind) | DRAGON-STUDIO | 0:04 | — | Film & special effects, Elemental, Spel… |  |  |
-| 39 | Impact Sound Effect | — | 0:04 | — | , Film & special effects, Sound Effect,… |  |  |
-| 40 | Elemental Spell Impact (Water) | DRAGON-STUDIO | 0:05 | — | Film & special effects, Elemental, Spel… |  |  |
-| 41 | Disturb - Trailer Impact, Dark, Cinemat… | BryanSantosBreton | 0:05 | — | Film & special effects, Disturb, Traile… |  |  |
-| 42 | Sound Design Elements Impact SFX PS 126 | AudioPapkin | 0:05 | — | Film & special effects, Impact Sfx, Sou… |  |  |
-| 43 | Critical Tension - Cinematic BRAAM Impa… | BryanSantosBreton | 0:06 | — | Film & special effects, Critical, Tensi… |  |  |
-| 44 | Elemental Spell Impact (Light) | DRAGON-STUDIO | 0:06 | — | Film & special effects, Light, Spell, I… |  |  |
-| 45 | Sound Design Elements Impact SFX PS 143 | AudioPapkin | 0:06 | — | Horror, Impact Sfx, Sound Effects |  |  |
-| 46 | Earth Spell Impact | DRAGON-STUDIO | 0:07 | — | Horror, Earth, Spell, Impact |  |  |
-| 47 | Cinematic Impact | freesound_community | 0:07 | — | Film & special effects, Impact, Bang, H… |  |  |
-| 48 | Elemental Spell Impact (Earth) | DRAGON-STUDIO | 0:07 | — | Horror, Earth, Spell, Impact |  |  |
-| 49 | Biodynamic - Impact, Braam, Tonal, Dark | BryanSantosBreton | 0:08 | — | Film & special effects, Biodynamic, Imp… |  |  |
+| 1 | Impact – Cinematic Boom | Universfield | 0:02 | — | Film & special effects, Cinematic Boom | ⭐ |  |
+| 2 | Epic Spell Impact | DRAGON-STUDIO | 0:02 | — | Film & special effects, Epic, Spell, Im… | ⭐ |  |
+| 3 | Flesh Impact | u_xjrmmgxfru |  | — | Film & special effects, Impact, Gore, H… | ⭐ |  |
+| 4 | Ground Impact | Universfield | 0:01 | — | Film & special effects, Ground Impact |  |  |
+| 5 | Wet Squelchy Impact | Universfield | 0:01 | — | Film & special effects, Wet Impact |  |  |
+| 6 | Slime Impact | Universfield | 0:01 | — | Film & special effects, Slime Impact |  |  |
+| 7 | Sound Design Elements Impact SFX PS 140 | AudioPapkin | 0:01 | — | Film & special effects, Impact Sfx, Sou… |  |  |
+| 8 | Sound Design Elements Impact SFX PS 139 | AudioPapkin | 0:01 | — | Technology, Impact Sfx, Sound Effects |  |  |
+| 9 | Sound Design Elements Impact SFX PS 142 | AudioPapkin | 0:01 | — | Horror, Impact Sfx, Sound Effects |  |  |
+| 10 | Sound Design Elements Impact SFX PS 138 | AudioPapkin | 0:01 | — | Film & special effects, Impact Sfx, Sou… |  |  |
+| 11 | Boulder Impact | DRAGON-STUDIO | 0:02 | — | Horror, Boulder, Impact |  |  |
+| 12 | Hard Heavy Impact | DRAGON-STUDIO | 0:02 | — | Film & special effects, Impact, Heavy, … |  |  |
+| 13 | Impact – Cinematic Boom 02 | Universfield | 0:02 | — | Household, Cinematic Boom |  |  |
+| 14 | Impact | freesound_community | 0:02 | — | Film & special effects, Impact, Move, F… |  |  |
+| 15 | Cinamatic Impact | mleckert82 | 0:02 | — | Film & special effects, Cinematic Impac… |  |  |
+| 16 | Impact Sound Effect | Recordx_media | 0:02 | — | Film & special effects, Sfx, Sound, Imp… |  |  |
+| 17 | Thud Impact Sound SFX | Virtual_Vibes | 0:02 | — | Film & special effects, Thud, Impact, H… |  |  |
+| 18 | Impact | DRAGON-STUDIO | 0:02 | — | Film & special effects, Impact, Move, T… |  |  |
+| 19 | Sound Design Elements Impact SFX PS 141 | AudioPapkin | 0:02 | — | Technology, Impact Sfx, Sound Effects |  |  |
+| 20 | Cinematic Impact Boom 03 | Universfield | 0:02 | — | Film & special effects, Cinematic Impac… |  |  |
+| 21 | Sound Design Elements Impact SFX PS 101 | AudioPapkin | 0:02 | — | Film & special effects, Impact Sfx, Sou… |  |  |
+| 22 | Heavy Impact (LOUD) | DRAGON-STUDIO | 0:03 | — | Film & special effects, Impact, Heavy, … |  |  |
+| 23 | Cinematic Impact Hit | Universfield | 0:03 | — | Film & special effects, Impact Sound |  |  |
+| 24 | Deep Sea Impact | DRAGON-STUDIO | 0:03 | — | Film & special effects, Impact, Impact … |  |  |
+| 25 | Impact FX | freesound_community | 0:03 | — | Musical, Impact, Transition, Boom |  |  |
+| 26 | Impact | Liecio | 0:03 | — | Film & special effects, Impact, Snap, S… |  |  |
+| 27 | IMPACT | Liecio | 0:03 | — | Film & special effects, Transition Effe… |  |  |
+| 28 | Fx Impact Short 16 (140BPM - Eminor) | juniorsoundays | 0:03 | — | Film & special effects, Fx, Effect, Sou… |  |  |
+| 29 | Sound Design Elements Impact SFX PS 060 | AudioPapkin | 0:03 | — | Film & special effects, Impact Sfx, Sou… |  |  |
+| 30 | Sound Design Elements Impact SFX PS 094 | AudioPapkin | 0:03 | — | Film & special effects, Impact Sfx, Sou… |  |  |
+| 31 | Sound Design Elements Impact SFX PS 144 | AudioPapkin | 0:03 | — | Horror, Impact Sfx, Sound Effects |  |  |
+| 32 | Sound Design Elements Impact SFX PS 059 | AudioPapkin | 0:03 | — | Film & special effects, Impact Sfx, Sou… |  |  |
+| 33 | Electric Impact | freesound_community | 0:03 | — | Film & special effects, Impact, Percuss… |  |  |
+| 34 | Powerful Cinematic Hit | Universfield | 0:03 | — | Impact Sound |  |  |
+| 35 | Cinematic Impact | lucadialessandro | 0:04 | — | Film & special effects, Impact, Cinemat… |  |  |
+| 36 | Impact Transition Impact Dramatic Boom | ALEXIS_GAMING_CAM | 0:04 | — | Film & special effects, Transition, Imp… |  |  |
+| 37 | Bass Impact | UnderPixel1475 | 0:04 | — | Film & special effects, Bass, Sound Eff… |  |  |
+| 38 | Frost Spell Impact | DRAGON-STUDIO | 0:04 | — | Film & special effects, Frost Spell Imp… |  |  |
+| 39 | Elemental Spell Impact (Wind) | DRAGON-STUDIO | 0:04 | — | Film & special effects, Elemental, Spel… |  |  |
+| 40 | Impact Sound Effect | — | 0:04 | — | , Film & special effects, Sound Effect,… |  |  |
+| 41 | Elemental Spell Impact (Water) | DRAGON-STUDIO | 0:05 | — | Film & special effects, Elemental, Spel… |  |  |
+| 42 | Disturb - Trailer Impact, Dark, Cinemat… | BryanSantosBreton | 0:05 | — | Film & special effects, Disturb, Traile… |  |  |
+| 43 | Sound Design Elements Impact SFX PS 126 | AudioPapkin | 0:05 | — | Film & special effects, Impact Sfx, Sou… |  |  |
+| 44 | Critical Tension - Cinematic BRAAM Impa… | BryanSantosBreton | 0:06 | — | Film & special effects, Critical, Tensi… |  |  |
+| 45 | Elemental Spell Impact (Light) | DRAGON-STUDIO | 0:06 | — | Film & special effects, Light, Spell, I… |  |  |
+| 46 | Sound Design Elements Impact SFX PS 143 | AudioPapkin | 0:06 | — | Horror, Impact Sfx, Sound Effects |  |  |
+| 47 | Earth Spell Impact | DRAGON-STUDIO | 0:07 | — | Horror, Earth, Spell, Impact |  |  |
+| 48 | Cinematic Impact | freesound_community | 0:07 | — | Film & special effects, Impact, Bang, H… |  |  |
+| 49 | Elemental Spell Impact (Earth) | DRAGON-STUDIO | 0:07 | — | Horror, Earth, Spell, Impact |  |  |
 | 50 | Biodynamic - Impact, Braam, Tonal, Dark | BryanSantosBreton | 0:08 | — | Film & special effects, Biodynamic, Imp… |  |  |
-| 51 | Elemental Spell Impact (Electric) | DRAGON-STUDIO | 0:09 | — | Technology, Electric, Spell, Impact |  |  |
-| 52 | Huge Cinematic Reverb Impact | Black_Kumuzhi | 0:20 | — | Film & special effects, Cinematic Impact |  |  |
-| 53 | Impact Strike – Cinematic Hit Stinger | DesiFreeMusic | 0:29 | — | Musical, Cinematic Hit |  |  |
-| 54 | Impact Thud | DRAGON-STUDIO |  | — | Film & special effects, Impact Thud Sou… |  |  |
-| 55 | metal impact | u_ml52e3xzf7 |  | — | Film & special effects, Impact, Metal, … |  |  |
-| 56 | Arrow Impact | freesound_community |  | — | Film & special effects, Impact, Flight,… |  |  |
-| 57 | Flesh Impact | u_xjrmmgxfru |  | — | Film & special effects, Impact, Gore, H… |  |  |
+| 51 | Biodynamic - Impact, Braam, Tonal, Dark | BryanSantosBreton | 0:08 | — | Film & special effects, Biodynamic, Imp… |  |  |
+| 52 | Elemental Spell Impact (Electric) | DRAGON-STUDIO | 0:09 | — | Technology, Electric, Spell, Impact |  |  |
+| 53 | Huge Cinematic Reverb Impact | Black_Kumuzhi | 0:20 | — | Film & special effects, Cinematic Impact |  |  |
+| 54 | Impact Strike – Cinematic Hit Stinger | DesiFreeMusic | 0:29 | — | Musical, Cinematic Hit |  |  |
+| 55 | Impact Thud | DRAGON-STUDIO |  | — | Film & special effects, Impact Thud Sou… |  |  |
+| 56 | metal impact | u_ml52e3xzf7 |  | — | Film & special effects, Impact, Metal, … |  |  |
+| 57 | Arrow Impact | freesound_community |  | — | Film & special effects, Impact, Flight,… |  |  |
 
-## ambience (58 files · 0 approved)
+## ambience (58 files · 0 shortlisted)
 
-| # | Title | Author | Duration | Mood | Tags | ✓ | Notes |
+| # | Title | Author | Duration | Mood | Tags | ⭐ | Notes |
 |---|-------|--------|----------|------|------|---|-------|
 | 1 | Forest ambience | kauasilbershlachpar… | 0:03 | — | Nature, Ambience, Sfx, Forest |  |  |
 | 2 | Bunker ambience | kauasilbershlachpar… | 0:03 | — | Film & special effects, Ambience, Sfx, … |  |  |
@@ -318,3 +318,104 @@
 | 56 | Nature Ambience | u_vr5icvkppa | 9:53 | — | Nature, Nature, Ambience, Birds |  |  |
 | 57 | Old Mine Ambience | JoelFazhari | 10:03 | — | Film & special effects, Mine, Ambience,… |  |  |
 | 58 | Busy Street Ambience | aatreya_v | 28:45 | — | City, Ambience, Nature, Sound |  |  |
+
+## music (89 files · 0 shortlisted)
+
+### tiktok-backing (85)
+
+| # | Title | Author | Duration | Mood | Tags | ⭐ | Notes |
+|---|-------|--------|----------|------|------|---|-------|
+| 1 | Lose Yourself 8 bar loop | — | 0:22 | — | — |  |  |
+| 2 | Lose Yourself 8 bar loop | — | 0:22 | — | — |  |  |
+| 3 | The Long Way Home logic edit | — | 0:53 | — | — |  |  |
+| 4 | Spooky Quiet Scary Atmosphere piano cov… | — | 1:07 | — | — |  |  |
+| 5 | Running Up That Hill (A Deal With God) … | — | 1:22 | — | — |  |  |
+| 6 | Mockingbird [TubeRipper.com] | — | 1:33 | — | — |  |  |
+| 7 | Skittlegirl Sound - Theme of Mysterious… | — | 1:34 | — | — |  |  |
+| 8 | Beat Automotivo Tan Tan Tan Viral - WZ … | — | 1:50 | — | — |  |  |
+| 9 | Wildest Dreams (Piano Version)  | — | 1:54 | — | — |  |  |
+| 10 | MurderCaust [TubeRipper.com] | — | 2:05 | — | — |  |  |
+| 11 | cornfield chase (theme from interstella… | — | 2:05 | — | — |  |  |
+| 12 | Hans Zimmer - Cornfield Chase (Interste… | — | 2:06 | — | — |  |  |
+| 13 | Love Me (ecstazzz Remix) [TubeRipper.co… | — | 2:07 | — | — |  |  |
+| 14 | Intro] | — | 2:08 | — | — |  |  |
+| 15 | Gravity [TubeRipper.com] | — | 2:08 | — | — |  |  |
+| 16 | [Emotional Piano Music] DS Productions … | — | 2:08 | — | — |  |  |
+| 17 | KUTE TECHNO KILLA  | — | 2:10 | — | — |  |  |
+| 18 | Deathmatch [TubeRipper.com] | — | 2:10 | — | — |  |  |
+| 19 | Aesthetic [TubeRipper.com] | — | 2:14 | — | — |  |  |
+| 20 | DAY$TAR- SMELLS LIKE DRILL SPIRIT (Musi… | — | 2:15 | — | — |  |  |
+| 21 | In Essence [TubeRipper.com] | — | 2:23 | — | — |  |  |
+| 22 | in the air reels version | — | 2:27 | — | — |  |  |
+| 23 | OneRepublic - I Aint Worried (Instrumen… | — | 2:31 | — | — |  |  |
+| 24 | øneheart x reidenshi - snowfall (slowed… | — | 2:31 | — | — |  |  |
+| 25 | Melancholy [TubeRipper.com] | — | 2:35 | — | — |  |  |
+| 26 | golden hour (piano Version)  | — | 2:40 | — | — |  |  |
+| 27 | Night Lovell - Polozhenie [TubeRipper.c… | — | 2:41 | — | — |  |  |
+| 28 | Call Me (Slowed) [TubeRipper.com] | — | 2:41 | — | — |  |  |
+| 29 | Night Lovell - Polozhenie [TubeRipper.c… | — | 2:41 | — | — |  |  |
+| 30 | Mo Beats - Righteous (pepe lore song)  | — | 2:44 | — | — |  |  |
+| 31 | I need your loving like the sunshine [T… | — | 2:45 | — | — |  |  |
+| 32 | Stargazing (Slowed + Reverb) - Marcelo … | — | 2:45 | — | — |  |  |
+| 33 | Kreepa - Oh No (Lyrics) [TubeRipper.com] | — | 2:47 | — | — |  |  |
+| 34 | Gustavo Bravetti - Babel (Visualizer)  | — | 2:52 | — | — |  |  |
+| 35 | Pxlish Beatz -Prey - SPIT IN MY FACE! (… | — | 2:52 | — | — |  |  |
+| 36 | Digga D - Energy (Official Video) [Tube… | — | 2:54 | — | — |  |  |
+| 37 | Solas x Interstellar [TubeRipper.com] | — | 2:54 | — | — |  |  |
+| 38 | Kina - get you the moon (ft. Snow) | — | 2:59 | — | — |  |  |
+| 39 | SHADOW (Slowed + Reverb)  | — | 3:05 | — | — |  |  |
+| 40 | Anywhere - Free No Copyright Music  | — | 3:06 | — | — |  |  |
+| 41 | Epic Inspirational and Cinematic Motiva… | — | 3:11 | — | — |  |  |
+| 42 | Palm City - TimeLesz [TubeRipper.com] | — | 3:13 | — | — |  |  |
+| 43 | Really Slow Motion - Deadwood (Epic Dar… | — | 3:14 | — | — |  |  |
+| 44 | Vitrolic-Jailbreak (Instrumental remix … | — | 3:14 | — | — |  |  |
+| 45 | Alessia Cara - Here (Official Video) [T… | — | 3:30 | — | — |  |  |
+| 46 | Else - Paris  | — | 3:30 | — | — |  |  |
+| 47 | IVOXYGEN - YOUNG KID (Official Music Vi… | — | 3:30 | — | — |  |  |
+| 48 | Astraleazar - Jailbreak(Instrumental) [… | — | 3:34 | — | — |  |  |
+| 49 | Kina - Get You The Moon (Lyrics) Hippie… | — | 3:40 | — | — |  |  |
+| 50 | River Flows in You [TubeRipper.com] | — | 3:40 | — | — |  |  |
+| 51 | M83 - Solitude (Felsmann + Tiley Reinte… | — | 3:42 | — | — |  |  |
+| 52 | Say It Right - Nelly Furtado | — | 3:45 | — | — |  |  |
+| 53 | Common Sense [TubeRipper.com] | — | 3:46 | — | — |  |  |
+| 54 | Synthwave goose - Blade Runner 2049  | — | 3:47 | — | — |  |  |
+| 55 | Gustavo Santaolalla - Babel (Otnicka Re… | — | 3:52 | — | — |  |  |
+| 56 | Canelo [TubeRipper.com] | — | 3:57 | — | — |  |  |
+| 57 | Tony Anderson - Butterflies (Piano Sona… | — | 4:00 | — | — |  |  |
+| 58 | KTerror - My All (Official Lyric Video)… | — | 4:05 | — | — |  |  |
+| 59 | Get You The Moon - Kina Marty Ray Proje… | — | 4:15 | — | — |  |  |
+| 60 | Kina - get you to the moon (feat. Snow)… | — | 4:16 | — | — |  |  |
+| 61 | YVDB 89 - Lazy Sunday (So Fancy) [Exten… | — | 4:17 | — | — |  |  |
+| 62 | Spentukto - New Magic Wand X Funtime Fo… | — | 4:18 | — | — |  |  |
+| 63 | The Commodores - Easy (1977) [TubeRippe… | — | 4:20 | — | — |  |  |
+| 64 | solas (slowed + reverb)  | — | 4:28 | — | — |  |  |
+| 65 | Biggie Small One More Chance | — | 4:29 | — | — |  |  |
+| 66 | The Weeknd - Starboy ft. Daft Punk ( | — | 4:33 | — | — |  |  |
+| 67 | Fell Apart Lucky Ones [TubeRipper.com] | — | 5:05 | — | — |  |  |
+| 68 | Apocalyptica - Nothing Else Matters (Pl… | — | 5:05 | — | — |  |  |
+| 69 | Meri Aashiqui Song Rochak Kohli Feat. J… | — | 5:07 | — | — |  |  |
+| 70 | 28 Days Later slowed [TubeRipper.com] | — | 5:09 | — | — |  |  |
+| 71 | Lose Yourself (From 8 Mile Soundtrack) … | — | 5:21 | — | — |  |  |
+| 72 | Massive Attack - Unfinished Sympathy [T… | — | 5:21 | — | — |  |  |
+| 73 | Epic Motivational Music - Our Saga [Tub… | — | 5:21 | — | — |  |  |
+| 74 | Eminem - Lose Yourself [HD] [TubeRipper… | — | 5:23 | — | — |  |  |
+| 75 | Phil Collins - In the Air Tonight [Tube… | — | 5:37 | — | — |  |  |
+| 76 | Eminem - Stan (Short Version) ft. Dido … | — | 6:04 | — | — |  |  |
+| 77 | Giggs - FreeStyle (Hardest Talking) (In… | — | 6:04 | — | — |  |  |
+| 78 | Petit Biscuit - Night Trouble (Official… | — | 6:31 | — | — |  |  |
+| 79 | Logic - 1-800-273-8255 ft. Alessia Cara… | — | 6:60 | — | — |  |  |
+| 80 | Love Hate [TubeRipper.com] | — | 7:07 | — | — |  |  |
+| 81 | the cinematic orchestra - to build a ho… | — | 7:13 | — | — |  |  |
+| 82 | RY X - Body Sun (Live from the Royal Al… | — | 7:27 | — | — |  |  |
+| 83 | Interstellar  | — | 7:45 | — | — |  |  |
+| 84 | Kina - get you the moon (Lyrics) ft. Sn… | — | 8:20 | — | — |  |  |
+| 85 | Fred again.. x Skepta x PlaqueBoyMax - … | — | 8:23 | — | — |  |  |
+
+### ssl-live-beds (4)
+
+| # | Title | Author | Duration | Mood | Tags | ⭐ | Notes |
+|---|-------|--------|----------|------|------|---|-------|
+| 1 | penguinmusic-emotions-cinematic-ambient… | — | 1:05 | — | — |  |  |
+| 2 | penguinmusic-wings-196958 | — | 1:23 | — | — |  |  |
+| 3 | onaldin_music-emotional-modern-piano-in… | — | 1:30 | — | — |  |  |
+| 4 | penguinmusic-through-the-clouds-calming… | — | 1:39 | — | — |  |  |

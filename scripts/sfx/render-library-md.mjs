@@ -2,8 +2,9 @@
 /**
  * Render LIBRARY.md from MANIFEST.json.
  *
- * Human-readable sign-off sheet. One section per category, sorted approved-desc
- * then duration-asc. Pipes in text are escaped so GitHub/VS Code render cleanly.
+ * Human-readable sign-off sheet. One section per category, sorted
+ * shortlisted-desc then duration-asc. Music is sub-grouped by subcategory.
+ * Pipes in text are escaped so GitHub/VS Code render cleanly.
  *
  * Usage:
  *   node scripts/sfx/render-library-md.mjs
@@ -17,7 +18,7 @@ const PROJECT_ROOT = resolve(__dirname, '..', '..');
 const MANIFEST_PATH = resolve(PROJECT_ROOT, 'public/assets/sfx/MANIFEST.json');
 const OUT_PATH = resolve(PROJECT_ROOT, 'public/assets/sfx/LIBRARY.md');
 
-const CATEGORY_ORDER = ['transitions', 'stingers', 'risers', 'impacts', 'ambience'];
+const CATEGORY_ORDER = ['transitions', 'stingers', 'risers', 'impacts', 'ambience', 'music'];
 
 function escapePipes(s) {
   return String(s ?? '').replace(/\|/g, '\\|');
@@ -35,28 +36,59 @@ function truncate(s, n) {
   return str.length <= n ? str : str.slice(0, n - 1) + '…';
 }
 
-function renderCategory(name, items) {
-  const sorted = [...items].sort((a, b) => {
-    if (a.approved !== b.approved) return a.approved ? -1 : 1;
+function sortItems(items) {
+  return [...items].sort((a, b) => {
+    if (!!a.shortlisted !== !!b.shortlisted) return a.shortlisted ? -1 : 1;
     return durationKey(a.duration) - durationKey(b.duration);
   });
+}
 
-  const rows = sorted.map((it, i) => {
+function renderRows(items) {
+  return items.map((it, i) => {
     const mood = Array.isArray(it.mood) && it.mood.length ? it.mood.join(', ') : '—';
     const tags = Array.isArray(it.tags) && it.tags.length ? truncate(it.tags.slice(0, 4).join(', '), 40) : '—';
-    const approved = it.approved ? '✓' : '';
+    const shortlisted = it.shortlisted ? '⭐' : '';
     const notes = it.notes ? truncate(it.notes, 30) : '';
-    return `| ${i + 1} | ${escapePipes(truncate(it.title ?? '—', 40))} | ${escapePipes(truncate(it.author ?? '—', 20))} | ${it.duration ?? '—'} | ${escapePipes(mood)} | ${escapePipes(tags)} | ${approved} | ${escapePipes(notes)} |`;
+    return `| ${i + 1} | ${escapePipes(truncate(it.title ?? '—', 40))} | ${escapePipes(truncate(it.author ?? '—', 20))} | ${it.duration ?? '—'} | ${escapePipes(mood)} | ${escapePipes(tags)} | ${shortlisted} | ${escapePipes(notes)} |`;
   });
+}
 
-  const approvedCount = sorted.filter(s => s.approved).length;
+function renderTable(items) {
   return [
-    `## ${name} (${sorted.length} files · ${approvedCount} approved)`,
-    '',
-    '| # | Title | Author | Duration | Mood | Tags | ✓ | Notes |',
+    '| # | Title | Author | Duration | Mood | Tags | ⭐ | Notes |',
     '|---|-------|--------|----------|------|------|---|-------|',
-    ...rows,
+    ...renderRows(items),
     '',
+  ].join('\n');
+}
+
+function renderCategory(name, items) {
+  const sorted = sortItems(items);
+  const shortlistedCount = sorted.filter(s => s.shortlisted).length;
+
+  if (name === 'music') {
+    const bySub = new Map();
+    for (const it of sorted) {
+      const sub = it.subcategory || 'unsorted';
+      if (!bySub.has(sub)) bySub.set(sub, []);
+      bySub.get(sub).push(it);
+    }
+    const parts = [
+      `## ${name} (${sorted.length} files · ${shortlistedCount} shortlisted)`,
+      '',
+    ];
+    for (const [sub, subItems] of bySub) {
+      parts.push(`### ${sub} (${subItems.length})`);
+      parts.push('');
+      parts.push(renderTable(subItems));
+    }
+    return parts.join('\n');
+  }
+
+  return [
+    `## ${name} (${sorted.length} files · ${shortlistedCount} shortlisted)`,
+    '',
+    renderTable(sorted),
   ].join('\n');
 }
 
@@ -73,14 +105,14 @@ async function main() {
   }
 
   const total = items.length;
-  const totalApproved = items.filter(i => i.approved).length;
+  const totalShortlisted = items.filter(i => i.shortlisted).length;
   const capturedAt = new Date().toISOString();
 
   const header = [
-    '# SFX Library — sign-off sheet',
+    '# SFX + Music Library — sign-off sheet',
     '',
     `> Generated ${capturedAt.slice(0, 19).replace('T', ' ')} UTC from MANIFEST.json.`,
-    `> **${total} files · ${totalApproved} approved** across ${byCat.size} categories.`,
+    `> **${total} files · ${totalShortlisted} shortlisted** across ${byCat.size} categories.`,
     '> Re-run \`node scripts/sfx/render-library-md.mjs\` after curation to refresh.',
     '',
     '---',
@@ -98,7 +130,7 @@ async function main() {
   console.log(`wrote ${OUT_PATH}`);
   console.log(`  categories: ${byCat.size}`);
   console.log(`  total: ${total}`);
-  console.log(`  approved: ${totalApproved}`);
+  console.log(`  shortlisted: ${totalShortlisted}`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

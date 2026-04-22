@@ -1,21 +1,26 @@
 #!/usr/bin/env node
 /**
- * SFX auditioner server — tiny Node HTTP + file-system bridge.
+ * SFX + Music auditioner server — tiny Node HTTP + file-system bridge.
  *
  * Serves:
  *   GET  /                → auditioner/index.html
- *   GET  /audio/<path>    → public/assets/sfx/<path>  (raw MP3s for <audio>)
+ *   GET  /audio/<path>    → public/assets/<path>  (MP3s/M4As for <audio>)
+ *                           jail: must resolve under ASSETS_ROOT; traversal rejected
  *   GET  /api/manifest    → MANIFEST.json
- *   PATCH /api/item/:id   → merge partial updates into the matching item,
- *                           write MANIFEST, regenerate LIBRARY.md
+ *   PATCH /api/item/:id   → merge WHITELISTED partial updates into the matching
+ *                           item, write MANIFEST, regenerate LIBRARY.md.
+ *                           Whitelist: shortlisted, notes, mood, subcategory.
+ *                           Deprecated keys (approved, rejected) are silently
+ *                           ignored so stale browser tabs can't resurrect them.
  *
  * No deps beyond Node stdlib. Launches on port 4747 (SFX on a dial pad).
  *
  * Usage:
  *   node scripts/sfx/auditioner/server.mjs
- *   npm run audition      # once package.json script is wired
+ *   npm run audition
  */
 import { createServer } from 'node:http';
+import { createReadStream } from 'node:fs';
 import { readFile, writeFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -24,7 +29,7 @@ import { spawn } from 'node:child_process';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = resolve(__dirname, '..', '..', '..');
 const MANIFEST_PATH = join(PROJECT_ROOT, 'public/assets/sfx/MANIFEST.json');
-const SFX_ROOT = join(PROJECT_ROOT, 'public/assets/sfx');
+const ASSETS_ROOT = join(PROJECT_ROOT, 'public/assets');
 const INDEX_HTML = join(__dirname, 'index.html');
 const PORT = Number(process.env.AUDITIONER_PORT || 4747);
 
@@ -34,8 +39,16 @@ const MIME = {
   '.js': 'application/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.mp3': 'audio/mpeg',
+  '.m4a': 'audio/mp4',
   '.wav': 'audio/wav',
+  '.aif': 'audio/aiff',
+  '.aiff': 'audio/aiff',
 };
+
+// PATCH whitelist — keys the browser is allowed to write. Everything else is
+// silently dropped. Deprecated fields (approved/rejected/approved_at) are NOT
+// here so stale tabs cannot resurrect them.
+const PATCH_ALLOWED = new Set(['shortlisted', 'notes', 'mood', 'subcategory']);
 
 let manifestLock = Promise.resolve();
 async function withManifestLock(fn) {
@@ -76,6 +89,39 @@ async function serveFile(res, filePath, contentType) {
   }
 }
 
+// Serves audio with byte-range support so <audio> can scrub/seek mid-track
+// without the browser re-downloading. No Range header → 200 with full body.
+async function serveAudio(req, res, filePath, contentType) {
+  let s;
+  try { s = await stat(filePath); } catch { res.writeHead(404); return res.end('not found'); }
+  if (!s.isFile()) { res.writeHead(404); return res.end('not found'); }
+  const size = s.size;
+  const range = req.headers.range;
+  const baseHeaders = {
+    'Content-Type': contentType,
+    'Accept-Ranges': 'bytes',
+    'Cache-Control': 'public, max-age=3600',
+  };
+  if (!range) {
+    res.writeHead(200, { ...baseHeaders, 'Content-Length': size });
+    return createReadStream(filePath).pipe(res);
+  }
+  const m = /^bytes=(\d*)-(\d*)$/.exec(range);
+  if (!m) { res.writeHead(416, { 'Content-Range': `bytes */${size}` }); return res.end(); }
+  let start = m[1] === '' ? 0 : parseInt(m[1], 10);
+  let end = m[2] === '' ? size - 1 : parseInt(m[2], 10);
+  if (isNaN(start) || isNaN(end) || start > end || end >= size) {
+    res.writeHead(416, { 'Content-Range': `bytes */${size}` });
+    return res.end();
+  }
+  res.writeHead(206, {
+    ...baseHeaders,
+    'Content-Range': `bytes ${start}-${end}/${size}`,
+    'Content-Length': end - start + 1,
+  });
+  createReadStream(filePath, { start, end }).pipe(res);
+}
+
 function json(res, status, body) {
   const payload = JSON.stringify(body);
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': Buffer.byteLength(payload) });
@@ -98,11 +144,15 @@ const server = createServer(async (req, res) => {
       return serveFile(res, INDEX_HTML, MIME['.html']);
     }
 
-    if (req.method === 'GET' && pathname.startsWith('/audio/')) {
+    if ((req.method === 'GET' || req.method === 'HEAD') && pathname.startsWith('/audio/')) {
       const rel = decodeURIComponent(pathname.slice('/audio/'.length));
-      const filePath = normalize(join(SFX_ROOT, rel));
-      if (!filePath.startsWith(SFX_ROOT)) { res.writeHead(403); return res.end('forbidden'); }
-      return serveFile(res, filePath, MIME[extname(filePath).toLowerCase()] || 'application/octet-stream');
+      const filePath = normalize(join(ASSETS_ROOT, rel));
+      // Must stay inside ASSETS_ROOT — blocks ../ traversal.
+      if (filePath !== ASSETS_ROOT && !filePath.startsWith(ASSETS_ROOT + '/')) {
+        res.writeHead(403); return res.end('forbidden');
+      }
+      const contentType = MIME[extname(filePath).toLowerCase()] || 'application/octet-stream';
+      return serveAudio(req, res, filePath, contentType);
     }
 
     if (req.method === 'GET' && pathname === '/api/manifest') {
@@ -117,13 +167,19 @@ const server = createServer(async (req, res) => {
         const data = await readManifest();
         const item = (data.items || []).find(i => i.id === id);
         if (!item) return { ok: false, reason: 'not_found' };
-        // Approval toggle records a timestamp so we can audit when Danny signed off
-        if (patch.approved !== undefined && patch.approved !== item.approved) {
-          item.approved_at = patch.approved ? new Date().toISOString() : null;
+        const applied = {};
+        const ignored = [];
+        for (const [k, v] of Object.entries(patch)) {
+          if (!PATCH_ALLOWED.has(k)) { ignored.push(k); continue; }
+          applied[k] = v;
         }
-        Object.assign(item, patch);
+        // Shortlist toggle records a timestamp so we can audit Danny's bookmarks.
+        if ('shortlisted' in applied && applied.shortlisted !== item.shortlisted) {
+          item.shortlisted_at = applied.shortlisted ? new Date().toISOString() : null;
+        }
+        Object.assign(item, applied);
         await writeManifest(data);
-        return { ok: true, item };
+        return { ok: true, item, applied: Object.keys(applied), ignored };
       });
       if (result.ok) {
         regenerateLibraryMd().catch(e => console.error('render-library-md failed:', e.message));
@@ -139,8 +195,8 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`SFX auditioner running on http://localhost:${PORT}`);
+  console.log(`SFX + Music auditioner running on http://localhost:${PORT}`);
   console.log(`  manifest: ${MANIFEST_PATH}`);
-  console.log(`  audio:    ${SFX_ROOT}`);
+  console.log(`  audio:    ${ASSETS_ROOT}`);
   console.log(`  Ctrl+C to stop.`);
 });
