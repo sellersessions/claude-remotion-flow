@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SFX Auditioner — SSL 2026</title>
+<style>
+  :root {
+    --bg: #0b0f14;
+    --panel: #141b24;
+    --panel-2: #1a2330;
+    --ink: #e6edf3;
+    --ink-muted: #8b9aaa;
+    --line: #243041;
+    --accent: #ffb11d;
+    --accent-dim: #8a6410;
+    --approve: #1fbf5b;
+    --reject: #e5484d;
+    --chip-bg: #1f2836;
+    --chip-on: #ffb11d;
+    --chip-on-ink: #0b0f14;
+    --radius: 6px;
+    --font: -apple-system, "SF Pro Text", Inter, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 13px; line-height: 1.4; }
+  header { position: sticky; top: 0; z-index: 10; background: var(--panel); border-bottom: 1px solid var(--line); padding: 14px 20px; }
+  header h1 { margin: 0 0 4px; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+  header .meta { color: var(--ink-muted); font-size: 12px; }
+  .tabs { display: flex; gap: 4px; margin: 10px 0 0; flex-wrap: wrap; }
+  .tab { background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 12px; color: var(--ink-muted); cursor: pointer; font-size: 12px; font-weight: 500; }
+  .tab.on { background: var(--accent); color: var(--chip-on-ink); border-color: var(--accent); }
+  .tab .count { opacity: 0.65; margin-left: 6px; font-weight: 400; }
+  .tab.on .count { opacity: 0.85; }
+  .filters { display: flex; gap: 12px; margin: 12px 0 0; flex-wrap: wrap; align-items: center; }
+  .filter-group { display: flex; gap: 4px; align-items: center; }
+  .filter-group label { color: var(--ink-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; margin-right: 4px; }
+  .chip { background: var(--chip-bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--ink); cursor: pointer; font-size: 11px; }
+  .chip.on { background: var(--chip-on); color: var(--chip-on-ink); border-color: var(--chip-on); }
+  .content { padding: 14px 20px 60px; }
+  .row { display: grid; grid-template-columns: 30px 1fr 250px 50px 40px 40px; gap: 12px; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  .row.approved { background: rgba(31, 191, 91, 0.06); }
+  .row.rejected { opacity: 0.5; }
+  .meta-cell { display: flex; flex-direction: column; min-width: 0; }
+  .title { font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sub { color: var(--ink-muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  audio { width: 100%; height: 32px; }
+  audio::-webkit-media-controls-panel { background: var(--panel-2); }
+  .duration { font-variant-numeric: tabular-nums; color: var(--ink-muted); font-size: 12px; text-align: right; }
+  button.act { background: transparent; border: 1px solid var(--line); border-radius: var(--radius); color: var(--ink-muted); width: 32px; height: 28px; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+  button.act:hover { background: var(--panel-2); color: var(--ink); }
+  button.act.approve.on { background: var(--approve); border-color: var(--approve); color: white; }
+  button.act.reject.on { background: var(--reject); border-color: var(--reject); color: white; }
+  .empty { padding: 80px 20px; text-align: center; color: var(--ink-muted); }
+  .note { grid-column: 2 / -1; margin-top: 2px; }
+  .note input { width: 100%; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); padding: 4px 8px; font-size: 11px; font-family: var(--font); }
+  .note input:focus { outline: none; border-color: var(--accent); }
+  .row.expanded { grid-template-columns: 30px 1fr 250px 50px 40px 40px; grid-auto-rows: auto; }
+  .idx { color: var(--ink-muted); font-variant-numeric: tabular-nums; font-size: 11px; text-align: right; }
+  .count-pill { display: inline-block; background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; font-size: 11px; color: var(--ink-muted); }
+  .count-pill.on { background: var(--approve); color: white; border-color: var(--approve); }
+  .save-indicator { font-size: 11px; color: var(--ink-muted); margin-left: 8px; }
+  .save-indicator.saving { color: var(--accent); }
+  .save-indicator.saved { color: var(--approve); }
+  @media (max-width: 900px) {
+    .row { grid-template-columns: 1fr 40px 40px; gap: 8px; }
+    .meta-cell { grid-column: 1 / -1; }
+    audio { grid-column: 1 / -1; }
+    .duration { display: none; }
+    .idx { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>SFX Auditioner <span class="save-indicator" id="saveIndicator"></span></h1>
+  <div class="meta" id="meta">loading…</div>
+  <div class="tabs" id="tabs"></div>
+  <div class="filters">
+    <div class="filter-group">
+      <label>Status</label>
+      <button class="chip" data-status="all">all</button>
+      <button class="chip" data-status="unreviewed">unreviewed</button>
+      <button class="chip" data-status="approved">approved</button>
+      <button class="chip" data-status="rejected">rejected</button>
+    </div>
+    <div class="filter-group">
+      <label>Duration</label>
+      <button class="chip" data-dur="all">any</button>
+      <button class="chip" data-dur="short">≤ 3s</button>
+      <button class="chip" data-dur="mid">3–15s</button>
+      <button class="chip" data-dur="long">15s+</button>
+    </div>
+    <div class="filter-group">
+      <label>Search</label>
+      <input id="search" type="search" placeholder="title or author" style="background:var(--panel-2);border:1px solid var(--line);border-radius:4px;color:var(--ink);padding:4px 8px;font-size:12px;min-width:180px;">
+    </div>
+  </div>
+</header>
+<main class="content" id="content">
+  <div class="empty">loading manifest…</div>
+</main>
+
+<script>
+// ──────────────────────────────────────────────────────────────
+// State
+// ──────────────────────────────────────────────────────────────
+const state = {
+  manifest: null,
+  byCat: new Map(),
+  activeCat: null,
+  filter: { status: 'all', dur: 'all', search: '' },
+  pending: new Map(), // id → timer for debounced save
+};
+
+// ──────────────────────────────────────────────────────────────
+// Data helpers
+// ──────────────────────────────────────────────────────────────
+function durationSeconds(s) {
+  if (!s) return 0;
+  const m = String(s).match(/(\d+):(\d{2})/);
+  return m ? parseInt(m[1]) * 60 + parseInt(m[2]) : 0;
+}
+
+function durationBucket(s) {
+  const sec = durationSeconds(s);
+  if (sec <= 3) return 'short';
+  if (sec <= 15) return 'mid';
+  return 'long';
+}
+
+function matchesFilter(item) {
+  const st = state.filter.status;
+  if (st === 'approved' && !item.approved) return false;
+  if (st === 'rejected' && item.rejected !== true) return false;
+  if (st === 'unreviewed' && (item.approved || item.rejected)) return false;
+  const d = state.filter.dur;
+  if (d !== 'all' && durationBucket(item.duration) !== d) return false;
+  const q = state.filter.search.trim().toLowerCase();
+  if (q) {
+    const hay = `${item.title||''} ${item.author||''} ${(item.tags||[]).join(' ')}`.toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+// ──────────────────────────────────────────────────────────────
+// Save — debounced PATCH per item
+// ──────────────────────────────────────────────────────────────
+function scheduleSave(item, patch) {
+  Object.assign(item, patch);
+  setIndicator('saving');
+  if (state.pending.has(item.id)) clearTimeout(state.pending.get(item.id));
+  const t = setTimeout(async () => {
+    try {
+      const res = await fetch(`/api/item/${encodeURIComponent(item.id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+      if (!res.ok) throw new Error('PATCH failed: ' + res.status);
+      setIndicator('saved');
+    } catch (e) {
+      console.error(e);
+      setIndicator('error: ' + e.message, true);
+    }
+    state.pending.delete(item.id);
+  }, 250);
+  state.pending.set(item.id, t);
+}
+
+function setIndicator(text, isError = false) {
+  const el = document.getElementById('saveIndicator');
+  el.textContent = text;
+  el.className = 'save-indicator ' + (isError ? 'error' : (text === 'saved' ? 'saved' : text ? 'saving' : ''));
+  if (!isError && text === 'saved') setTimeout(() => { el.textContent = ''; el.className = 'save-indicator'; }, 1200);
+}
+
+// ──────────────────────────────────────────────────────────────
+// Render
+// ──────────────────────────────────────────────────────────────
+function render() {
+  renderTabs();
+  renderFilters();
+  renderContent();
+}
+
+function renderTabs() {
+  const tabs = document.getElementById('tabs');
+  tabs.innerHTML = '';
+  for (const [cat, items] of state.byCat) {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (cat === state.activeCat ? ' on' : '');
+    const approved = items.filter(i => i.approved).length;
+    btn.innerHTML = `${cat}<span class="count">${approved}/${items.length}</span>`;
+    btn.onclick = () => { state.activeCat = cat; render(); };
+    tabs.appendChild(btn);
+  }
+}
+
+function renderFilters() {
+  document.querySelectorAll('.chip[data-status]').forEach(el => {
+    el.classList.toggle('on', el.dataset.status === state.filter.status);
+  });
+  document.querySelectorAll('.chip[data-dur]').forEach(el => {
+    el.classList.toggle('on', el.dataset.dur === state.filter.dur);
+  });
+}
+
+function renderContent() {
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+  if (!state.activeCat) { content.innerHTML = '<div class="empty">pick a category</div>'; return; }
+  const all = state.byCat.get(state.activeCat) || [];
+  const filtered = all.filter(matchesFilter);
+  if (filtered.length === 0) { content.innerHTML = '<div class="empty">no matches — loosen filters</div>'; return; }
+  const sorted = [...filtered].sort((a, b) => {
+    if (a.approved !== b.approved) return a.approved ? -1 : 1;
+    return durationSeconds(a.duration) - durationSeconds(b.duration);
+  });
+  sorted.forEach((it, i) => content.appendChild(renderRow(it, i + 1)));
+}
+
+function renderRow(item, idx) {
+  const row = document.createElement('div');
+  row.className = 'row' + (item.approved ? ' approved' : '') + (item.rejected ? ' rejected' : '');
+
+  const idxCell = document.createElement('div');
+  idxCell.className = 'idx';
+  idxCell.textContent = idx;
+  row.appendChild(idxCell);
+
+  const meta = document.createElement('div');
+  meta.className = 'meta-cell';
+  meta.innerHTML = `<div class="title">${esc(item.title || '—')}</div>
+    <div class="sub">${esc(item.author || '—')} · ${esc((item.tags || []).slice(0, 3).join(', '))}</div>`;
+  row.appendChild(meta);
+
+  const audio = document.createElement('audio');
+  audio.controls = true;
+  audio.preload = 'none';
+  // MANIFEST.local_path is "public/assets/sfx/_inbox/<cat>/<file>"; server mounts
+  // /audio/<rel> under public/assets/sfx/, so strip that prefix.
+  const rel = (item.local_path || '').replace(/^public\/assets\/sfx\//, '');
+  audio.src = '/audio/' + rel;
+  row.appendChild(audio);
+
+  const dur = document.createElement('div');
+  dur.className = 'duration';
+  dur.textContent = item.duration || '—';
+  row.appendChild(dur);
+
+  const approveBtn = document.createElement('button');
+  approveBtn.className = 'act approve' + (item.approved ? ' on' : '');
+  approveBtn.textContent = '✓';
+  approveBtn.title = 'Approve';
+  approveBtn.onclick = () => {
+    const next = !item.approved;
+    scheduleSave(item, { approved: next, rejected: next ? false : item.rejected });
+    render();
+  };
+  row.appendChild(approveBtn);
+
+  const rejectBtn = document.createElement('button');
+  rejectBtn.className = 'act reject' + (item.rejected ? ' on' : '');
+  rejectBtn.textContent = '✗';
+  rejectBtn.title = 'Reject';
+  rejectBtn.onclick = () => {
+    const next = !item.rejected;
+    scheduleSave(item, { rejected: next, approved: next ? false : item.approved });
+    render();
+  };
+  row.appendChild(rejectBtn);
+
+  // Notes — inline row below
+  const noteDiv = document.createElement('div');
+  noteDiv.className = 'note';
+  const noteInput = document.createElement('input');
+  noteInput.type = 'text';
+  noteInput.placeholder = 'notes (optional)…';
+  noteInput.value = item.notes || '';
+  noteInput.oninput = () => scheduleSave(item, { notes: noteInput.value });
+  noteDiv.appendChild(noteInput);
+  row.appendChild(noteDiv);
+
+  return row;
+}
+
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
+
+// ──────────────────────────────────────────────────────────────
+// Wire filters
+// ──────────────────────────────────────────────────────────────
+document.querySelectorAll('.chip[data-status]').forEach(el => {
+  el.onclick = () => { state.filter.status = el.dataset.status; render(); };
+});
+document.querySelectorAll('.chip[data-dur]').forEach(el => {
+  el.onclick = () => { state.filter.dur = el.dataset.dur; render(); };
+});
+document.getElementById('search').oninput = (e) => {
+  state.filter.search = e.target.value;
+  render();
+};
+document.querySelector('.chip[data-status="all"]').classList.add('on');
+document.querySelector('.chip[data-dur="all"]').classList.add('on');
+
+// ──────────────────────────────────────────────────────────────
+// Boot
+// ──────────────────────────────────────────────────────────────
+async function boot() {
+  const res = await fetch('/api/manifest');
+  const data = await res.json();
+  state.manifest = data;
+  state.byCat = new Map();
+  for (const item of data.items || []) {
+    const c = item.category || 'uncategorised';
+    if (!state.byCat.has(c)) state.byCat.set(c, []);
+    state.byCat.get(c).push(item);
+  }
+  const total = data.items.length;
+  const approved = data.items.filter(i => i.approved).length;
+  document.getElementById('meta').textContent = `${total} files · ${approved} approved · ${state.byCat.size} categories · schema v${data.schema_version ?? 1}`;
+  state.activeCat = state.byCat.keys().next().value;
+  render();
+}
+
+boot().catch(e => {
+  document.getElementById('content').innerHTML = `<div class="empty">failed to load manifest: ${esc(e.message)}</div>`;
+});
+</script>
+</body>
+</html>

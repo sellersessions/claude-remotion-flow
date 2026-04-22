@@ -7,7 +7,10 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "audition": "node scripts/sfx/auditioner/server.mjs",
+    "library:migrate": "node scripts/sfx/migrate-manifest.mjs",
+    "library:render": "node scripts/sfx/render-library-md.mjs"
   },
   "repository": {},
   "license": "UNLICENSED",
