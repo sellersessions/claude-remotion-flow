@@ -14,14 +14,42 @@ Remotion composition rendering SSL 2026 promotional reel. 1920×1080, 30fps. 8 s
 4. [ ] **Round 3 voice polish** — per-word pitch bump on "guys" in "Hey guys" tune-in. Requires DSP post-processing (pedalboard). See task #13.
 5. [ ] **Canvas-only-during-transition bug** — TreatmentExplainer renders canvas only during transitions, empty at rest. Suspected tie to Trail motion-blur bug. Not voice-related.
 6. [ ] Danny scrubs TreatmentExplainer in Studio → feedback on 6 scenes
-7. [ ] Wire remaining SFX: glitch-tail stingers at transitions, whooshes at cuts
-8. [ ] Beat-sync scene cuts to cyberpunk music bed
-9. [ ] Scene 6 CTA button restyle (Danny flagged, deferred)
-10. [x] **Park F5-TTS pipeline** — keep venv + tuning-ui.py on disk as fallback, but stop iterating. Pivot locked to ElevenLabs.
+7. [ ] **Curate library via auditioner** — run `npm run audition`, ⭐-shortlist winners across 6 tabs (transitions/stingers/risers/impacts/ambience/music). Copy winners back to TSX via 📋 button or selection tray. 378 items total.
+8. [ ] Wire remaining SFX from shortlisted set: glitch-tail stingers at transitions, whooshes at cuts.
+9. [ ] Beat-sync scene cuts to cyberpunk music bed
+10. [ ] Scene 6 CTA button restyle (Danny flagged, deferred)
+11. [x] **Park F5-TTS pipeline** — keep venv + tuning-ui.py on disk as fallback, but stop iterating. Pivot locked to ElevenLabs.
+12. [x] **Auditioner v2** — library model, music tab, ⭐ + 📋 clipboard workflow, HTTP Range streaming. Session 8.
 
 ---
 
 ## Session Log
+
+### Session 8 — Auditioner v2: library model + music + clipboard workflow (22 Apr)
+
+- **Context:** Session 7's auditioner had approve/reject framing — Danny rejected the model (*"they're acceptable, but we'd keep them all anyway — it's a library"*). Also missed music entirely and had no path back to terminal/Claude.
+- **Schema v3:** `scripts/sfx/migrate-manifest.mjs` extended. Added `shortlisted` + `shortlisted_at`. `approved` / `approved_at` retained as deprecated for rollback; server rejects PATCH writes on them; UI ignores. 289 items touched, 578 fields added, idempotent re-run = 0 changes.
+- **Inbox merged into library:** `scripts/sfx/merge-inbox-to-library.mjs` new. 289 files moved `_inbox/<cat>/` → `library/<cat>/`, manifest `local_path` patched for all 289. `_inbox/` dir removed. Dry-run default, `--apply` required. Collision check built in (none hit). Post-merge: `library/` has 309 files (289 scraped + 20 hand-picks), 5 production paths re-verified intact (`grep -rn 'assets/sfx/library/' src/` = 5 code + 1 comment, unchanged).
+- **Music indexed:** `scripts/sfx/index-music.mjs` new. ffprobe-based scanner (5s timeout, stable `music-<sha1[0:10]>` id). Added 89 entries — 4 ssl-live-beds + 85 tiktok-backing. Allowlist `.mp3|.m4a|.wav|.aif`; 2× `.mp4` explicitly skipped with logged reason; `.DS_Store`, `Macintosh HD` symlink, `untitled folder`, `Tik` symlink all filtered by `lstat().isFile()`. Idempotent.
+- **Scraper default fixed:** `pixabay-scrape.mjs` now writes to `public/assets/sfx/library/<cat>/` by default (was `_inbox/<cat>/`). Future scrapes land in the right place.
+- **Auditioner server (`scripts/sfx/auditioner/server.mjs`):**
+  - Audio jail widened: `SFX_ROOT` → `ASSETS_ROOT = public/assets/`. Traversal guard kept (`startsWith(ASSETS_ROOT + '/')`). Confirmed `/audio/../../package.json` → 404.
+  - PATCH whitelist: `shortlisted`, `notes`, `mood`, `subcategory` only. Stale tabs sending `{approved:true, rejected:true}` → silently dropped; response lists `applied`+`ignored`.
+  - `shortlisted_at` timestamp mirrors old `approved_at` pattern (ISO on true, null on false).
+  - **HTTP Range support added** — `serveAudio()` handles `Range: bytes=…` → 206 Partial Content with `Content-Range`. Advertises `Accept-Ranges: bytes` + `Cache-Control`. Streams via `createReadStream` (no longer buffers whole file into memory). Smooth mid-track seeking for longer music tracks.
+- **Auditioner UI (`scripts/sfx/auditioner/index.html`):** full rebuild.
+  - ✗ reject button gone. ✓ → ⭐ shortlist toggle (yellow when on).
+  - 📋 copy-path per row. Click = bare `assets/sfx/library/<cat>/<file>.mp3`. Alt-click = `staticFile("assets/…")` wrapper for direct TSX paste. Modal fallback if `navigator.clipboard` unavailable.
+  - URL-encodes each path segment when building `/audio/<rel>` (filenames have spaces, brackets, parens like `[TubeRipper.com]`).
+  - **Selection tray** (sticky, `localStorage` key `sfx-auditioner-selection-v1`): per-row checkbox → tray shows count, `Clear`, `Copy selection` (markdown block: `- \`path\` — notes, duration`), `Promote to ⭐ shortlist` (PATCHes each selected id + clears tray). Persists across reloads.
+  - **Music tab** in unified tab bar (6 tabs: transitions/stingers/risers/impacts/ambience/music). Music grouped by subcategory (ssl-live-beds, tiktok-backing).
+  - **One audio plays at a time** — global `currentAudio` pauses prior when new one starts. Handles the "too many playing" chaos when scrubbing many rows.
+  - Filter chips: `all / ⭐ shortlisted / unshortlisted` (was `all/unreviewed/approved/rejected`).
+- **Live round-trip test:** Danny pasted `assets/sfx/library/transitions/pixabay-dragon-studio-simple-whoosh-b3087a581e.mp3` back into the terminal — byte-exact, file resolves (DRAGON-STUDIO "Simple Whoosh", 18K). Clipboard workflow validated.
+- **render-library-md.mjs:** added `music` to `CATEGORY_ORDER`, sub-groups music by subcategory, `Approved` column → `⭐ Shortlist`, sort by `shortlisted` desc then duration asc.
+- **Final state:** MANIFEST schema v3 · 378 items (289 SFX + 89 music) · 0 shortlisted (curation not started) · LIBRARY.md regenerated.
+- **Commit:** `abcc0a0` — `session 8: auditioner v2 — library model + music + clipboard workflow`.
+- **Not done this session (deliberate):** no waveform previews (Danny explicitly declined over-engineering), no `.mp4` audio-strip, no auto mood/bpm detection, no changes to `src/*.tsx`.
 
 ### Session 7 — ElevenLabs house voice locked + FormatExplainer refactor (22 Apr)
 
