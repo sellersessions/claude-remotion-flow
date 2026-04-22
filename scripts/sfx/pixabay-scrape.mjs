@@ -81,8 +81,8 @@ async function downloadMp3(url, outPath, referer) {
 }
 
 async function scrape({ query, category, pages, headful, connect }) {
-  const inboxDir = join(PROJECT_ROOT, 'public', 'audio', '_inbox', category);
-  const manifestPath = join(PROJECT_ROOT, 'public', 'audio', 'MANIFEST.json');
+  const inboxDir = join(PROJECT_ROOT, 'public', 'assets', 'sfx', '_inbox', category);
+  const manifestPath = join(PROJECT_ROOT, 'public', 'assets', 'sfx', 'MANIFEST.json');
   await mkdir(inboxDir, { recursive: true });
   const manifest = await loadManifest(manifestPath);
   const existingIds = new Set(manifest.items.map(i => i.id));
@@ -212,7 +212,7 @@ async function scrape({ query, category, pages, headful, connect }) {
     try {
       await downloadMp3(r.cdn_url, outPath, 'https://pixabay.com/');
       const s = await stat(outPath);
-      r.local_path = `public/audio/_inbox/${r.category}/${filename}`;
+      r.local_path = `public/assets/sfx/_inbox/${r.category}/${filename}`;
       r.bytes = s.size;
       bytesTotal += s.size;
       dlOk++;

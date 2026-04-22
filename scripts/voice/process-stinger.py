@@ -19,8 +19,8 @@ from pedalboard import Pedalboard, Reverb, Delay
 from pedalboard.io import AudioFile
 
 ROOT = Path(__file__).parent.parent.parent
-INPUT = ROOT / "public" / "audio" / "alex_kizenkov-aggressive-huge-hit-logo-139134.mp3"
-OUTPUT = ROOT / "public" / "audio" / "alex_kizenkov-aggressive-huge-hit-logo-139134-wet.mp3"
+INPUT = ROOT / "public" / "assets" / "sfx" / "library" / "stingers" / "alex_kizenkov-aggressive-huge-hit-logo-139134.mp3"
+OUTPUT = ROOT / "public" / "assets" / "sfx" / "library" / "stingers" / "alex_kizenkov-aggressive-huge-hit-logo-139134-wet.mp3"
 
 
 def main() -> int:

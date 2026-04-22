@@ -30,7 +30,7 @@ const TRANS_FRAMES = 8; // must match TRANS() below
 
 /**
  * One entry per scene, in timeline order.
- * Files land at public/voiceover/FormatExplainer/<scene-id>.mp3
+ * Files land at public/assets/voice/generated/FormatExplainer/<scene-id>.mp3
  * after the ElevenLabs generation script runs.
  */
 const SCENE_AUDIO_FILES = [
@@ -96,7 +96,7 @@ export const calculateMetadata: CalculateMetadataFunction<FormatExplainerProps> 
     if (allFallback) {
       console.warn(
         "[FormatExplainer] No VO files found — using hardcoded duration. " +
-          "Run the ElevenLabs generation script to populate public/voiceover/FormatExplainer/",
+          "Run the ElevenLabs generation script to populate public/assets/voice/generated/FormatExplainer/",
       );
       return {
         durationInFrames: FALLBACK_DURATION_IN_FRAMES,
@@ -165,7 +165,7 @@ const BrandMark: React.FC = () => {
       }}
     >
       <Img
-        src={staticFile("ssl-logo.png")}
+        src={staticFile("assets/branding/ssl-logo.png")}
         style={{ height: 44, width: "auto", display: "block" }}
       />
     </div>
@@ -401,7 +401,7 @@ const SceneOpener: React.FC = () => {
         {/* Logo zoom-punch */}
         <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
           <Img
-            src={staticFile("ssl-logo.png")}
+            src={staticFile("assets/branding/ssl-logo.png")}
             style={{
               width: 1100,
               height: "auto",
@@ -471,35 +471,35 @@ const AGENDA = [
     name: "Danny McMillan",
     role: "HOST + SESSION 1",
     time: "09:30 – 11:00",
-    photo: "speakers/danny-mcmillan.jpg",
+    photo: "assets/speakers/danny-mcmillan.jpg",
     bio: "Founder of Seller Sessions, co-founder of Databrill. Opens the day with a 90-minute deep dive into using Claude and Claude Code for Amazon operations — live, on laptops, building alongside every delegate.",
   },
   {
     name: "Shubhash Sharma",
     role: "SESSION 2",
     time: "11:15 – 12:30",
-    photo: "speakers/shubhash-sharma.jpg",
+    photo: "assets/speakers/shubhash-sharma.jpg",
     bio: "SP-API and operator tooling. Breaks down the architecture behind Amazon automation that actually holds up under account-level scale.",
   },
   {
     name: "Matt Kostan",
     role: "SESSION 3",
     time: "13:30 – 14:45",
-    photo: "speakers/matt-kostan.jpg",
+    photo: "assets/speakers/matt-kostan.jpg",
     bio: "Customer research and listing conversion. Runs a live teardown of how language on a page changes what buyers believe before they click.",
   },
   {
     name: "Sim Mahon",
     role: "SESSION 4",
     time: "15:00 – 16:15",
-    photo: "speakers/sim-mahon.jpg",
+    photo: "assets/speakers/sim-mahon.jpg",
     bio: "PPC and media math. Walks the room through the ad-spend decisions senior operators are making right now, and the ones most sellers still miss.",
   },
   {
     name: "Dorian Gorski",
     role: "SESSION 5",
     time: "16:30 – 17:45",
-    photo: "speakers/dorian-gorski.jpg",
+    photo: "assets/speakers/dorian-gorski.jpg",
     bio: "Brand and multi-channel. Closes the day with the playbook for moving an Amazon-first brand into DTC and retail without losing the unit economics.",
   },
 ];
@@ -1342,9 +1342,9 @@ const SceneExit: React.FC<{ durationInFrames: number; children: React.ReactNode 
 };
 
 const AUDIO_SRC = {
-  musicBed: staticFile("audio/vasilyatsevich-brain-implant-cyberpunk-sci-fi-trailer-action-intro-330416.mp3"),
-  riser: staticFile("audio/soundreality-riser-wildfire-285209.mp3"),
-  impact: staticFile("audio/alex_kizenkov-aggressive-huge-hit-logo-139134.mp3"),
+  musicBed: staticFile("assets/sfx/library/impacts/vasilyatsevich-brain-implant-cyberpunk-sci-fi-trailer-action-intro-330416.mp3"),
+  riser: staticFile("assets/sfx/library/risers/soundreality-riser-wildfire-285209.mp3"),
+  impact: staticFile("assets/sfx/library/stingers/alex_kizenkov-aggressive-huge-hit-logo-139134.mp3"),
 };
 
 // ---------------------------------------------------------------------------

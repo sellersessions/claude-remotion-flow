@@ -3,10 +3,10 @@
 
 Usage:
   # Single line
-  python generate-vo.py --text "Seller Sessions Live returns." --output public/audio/voiceover/vo-intro.wav
+  python generate-vo.py --text "Seller Sessions Live returns." --output public/assets/voice/generated/vo-intro.wav
 
   # Batch mode (JSON array)
-  python generate-vo.py --batch lines.json --output-dir public/audio/voiceover/
+  python generate-vo.py --batch lines.json --output-dir public/assets/voice/generated/
 
   # Batch from stdin
   echo '[{"id":"test","text":"Hello world."}]' | python generate-vo.py --batch - --output-dir /tmp/

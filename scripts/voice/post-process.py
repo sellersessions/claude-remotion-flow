@@ -5,9 +5,9 @@ Proper bus approach: dry signal at 100%, reverb send at 2% wet, mixed in.
 Not a wet-only replacement. Keeps the direct signal crisp, adds space.
 
 Flow:
-  public/voiceover/TreatmentExplainer/scene-*.mp3   ← raw from ElevenLabs
-  public/voiceover/TreatmentExplainer/_raw/*.mp3    ← auto backup (first run)
-  public/voiceover/TreatmentExplainer/scene-*.mp3   ← overwritten with processed
+  public/assets/voice/generated/TreatmentExplainer/scene-*.mp3   ← raw from ElevenLabs
+  public/assets/voice/generated/TreatmentExplainer/_raw/*.mp3    ← auto backup (first run)
+  public/assets/voice/generated/TreatmentExplainer/scene-*.mp3   ← overwritten with processed
 
 On every run, we re-read from _raw/ to keep processing idempotent.
 
@@ -32,7 +32,7 @@ from pathlib import Path
 from pedalboard import Pedalboard, Reverb
 from pedalboard.io import AudioFile
 
-VO_DIR = Path(__file__).parent.parent.parent / "public" / "voiceover" / "TreatmentExplainer"
+VO_DIR = Path(__file__).parent.parent.parent / "public" / "assets" / "voice" / "generated" / "TreatmentExplainer"
 RAW_DIR = VO_DIR / "_raw"
 
 

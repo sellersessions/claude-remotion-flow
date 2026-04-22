@@ -35,12 +35,12 @@ const VO_PRE_PAD_FRAMES = 15; // ~0.5s
 const VO_POST_PAD_FRAMES = 20; // ~0.67s
 
 const SCENE_AUDIO_FILES = [
-  "voiceover/TreatmentExplainer/scene-1-title.mp3",
-  "voiceover/TreatmentExplainer/scene-2-layers.mp3",
-  "voiceover/TreatmentExplainer/scene-3-brief.mp3",
-  "voiceover/TreatmentExplainer/scene-4-skeletons.mp3",
-  "voiceover/TreatmentExplainer/scene-5-treatment.mp3",
-  "voiceover/TreatmentExplainer/scene-6-pipeline.mp3",
+  "assets/voice/generated/TreatmentExplainer/scene-1-title.mp3",
+  "assets/voice/generated/TreatmentExplainer/scene-2-layers.mp3",
+  "assets/voice/generated/TreatmentExplainer/scene-3-brief.mp3",
+  "assets/voice/generated/TreatmentExplainer/scene-4-skeletons.mp3",
+  "assets/voice/generated/TreatmentExplainer/scene-5-treatment.mp3",
+  "assets/voice/generated/TreatmentExplainer/scene-6-pipeline.mp3",
 ] as const;
 
 // Per-scene VO enable flag. Scene 1 is visual-only — the title card already
@@ -65,10 +65,10 @@ const CARD_BEFORE: Array<ChapterCardSpec | null> = [
   null, // before S6 (pipeline)
 ];
 
-// SFX — incidental sound design from public/audio/
+// SFX — incidental sound design from public/assets/sfx/library/
 // Open stinger uses the wet (delay + hall reverb) version; raw was too dry.
-const SFX_OPEN = "audio/alex_kizenkov-aggressive-huge-hit-logo-139134-wet.mp3";
-const SFX_OUTRO = "audio/submority-boom-geomorphism-cinematic-trailer-sound-effects-123876.mp3";
+const SFX_OPEN = "assets/sfx/library/stingers/alex_kizenkov-aggressive-huge-hit-logo-139134-wet.mp3";
+const SFX_OUTRO = "assets/sfx/library/impacts/submority-boom-geomorphism-cinematic-trailer-sound-effects-123876.mp3";
 const SFX_OPEN_LEN_FRAMES = 75; // 2.5s — lets the wet tail breathe before VO lands
 const SFX_OUTRO_POST_VO_GAP_FRAMES = 12; // 0.4s beat after last VO word before the boom
 const SFX_OUTRO_LEN_FRAMES = 150; // 5s decay (may clip at composition end — acceptable)
@@ -117,7 +117,7 @@ export const calculateMetadata: CalculateMetadataFunction<TreatmentExplainerProp
     if (allFallback) {
       console.warn(
         "[TreatmentExplainer] No VO files found — using hardcoded duration. " +
-          "Run the ElevenLabs generation script to populate public/voiceover/TreatmentExplainer/",
+          "Run the ElevenLabs generation script to populate public/assets/voice/generated/TreatmentExplainer/",
       );
       return {
         durationInFrames: FALLBACK_DURATION_IN_FRAMES,
