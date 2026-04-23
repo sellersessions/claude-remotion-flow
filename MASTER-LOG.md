@@ -8,29 +8,58 @@ Remotion composition rendering SSL 2026 promotional reel. 1920×1080, 30fps. 8 s
 
 ## Next Up
 
-1. [ ] **Danny scrubs StackExplainer in Studio** → per-scene feedback. First watch is the render-quality gate before committing to `render:stack` for an MP4 export.
-2. [ ] **Render StackExplainer to MP4** — `npm run render:stack`. Lands at `out/StackExplainer.mp4`.
-3. [ ] **Write `HOW-TO-SHIP-AN-EXPLAINER.md`** (Session 12) — end-to-end cookbook. Link the 3 explainer MP4s from the repo README.
-4. [ ] **Auto-snap helper** (Session 12 stretch) — script reading an onset JSON + scene-starts array, emits a safe `BEAT_SNAP_TARGETS` literal. Closes the 5/10 beat-detection gap + would give StackExplainer real snaps (currently all null).
-5. [ ] **Shortlist → code helper** (Session 12 stretch) — CLI reading `shortlisted: true` items from `MANIFEST.json`, emits a TS module of typed SFX path constants. Closes the 3/10 shortlist gap.
-7. [ ] **Write 8 scene scripts** for FormatExplainer VO — still open. Lower priority vs StackExplainer push.
-8. [ ] **Generate 8 VO MP3s** for FormatExplainer.
-9. [ ] **Test FormatExplainer render** — calculateMetadata auto-sizing already wired (Session 7).
+1. [ ] **Danny scrubs StackExplainer in Studio with the live mixer** → per-scene feedback + fine-tune mixer values. Drag-scrubber step = 0.05 (20 meaningful gain steps). VO-length cache now prevents the "calculating metadata" toast on every drag tick.
+2. [ ] **Render StackExplainer to MP4** — `npm run render:stack`. Lands at `out/StackExplainer.mp4`. Deferred until Danny's satisfied post-scrub.
+3. [ ] **Clarify FormatExplainer intent** — scene scaffolding (`scene-container`, `scene-interview`, `scene-delegate`) suggests delegation/agent-workflow topic, but `HOW-TO-SHIP-AN-EXPLAINER.md` lists it as "output formats + dimensions." Resolve before writing VO script.
+4. [ ] **Write 8 scene scripts** for FormatExplainer VO — blocked on #3.
+5. [ ] **Generate 8 VO MP3s** for FormatExplainer — blocked on #4.
+6. [ ] **Test FormatExplainer render** — calculateMetadata auto-sizing already wired (Session 7).
+7. [ ] **(Stretch) Visible track-and-thumb slider tool** — separate HTML page writing mixer values to a JSON file read via `staticFile()`. Only if the `InputDragger` UX isn't enough. ~1-2h build.
+8. [ ] **(Stretch) Fix pre-compact routing leaks** — `flights_decisions`, `claudeflow_architecture`, `video_editing_flow_decisions` still absorb some remotion content (too-broad regex). Danny handling via session-start/memory/close work in another terminal.
+9. [ ] **Auto-snap against real StackExplainer scene starts** — script exists (`scripts/music/auto-snap.ts`), but `BEAT_SNAP_FRAMES` is still all-null. Re-run with VO-driven starts to see if any snaps emerge.
 10. [ ] **Round 3 voice polish** — per-word pitch bump on "guys" in "Hey guys" tune-in. Requires DSP post-processing.
 11. [ ] **Canvas-only-during-transition bug** — TreatmentExplainer renders canvas only during transitions, empty at rest.
 12. [ ] Danny scrubs TreatmentExplainer in Studio → feedback on 6 scenes.
 13. [ ] **Curate library via auditioner** — ⭐-shortlist winners across 6 tabs.
 14. [ ] Wire remaining SFX from shortlisted set.
 15. [ ] Scene 6 CTA button restyle (Danny flagged, deferred).
-16. [x] **Park F5-TTS pipeline** — fallback-only.
-17. [x] **Auditioner v2** — Session 8.
-18. [x] **TreatmentExplainer audio spine** — music bed + beat-snap + cinematic bookends + fade-to-black + pre/post-roll. Session 9.
-19. [x] **StackExplainer content lock** — treatment doc + 8-scene VO config + 8 MP3s + music bed picked + onsets captured. Session 10.
-20. [x] **StackExplainer composition + explainer-shared extraction** — 8 scenes, music bed + SFX bookends wired, TreatmentExplainer refactored onto shared module. `npm run render:stack` added. Session 11.
+16. [ ] **Fix 2 pre-existing lint warnings** — `@remotion/non-pure-animation` at StackExplainer:894 + TreatmentExplainer:470. Render-farm flicker risk; live renders play fine. Low priority.
+17. [ ] **Embed 3 explainer MP4s in repo README** — deferred by Danny until all fine adjustments land; possibly via hosted (YouTube/Loom) links instead of raw embeds.
+18. [x] **Park F5-TTS pipeline** — fallback-only.
+19. [x] **Auditioner v2** — Session 8.
+20. [x] **TreatmentExplainer audio spine** — music bed + beat-snap + cinematic bookends + fade-to-black + pre/post-roll. Session 9.
+21. [x] **StackExplainer content lock** — treatment doc + 8-scene VO config + 8 MP3s + music bed picked + onsets captured. Session 10.
+22. [x] **StackExplainer composition + explainer-shared extraction** — 8 scenes, music bed + SFX bookends wired, TreatmentExplainer refactored onto shared module. `npm run render:stack` added. Session 11.
+23. [x] **Wave 1-4 Loom feedback + live mixer promotion + cookbook + helper scripts + README refresh** — Session 12.
+24. [x] **Starter-template cleanup + live-mixer drag-scrub fix + VO-length cache** — Session 13.
 
 ---
 
 ## Session Log
+
+### Session 13 — Live-mixer UX fixes + starter-template cleanup (23 Apr, 19:46 BST)
+
+- **Resumed post-compact** with the Session 12 kickoff prompt. Danny asked four things: (1) are we looking at mixer sliders, (2) what is FormatExplainer, (3) fix pre-existing lint errors, (4) technical-debt triage.
+- **FormatExplainer clarity dug out:** File exists (`src/FormatExplainer.tsx`, Session 7). VO folder (`public/assets/voice/generated/FormatExplainer/`) does NOT exist on disk. Scene IDs (`scene-opener` / `scene-0-agenda` / `scene-2-problem` / `scene-3-container` / `scene-4-interview` / `scene-5-delegate` / `scene-6-outro`) read like a delegation-workflow video, but `HOW-TO-SHIP-AN-EXPLAINER.md` describes it as "output formats + dimensions." Contradiction flagged — Danny needs to pick intent before VO work.
+- **Cleanup — `55407c2` "remove remotion-starter leftovers + live-mixer tune":** Deleted `src/HelloWorld.tsx`, full `src/HelloWorld/` folder (Arc, Atom, constants, Logo, Subtitle, Title — 7 files), `src/SSDemo.tsx`. Danny's prior working-tree had already dropped the corresponding `<Composition>` blocks + hardcoded StackExplainer mixer defaults; this commit consolidates. Removed 3 now-dead import lines from `Root.tsx`. ESLint `--fix` landed the `from={0}` auto-fix on `FormatExplainer.tsx:1422`. Added `scripts` to `tsconfig.json` exclude list — `generate-vo.ts` uses ESM features (`import.meta`, dynamic-import options) and runs via `node --strip-types`, not the project's commonjs config. Lint: 7 errors → 0 errors. 647 lines deleted, 8 added.
+- **Mixer drag-scrub fix — `afb92dd` "fix mixer drag-scrub granularity":** Perplexity (via Danny's Comet tab) reported "sliders aren't showing; Claude edited the wrong file; use `z.number().step(0.01)`." Both wrong. Source-read verified: `.step()` is not a Zod method; Remotion renders `z.number().min().max()` as `InputDragger` (drag-scrubbable number field with `cursor: 'ew-resize'`, `mousemove` listeners) — NOT an `<input type="range">`. Step came through as `undefined` because no `.multipleOf()` on the schema. Added `.multipleOf(0.01)` to all 4 mixer props on both StackExplainer + TreatmentExplainer schemas. The "slider" was always there — it just couldn't scrub across the 0-1 range.
+- **Cache + step refinement — `8c8ec10` "cache VO lengths + tune mixer step to 0.05":** First test drag surfaced a second problem: "calculating metadata" toasts flashing on every drag tick. Cause — `makeCalculateMetadata` re-ran `Promise.allSettled` over 8 `getAudioDurationInSeconds` fetches whenever any schema prop changed (Remotion re-invokes `calculateMetadata` on every prop change). Added module-level `voLengthsCache` (`Map<string, number[]>`) keyed by `sceneAudioFiles.join("|")`. First call does the fetch; subsequent calls return synchronously. Also bumped schema `.multipleOf(0.01)` → `.multipleOf(0.05)` for 20 responsive steps vs 100 imperceptible micro-ticks. Rounded grid-violating constants: `MUSIC_HIGH 0.16 → 0.15` (-0.56 dB, inaudible), `MUSIC_DUCK 0.06 → 0.05` (-1.58 dB, same mixing intent). Picked up Studio's auto-saved StackExplainer `defaultProps` edit (`musicHigh 1 → 0.6`, `musicDuck 0.06 → 0.1`).
+- **Remotion API fact catalogued:** There is NO `zSlider` / `zNumberSlider` / auto-rendered `<input type="range">` in Remotion 4. Stock Remotion renders numbers via `ZodNumberEditor.js` → `InputDragger` (horizontal drag-scrub, respects `.min()`/`.max()`/`.multipleOf()`). For a visible track-and-thumb UI, the only path is a separate HTML side-tool writing values to a JSON file read via `staticFile()`. Deferred — the drag-scrubber now works.
+- **Commits:** `55407c2`, `afb92dd`, `8c8ec10`. Lint state: 0 errors, 2 pre-existing `@remotion/non-pure-animation` warnings (`StackExplainer:894`, `TreatmentExplainer:470`) untouched.
+- **Not done (deliberate):** No StackExplainer MP4 render (Danny still scrubbing). No FormatExplainer VO script (blocked on intent clarification). No visible-slider side-tool (drag-scrubber OK for now). No pre-compact routing tightening (Danny handling in another terminal).
+
+### Session 12 — Wave 1-4 Loom feedback + live mixer + helpers + README refresh (23 Apr, pre-compact)
+
+*(Retroactive entry — master log wasn't updated at end of that conversation. Reconstructed from commit log + kickoff prompt.)*
+
+- **Wave 1-4 Loom feedback — `ddebe64`:** All 13 feedback items landed across StackExplainer + explainer-shared. Music dropped −5 dB: `MUSIC_HIGH 0.28 → 0.16`, `MUSIC_DUCK 0.10 → 0.06`. Added 4 chapter cards (Part 01 / 02 / 03 + Recap). New `SAFE_INSET_X` / `SAFE_INSET_Y` tokens. S1 VO toggled off. S8 renamed envelope → production. NEW `Scene9Recap` (silent 6s). Final comp ~74s. Typecheck clean.
+- **Live mixer zod schema — `620ac33`:** Promoted `MUSIC_HIGH` / `MUSIC_DUCK` / `SFX_INTRO_VOLUME` / `SFX_OUTRO_VOLUME` from constants to schema props (`z.number().min(0).max(1)`) on both explainers. Added `MixerProps` type + `DEFAULT_MIXER` const in `src/explainer-shared/metadata.ts`. `buildMusicVolume()` accepts optional `musicHigh` / `musicDuck` overrides. `makeCalculateMetadata` spreads input props so mixer values survive. `Root.tsx`: `defaultProps={{ ...DEFAULT_MIXER }}` on both comps.
+- **Cookbook — `d31cade`:** Wrote `HOW-TO-SHIP-AN-EXPLAINER.md` at repo root. 6-step recipe (treatment → VO → music + onsets → composition → Studio scrub → render). The user-facing README for non-technical contributors.
+- **Auto-snap helper — `cc839db`:** `scripts/music/auto-snap.ts` — CLI that turns an onset JSON + scene-starts array into a paste-ready `BEAT_SNAP_FRAMES` literal. 4/9 snap on wings onsets with contrived starts. Closes Session 10's 5/10 beat-detection gap.
+- **Shortlist → code helper — `cafd54d`:** `scripts/sfx/shortlist-to-code.ts` + generated `src/explainer-shared/sfx-library.ts` — typed SFX path constants from MANIFEST.json `shortlisted: true` items. 18 items across 4 categories. Closes Session 10's 3/10 shortlist gap.
+- **Project registry — `bcfb584`:** Added `claude-remotion-flow` entry to `command-centre-memory/project-registry.json` — 34 trigger keywords + 1 capture pattern. Content now routes into new `remotion_flow_decisions` ChromaDB collection instead of bleeding into flights / legal / databrill. Post-session validation: +31 captures, routing confirmed.
+- **README refresh — `e9fbe99`:** 11 surgical edits. Repo path updated (remotion-demo → claude-remotion-flow). Package count 30 → 29. Directory tree expanded (explainer-shared/, scripts/, treatments/, out/, cookbook). Compositions table (StackExplainer added, durations now VO-driven). SFX section rewritten around MANIFEST (378 indexed, 18 shortlisted). Voice-pipeline mermaid redrawn (dropped fictional human-VO + Whisper; shows actual ElevenLabs + house-voice + calculateMetadata). Beat-sync mermaid redrawn (dropped `getAudioData()` fiction; shows `detect-onsets → auto-snap → calculateMetadata`). Remotion 4 API updates (`trimBefore`/`trimAfter` → `startFrom`/`endAt`). Aspect-ratio renders: `npx` → `npm run render:*`. New design tokens: `ACCENT_3`, `SAFE_INSET_X/Y`, `CANVAS_W/H`, `GRAIN_SVG`. New sections: npm Scripts table, Helper Scripts table, Live Mixer table.
+- **Commits:** `ddebe64`, `620ac33`, `d31cade`, `cc839db`, `cafd54d`, `bcfb584`, `e9fbe99`.
 
 ### Session 11 — StackExplainer: composition + explainer-shared extraction (23 Apr)
 

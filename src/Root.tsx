@@ -42,7 +42,12 @@ export const RemotionRoot: React.FC = () => {
         width={1920}
         height={1080}
         schema={treatmentExplainerSchema}
-        defaultProps={{ ...DEFAULT_MIXER }}
+        defaultProps={{
+          musicHigh: 0.4,
+          musicDuck: 0.05,
+          sfxIntroVolume: 0.65,
+          sfxOutroVolume: 0.55,
+        }}
       />
       <Composition
         id="StackExplainer"
@@ -54,8 +59,8 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         schema={stackExplainerSchema}
         defaultProps={{
-          musicHigh: 0.6,
-          musicDuck: 0.1,
+          musicHigh: 0.4,
+          musicDuck: 0.35,
           sfxIntroVolume: 1,
           sfxOutroVolume: 0.55,
         }}
