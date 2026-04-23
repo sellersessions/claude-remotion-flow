@@ -20,10 +20,11 @@ export const EXIT_FRAMES = 14;
 export const CARD_DURATION_FRAMES = 45;
 
 // Music bed levels — Session 11 Loom feedback round 2: drop another 5 dB.
-// 10^(-5/20) ≈ 0.562 applied: 0.28→0.16, 0.10→0.06. Music reads as
-// atmosphere, never competes with VO. Danny's rule: err on caution.
-export const MUSIC_HIGH = 0.16;
-export const MUSIC_DUCK = 0.06;
+// 10^(-5/20) ≈ 0.562 applied: 0.28→0.16, 0.10→0.06. Rounded to 0.15 /
+// 0.05 in Session 12 so defaults land on the mixer's 0.05 scrub grid
+// (differences of -0.56 dB / -1.58 dB, inaudible at these gains).
+export const MUSIC_HIGH = 0.15;
+export const MUSIC_DUCK = 0.05;
 export const DUCK_RAMP = 15;            // frames to ramp into/out of a VO window
 export const MUSIC_FADE_OUT_FRAMES = 75; // 2.5s tail — lets bed exit before boom
 

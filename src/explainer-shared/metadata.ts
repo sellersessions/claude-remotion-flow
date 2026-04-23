@@ -68,6 +68,12 @@ export function fallbackDurationInFrames(config: ExplainerConfig): number {
   );
 }
 
+// Module-level cache of measured VO durations, keyed by the scene-audio
+// signature. calculateMetadata re-runs on every mixer prop change; without
+// this cache, each drag tick would re-fetch 8 MP3 durations and block the
+// Studio with a "calculating" toast.
+const voLengthsCache = new Map<string, number[]>();
+
 // VO-driven metadata factory. Reads each scene's MP3 duration, sizes scenes
 // to max(VO+padding, animator fallback), then applies beat-snap by nudging
 // prior-scene durations. Never touches the VO audio itself.
@@ -75,32 +81,40 @@ export function makeCalculateMetadata(
   config: ExplainerConfig,
 ): CalculateMetadataFunction<ExplainerProps> {
   return async ({ props }) => {
-    const results = await Promise.allSettled(
-      config.sceneAudioFiles.map(async (file) => {
-        try {
-          const src = staticFile(file);
-          const secs = await getAudioDurationInSeconds(src);
-          return secs * FPS;
-        } catch {
-          return null;
-        }
-      }),
-    );
+    const cacheKey = config.sceneAudioFiles.join("|");
+    let voLengths = voLengthsCache.get(cacheKey);
+    let allFallback = false;
 
-    const voLengths: number[] = results.map((r, i) => {
-      if (r.status === "fulfilled" && r.value !== null) {
-        return Math.ceil(r.value);
-      }
-      console.warn(
-        `[${config.logPrefix}] VO file missing or unreadable: ${config.sceneAudioFiles[i]}. ` +
-          `Falling back to ${config.fallbackSceneDurations[i]} frames.`,
+    if (!voLengths) {
+      const results = await Promise.allSettled(
+        config.sceneAudioFiles.map(async (file) => {
+          try {
+            const src = staticFile(file);
+            const secs = await getAudioDurationInSeconds(src);
+            return secs * FPS;
+          } catch {
+            return null;
+          }
+        }),
       );
-      return 0;
-    });
 
-    const allFallback = results.every(
-      (r) => r.status === "rejected" || r.value === null,
-    );
+      voLengths = results.map((r, i) => {
+        if (r.status === "fulfilled" && r.value !== null) {
+          return Math.ceil(r.value);
+        }
+        console.warn(
+          `[${config.logPrefix}] VO file missing or unreadable: ${config.sceneAudioFiles[i]}. ` +
+            `Falling back to ${config.fallbackSceneDurations[i]} frames.`,
+        );
+        return 0;
+      });
+
+      allFallback = results.every(
+        (r) => r.status === "rejected" || r.value === null,
+      );
+
+      if (!allFallback) voLengthsCache.set(cacheKey, voLengths);
+    }
     if (allFallback) {
       console.warn(
         `[${config.logPrefix}] No VO files found — using hardcoded duration. ` +

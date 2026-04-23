@@ -121,13 +121,14 @@ export const stackExplainerSchema = z.object({
   voiceover: z.array(z.number()).optional(),
   voLengths: z.array(z.number()).optional(),
   // Live mixer — Remotion's InputDragger in the Props panel; drag
-  // horizontally to scrub, or click to type. .multipleOf(0.01) gives
-  // 0.01 resolution so drag produces fine steps instead of 0→1 jumps.
+  // horizontally to scrub, or click to type. .multipleOf(0.05) gives
+  // 20 meaningful steps across the 0–1 gain range; 0.01 was too fine
+  // to feel responsive during drag.
   // Values are absolute gains (0 = silent, 1 = unity).
-  musicHigh: z.number().min(0).max(1).multipleOf(0.01),
-  musicDuck: z.number().min(0).max(1).multipleOf(0.01),
-  sfxIntroVolume: z.number().min(0).max(1).multipleOf(0.01),
-  sfxOutroVolume: z.number().min(0).max(1).multipleOf(0.01),
+  musicHigh: z.number().min(0).max(1).multipleOf(0.05),
+  musicDuck: z.number().min(0).max(1).multipleOf(0.05),
+  sfxIntroVolume: z.number().min(0).max(1).multipleOf(0.05),
+  sfxOutroVolume: z.number().min(0).max(1).multipleOf(0.05),
 });
 
 // ---------------------------------------------------------------------------

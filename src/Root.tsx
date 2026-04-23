@@ -54,8 +54,8 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         schema={stackExplainerSchema}
         defaultProps={{
-          musicHigh: 1,
-          musicDuck: 0.06,
+          musicHigh: 0.6,
+          musicDuck: 0.1,
           sfxIntroVolume: 1,
           sfxOutroVolume: 0.55,
         }}
