@@ -10,7 +10,9 @@
     "lint": "eslint src && tsc",
     "audition": "node scripts/sfx/auditioner/server.mjs",
     "library:migrate": "node scripts/sfx/migrate-manifest.mjs",
-    "library:render": "node scripts/sfx/render-library-md.mjs"
+    "library:render": "node scripts/sfx/render-library-md.mjs",
+    "render:stack": "remotion render StackExplainer out/StackExplainer.mp4",
+    "render:treatment": "remotion render TreatmentExplainer out/TreatmentExplainer.mp4"
   },
   "repository": {},
   "license": "UNLICENSED",

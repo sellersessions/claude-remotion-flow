@@ -14,6 +14,12 @@ import {
   calculateMetadata as treatmentExplainerCalculateMetadata,
   FALLBACK_DURATION_IN_FRAMES as treatmentExplainerFallbackDuration,
 } from "./TreatmentExplainer";
+import {
+  StackExplainer,
+  stackExplainerSchema,
+  calculateMetadata as stackExplainerCalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as stackExplainerFallbackDuration,
+} from "./StackExplainer";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -84,6 +90,18 @@ export const RemotionRoot: React.FC = () => {
         width={1920}
         height={1080}
         schema={treatmentExplainerSchema}
+        defaultProps={{}}
+      />
+
+      <Composition
+        id="StackExplainer"
+        component={StackExplainer}
+        calculateMetadata={stackExplainerCalculateMetadata}
+        durationInFrames={stackExplainerFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={stackExplainerSchema}
         defaultProps={{}}
       />
     </>

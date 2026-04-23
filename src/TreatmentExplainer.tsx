@@ -2,8 +2,6 @@ import React from "react";
 import {
   AbsoluteFill,
   Audio,
-  CalculateMetadataFunction,
-  Easing,
   interpolate,
   Sequence,
   spring,
@@ -11,28 +9,46 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import {
-  TransitionSeries,
-  linearTiming,
-} from "@remotion/transitions";
-import { fade } from "@remotion/transitions/fade";
-import { loadFont } from "@remotion/google-fonts/Inter";
-import { noise2D } from "@remotion/noise";
-import { getAudioDurationInSeconds } from "@remotion/media-utils";
+import { TransitionSeries } from "@remotion/transitions";
 import { z } from "zod";
+import {
+  ACCENT,
+  ACCENT_2,
+  EASE_OUT,
+  FONT,
+  MONO,
+  PRE_ROLL_FRAMES,
+  POST_ROLL_FRAMES,
+  SFX_INTRO,
+  SFX_INTRO_LEN_FRAMES,
+  SFX_INTRO_VOLUME,
+  SFX_OUTRO,
+  SFX_OUTRO_LEAD_IN_FRAMES,
+  SFX_OUTRO_LEN_FRAMES,
+  SFX_OUTRO_VOLUME,
+  TEXT,
+  TEXT_DIM,
+  VO_PRE_PAD_FRAMES,
+  buildMusicVolume,
+  computeTimeline,
+  easeIn,
+  fallbackDurationInFrames,
+  makeCalculateMetadata,
+  type ChapterCardSpec,
+  type ExplainerConfig,
+  type ExplainerProps,
+  ChapterCard,
+  FadeToBlack,
+  FadeUp,
+  SceneBG,
+  SceneExit,
+  TRANS,
+} from "./explainer-shared";
 
 // ---------------------------------------------------------------------------
-// VO scaffolding
+// Composition config (per-video) — everything else is inherited from
+// src/explainer-shared. See StackExplainer.tsx for the sister config.
 // ---------------------------------------------------------------------------
-
-const FPS = 30;
-const TRANS_FRAMES = 8; // must match TRANS() below
-
-// VO anchoring — keeps the voice from butting against scene start/end.
-// Pre-pad lets the animation establish before VO lands; post-pad gives a tail
-// so the voice doesn't hit the cross-fade.
-const VO_PRE_PAD_FRAMES = 15; // ~0.5s
-const VO_POST_PAD_FRAMES = 20; // ~0.67s
 
 const SCENE_AUDIO_FILES = [
   "assets/voice/generated/TreatmentExplainer/scene-1-title.mp3",
@@ -43,258 +59,63 @@ const SCENE_AUDIO_FILES = [
   "assets/voice/generated/TreatmentExplainer/scene-6-pipeline.mp3",
 ] as const;
 
-// Per-scene VO enable flag. Scene 1 is visual-only — the title card already
-// says "Brief any video in three layers" on screen, so repeating it in VO
-// felt redundant. File is kept on disk in case we want it back.
+// Scene 1 is visual-only — the title card already says "Brief any video in
+// three layers" on screen; repeating it in VO felt redundant. File kept on
+// disk in case we want it back.
 const SCENE_VO_ENABLED = [false, true, true, true, true, true] as const;
 
-// Animator's original scene intent (pre-VO) — used as the floor so scenes
-// never compress below the timing the visuals were designed around.
+// Animator's original scene intent (pre-VO) — floor so scenes never compress
+// below the timing the visuals were designed around.
 const FALLBACK_SCENE_DURATIONS = [120, 180, 210, 270, 240, 180] as const;
 
-// Chapter cards — brief "Layer X — The Brief" screens between major sections.
-// Inserted BEFORE the scene at their index. null = no card before that scene.
-const CARD_DURATION_FRAMES = 45; // 1.5s: 12 fade in · 21 hold · 12 fade out
-type ChapterCardSpec = { label: string; title: string };
+// Chapter cards between major sections — inserted BEFORE the scene at their
+// index. null = no card before that scene.
 const CARD_BEFORE: Array<ChapterCardSpec | null> = [
   null, // before S1 (title)
   null, // before S2 (overview)
-  { label: "Layer 01", title: "The Brief" },      // before S3
-  { label: "Layer 02", title: "The Skeleton" },   // before S4
-  { label: "Layer 03", title: "The Treatment" },  // before S5
+  { label: "Layer 01", title: "The Brief" },
+  { label: "Layer 02", title: "The Skeleton" },
+  { label: "Layer 03", title: "The Treatment" },
   null, // before S6 (pipeline)
 ];
 
 // Music bed — calming cinematic ambient, 98.95s source trimmed to comp length.
-// Both volumes dropped −2 dB from the first pass (0.55/0.22 → 0.44/0.18) so the
-// bed sits as incidental backing rather than fighting the VO.
-const MUSIC_BED = "assets/music/ssl-live-beds/penguinmusic-through-the-clouds-calming-cinematic-ambient-200392.mp3";
-const MUSIC_HIGH = 0.44;
-const MUSIC_DUCK = 0.18;
-const DUCK_RAMP = 15; // frames to ramp in/out of a VO window
-const MUSIC_FADE_OUT_FRAMES = 75; // 2.5s tail — source is 99s, comp is 42s, needs a soft landing
-const FADE_TO_BLACK_FRAMES = 60; // 2.0s visual fade, ends aligned with music fade
-
-// Pre-roll lets the intro whoosh BUILD before the title lands — peak of the
-// sweep hits at the moment the title fades in, instead of the sweep starting
-// under an already-visible title.
-// Post-roll gives the outro boom's decay room to finish naturally (its attack
-// is zero-frame so the tail needs space to breathe into silence + black).
-const PRE_ROLL_FRAMES = 30;   // 1.0s — trimmed from 2.0s: black-before-title was dragging
-const POST_ROLL_FRAMES = 60;  // 2.0s — room for boom tail (ends visualEnd+43) + silent black
-// Outro boom fires a bit before visualEnd so it doesn't feel "late": attack
-// lands while the screen is still mid-fade, then decay resolves into black.
-const SFX_OUTRO_LEAD_IN_FRAMES = 20; // boom start = visualEnd − 20
-
-// SFX bookends — Danny's picks. Intro whoosh fires at t=0 over the title.
-// Outro boom starts when the music fade begins so the attack punches the
-// transition and the decay absorbs into the fade-to-black — avoids the
-// perceptual "clipping" of an unsignposted ending.
-const SFX_INTRO = "assets/sfx/library/transitions/pixabay-ksjsbwuil-whoosh-8-6b32a439bc.mp3";
-const SFX_OUTRO = "assets/sfx/library/impacts/pixabay-universfield-impact-cinematic-boom-be1e4daf3e.mp3";
-const SFX_INTRO_LEN_FRAMES = 114; // 3.79s source — peak lands at PRE_ROLL_FRAMES
-const SFX_OUTRO_LEN_FRAMES = 63;  // 2.09s — zero-attack boom + decay
-// Boom attack fires at the end of the visual section (visual_end) so its hit
-// punches the fade-to-black moment; decay rides through the post-roll.
+const MUSIC_BED =
+  "assets/music/ssl-live-beds/penguinmusic-through-the-clouds-calming-cinematic-ambient-200392.mp3";
 
 // Beat-snap — shift scene starts onto librosa onset markers where the cost is
 // trivial. Source: scripts/music/output/through-the-clouds-onsets.json.
-// We only snap when the delta is under ~25 frames. Everything else would
-// bloat the comp length for a marginal musical payoff.
+// Only snap when delta is under ~25 frames — anything else would bloat the
+// comp for a marginal musical payoff.
 //   S2: native 112 → 134 (+22f, onset strength 0.64 @ 4.46s)
 //   S5: native 859 → 852 (−7f, onset strength 0.74 @ 28.41s)
-// Net comp change: +15 frames (0.5s).
 const BEAT_SNAP_FRAMES: Array<number | null> = [
-  null, // S1 title — no snap (music just starts)
+  null, // S1 title
   134,  // S2 overview — onset at 4.46s
-  null, // S3 brief — nearest onset 68f away, too far
-  null, // S4 skeleton — nearest onset 98f away, too far
-  852,  // S5 treatment — onset at 28.41s, basically already locked
+  null, // S3 brief — nearest onset too far
+  null, // S4 skeleton — nearest onset too far
+  852,  // S5 treatment — onset at 28.41s
   null, // S6 pipeline — nearest onset past comp end
 ];
 
-// Includes chapter card durations so the composition length is correct when
-// VO files are missing (fallback branch in calculateMetadata).
-const CARD_COUNT = CARD_BEFORE.filter(Boolean).length;
-export const FALLBACK_DURATION_IN_FRAMES =
-  PRE_ROLL_FRAMES +
-  FALLBACK_SCENE_DURATIONS.reduce((s, d) => s + d, 0) +
-  CARD_COUNT * CARD_DURATION_FRAMES -
-  (FALLBACK_SCENE_DURATIONS.length + CARD_COUNT - 1) * TRANS_FRAMES +
-  POST_ROLL_FRAMES;
+const CONFIG: ExplainerConfig = {
+  sceneAudioFiles: SCENE_AUDIO_FILES,
+  sceneVoEnabled: SCENE_VO_ENABLED,
+  fallbackSceneDurations: FALLBACK_SCENE_DURATIONS,
+  cardBefore: CARD_BEFORE,
+  beatSnapFrames: BEAT_SNAP_FRAMES,
+  logPrefix: "TreatmentExplainer",
+};
+
+export const FALLBACK_DURATION_IN_FRAMES = fallbackDurationInFrames(CONFIG);
+export const calculateMetadata = makeCalculateMetadata(CONFIG);
 
 export const treatmentExplainerSchema = z.object({
-  voiceover: z.array(z.number()).optional(), // scene durations (frames)
-  voLengths: z.array(z.number()).optional(), // raw VO audio lengths (frames)
+  voiceover: z.array(z.number()).optional(),
+  voLengths: z.array(z.number()).optional(),
 });
 
-type TreatmentExplainerProps = z.infer<typeof treatmentExplainerSchema>;
-
-export const calculateMetadata: CalculateMetadataFunction<TreatmentExplainerProps> =
-  async () => {
-    const results = await Promise.allSettled(
-      SCENE_AUDIO_FILES.map(async (file) => {
-        try {
-          const src = staticFile(file);
-          const secs = await getAudioDurationInSeconds(src);
-          return secs * FPS;
-        } catch {
-          return null;
-        }
-      }),
-    );
-
-    const voLengths: number[] = results.map((r, i) => {
-      if (r.status === "fulfilled" && r.value !== null) {
-        return Math.ceil(r.value);
-      }
-      console.warn(
-        `[TreatmentExplainer] VO file missing or unreadable: ${SCENE_AUDIO_FILES[i]}. ` +
-          `Falling back to ${FALLBACK_SCENE_DURATIONS[i]} frames.`,
-      );
-      return 0;
-    });
-
-    const allFallback = results.every((r) => r.status === "rejected" || r.value === null);
-    if (allFallback) {
-      console.warn(
-        "[TreatmentExplainer] No VO files found — using hardcoded duration. " +
-          "Run the ElevenLabs generation script to populate public/assets/voice/generated/TreatmentExplainer/",
-      );
-      return {
-        durationInFrames: FALLBACK_DURATION_IN_FRAMES,
-        props: {
-          voiceover: [...FALLBACK_SCENE_DURATIONS],
-          voLengths: [...FALLBACK_SCENE_DURATIONS],
-        },
-      };
-    }
-
-    // Scene = max(VO + pre-pad + post-pad, animator fallback)
-    // Guarantees the visuals always have at least their intended breathing room.
-    const sceneDurations: number[] = voLengths.map((vo, i) => {
-      const padded = vo + VO_PRE_PAD_FRAMES + VO_POST_PAD_FRAMES;
-      return Math.ceil(Math.max(padded, FALLBACK_SCENE_DURATIONS[i]));
-    });
-
-    // Beat-snap pass — nudge scene boundaries so targeted scene starts land on
-    // music onsets. We shift by adjusting the PRIOR scene's duration; VO audio
-    // is never sped/slowed and never clipped (safety floor = VO + pre-pad + trans).
-    for (let i = 1; i < sceneDurations.length; i++) {
-      const target = BEAT_SNAP_FRAMES[i];
-      if (target == null) continue;
-      const { sceneStarts } = computeTimeline(sceneDurations);
-      const delta = target - sceneStarts[i];
-      if (delta === 0) continue;
-      const prior = i - 1;
-      const voLenPrior = voLengths[prior] ?? 0;
-      const minPrior = voLenPrior + VO_PRE_PAD_FRAMES + TRANS_FRAMES;
-      sceneDurations[prior] = Math.max(minPrior, sceneDurations[prior] + delta);
-    }
-
-    const { totalFrames: visualFrames } = computeTimeline(sceneDurations);
-    const totalFrames = PRE_ROLL_FRAMES + visualFrames + POST_ROLL_FRAMES;
-
-    return {
-      durationInFrames: Math.ceil(totalFrames),
-      props: { voiceover: sceneDurations, voLengths },
-    };
-  };
-
-type TimelineItem =
-  | { kind: "scene"; sceneIndex: number; duration: number; start: number }
-  | { kind: "card"; card: ChapterCardSpec; duration: number; start: number };
-
-function computeTimeline(sceneDurations: number[]): {
-  sceneStarts: number[];
-  items: TimelineItem[];
-  totalFrames: number;
-} {
-  // 1. Build render order (cards interleaved before their target scene).
-  const raw: Array<
-    | { kind: "scene"; sceneIndex: number; duration: number }
-    | { kind: "card"; card: ChapterCardSpec; duration: number }
-  > = [];
-  for (let i = 0; i < sceneDurations.length; i++) {
-    const card = CARD_BEFORE[i];
-    if (card) raw.push({ kind: "card", card, duration: CARD_DURATION_FRAMES });
-    raw.push({ kind: "scene", sceneIndex: i, duration: sceneDurations[i] });
-  }
-
-  // 2. Compute cumulative starts with transition overlap.
-  const sceneStarts: number[] = new Array(sceneDurations.length).fill(0);
-  const items: TimelineItem[] = [];
-  let cursor = 0;
-  for (let i = 0; i < raw.length; i++) {
-    const item = raw[i];
-    if (item.kind === "scene") {
-      items.push({ ...item, start: cursor });
-      sceneStarts[item.sceneIndex] = cursor;
-    } else {
-      items.push({ ...item, start: cursor });
-    }
-    cursor += item.duration - (i < raw.length - 1 ? TRANS_FRAMES : 0);
-  }
-
-  const last = items[items.length - 1];
-  const totalFrames = last.start + last.duration;
-
-  return { sceneStarts, items, totalFrames };
-}
-
-const { fontFamily: INTER } = loadFont();
-
-// Design tokens — matching SSL palette
-const BG = "linear-gradient(140deg, #0C0322, #1a1a2e, #461499)";
-const ACCENT = "#753EF7";
-const ACCENT_2 = "#FBBF24";
-const TEXT = "#ffffff";
-const TEXT_DIM = "#a0a0b0";
-const FONT = `${INTER}, system-ui, sans-serif`;
-const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
-const EASE_OUT = Easing.bezier(0.16, 1, 0.3, 1);
-const TRANS_EASE = Easing.bezier(0.4, 0, 0.2, 1);
-
-const GRAIN_SVG =
-  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")";
-
-// --- SHARED COMPONENTS ---
-
-const SceneBG: React.FC = () => {
-  const frame = useCurrentFrame();
-  const dx = noise2D("dx", frame / 90, 0) * 2;
-  const dy = noise2D("dy", 0, frame / 90) * 2;
-  return (
-    <>
-      <AbsoluteFill style={{ background: BG, transform: `translate(${dx}px, ${dy}px)` }} />
-      <AbsoluteFill style={{ opacity: 0.035, mixBlendMode: "overlay", backgroundImage: GRAIN_SVG }} />
-    </>
-  );
-};
-
-const easeIn = (frame: number, start: number, end: number) =>
-  interpolate(frame, [start, end], [0, 1], {
-    easing: EASE_OUT,
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
-const FadeUp: React.FC<{
-  delay: number;
-  children: React.ReactNode;
-  offsetY?: number;
-}> = ({ delay, children, offsetY = 40 }) => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const s = spring({ frame: frame - delay, fps, config: { damping: 20, stiffness: 120 } });
-  const y = interpolate(s, [0, 1], [offsetY, 0]);
-  const op = interpolate(s, [0, 1], [0, 1]);
-  return (
-    <div style={{ opacity: op, transform: `translateY(${y}px)` }}>
-      {children}
-    </div>
-  );
-};
+type TreatmentExplainerProps = ExplainerProps;
 
 // --- SCENE 1: TITLE CARD (120f / 4s) ---
 
@@ -914,110 +735,6 @@ const Scene6Pipeline: React.FC = () => {
   );
 };
 
-// --- TRANSITION + SCENE EXIT WRAPPERS ---
-
-const TRANS = () => (
-  <TransitionSeries.Transition
-    presentation={fade()}
-    timing={linearTiming({ durationInFrames: 8, easing: TRANS_EASE })}
-  />
-);
-
-const EXIT_FRAMES = 14;
-
-const SceneExit: React.FC<{ durationInFrames: number; children: React.ReactNode }> = ({
-  durationInFrames,
-  children,
-}) => {
-  const frame = useCurrentFrame();
-  const exitStart = durationInFrames - EXIT_FRAMES;
-  const p = interpolate(frame, [exitStart, durationInFrames], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.bezier(0.4, 0, 0.2, 1),
-  });
-  return (
-    <AbsoluteFill style={{ opacity: 1 - p, transform: `scale(${1 - p * 0.04})` }}>
-      {children}
-    </AbsoluteFill>
-  );
-};
-
-// --- CHAPTER CARD (brief screen-holder between major sections) ---
-
-const ChapterCard: React.FC<{
-  card: ChapterCardSpec;
-  durationInFrames: number;
-}> = ({ card, durationInFrames }) => {
-  const frame = useCurrentFrame();
-  const fadeIn = Math.min(10, Math.floor(durationInFrames / 3));
-  const fadeOut = Math.min(10, Math.floor(durationInFrames / 3));
-  const fadeOutStart = durationInFrames - fadeOut;
-
-  const op = interpolate(
-    frame,
-    [0, fadeIn, fadeOutStart, durationInFrames],
-    [0, 1, 1, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE_OUT },
-  );
-
-  // Horizontal rule sweeps in from the center during fade-in
-  const ruleScale = interpolate(frame, [0, fadeIn + 4], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: EASE_OUT,
-  });
-
-  return (
-    <AbsoluteFill>
-      <SceneBG />
-      <AbsoluteFill
-        style={{
-          opacity: op,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "column",
-          gap: 24,
-        }}
-      >
-        <div
-          style={{
-            fontFamily: MONO,
-            fontSize: 24,
-            letterSpacing: "0.32em",
-            textTransform: "uppercase",
-            color: ACCENT_2,
-            opacity: 0.9,
-          }}
-        >
-          {card.label}
-        </div>
-        <div
-          style={{
-            width: 280,
-            height: 1,
-            background: `linear-gradient(90deg, transparent, ${TEXT_DIM}, transparent)`,
-            transform: `scaleX(${ruleScale})`,
-          }}
-        />
-        <div
-          style={{
-            fontFamily: FONT,
-            fontSize: 92,
-            fontWeight: 600,
-            letterSpacing: "-0.02em",
-            color: TEXT,
-            textAlign: "center",
-          }}
-        >
-          {card.title}
-        </div>
-      </AbsoluteFill>
-    </AbsoluteFill>
-  );
-};
-
 // --- MAIN COMPOSITION (VO-driven) ---
 
 const SCENE_COMPONENTS: React.FC[] = [
@@ -1029,27 +746,10 @@ const SCENE_COMPONENTS: React.FC[] = [
   Scene6Pipeline,
 ];
 
-// Last-N-frames black curtain. Wrapped in its own component so it can call
-// useCurrentFrame without forcing the main composition to subscribe.
-const FadeToBlack: React.FC<{ visualEnd: number }> = ({ visualEnd }) => {
-  const frame = useCurrentFrame();
-  // 0 → 1 across the last FADE_TO_BLACK_FRAMES of the visual section; holds
-  // at 1 through the post-roll so the screen stays black for the boom tail.
-  const opacity = interpolate(
-    frame,
-    [visualEnd - FADE_TO_BLACK_FRAMES, visualEnd],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
-  if (opacity <= 0) return null;
-  return (
-    <AbsoluteFill
-      style={{ backgroundColor: "#000", opacity, pointerEvents: "none" }}
-    />
-  );
-};
-
-export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({ voiceover, voLengths }) => {
+export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({
+  voiceover,
+  voLengths,
+}) => {
   const sceneDurations: number[] =
     voiceover && voiceover.length === SCENE_AUDIO_FILES.length
       ? voiceover
@@ -1060,16 +760,19 @@ export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({ voiceove
       ? voLengths
       : [...FALLBACK_SCENE_DURATIONS];
 
-  const { sceneStarts, items, totalFrames: visualFrames } = computeTimeline(sceneDurations);
+  const { sceneStarts, items, totalFrames: visualFrames } = computeTimeline(
+    sceneDurations,
+    CARD_BEFORE,
+  );
 
-  // Absolute-frame anchors in the final composition (which wraps the visual
+  // Absolute-frame anchors in the final composition (wraps the visual
   // timeline in a pre-roll + post-roll so the intro whoosh can build before
   // the title and the outro boom's decay can finish in silence).
   const visualStart = PRE_ROLL_FRAMES;
   const visualEnd = PRE_ROLL_FRAMES + visualFrames;
   const totalFrames = visualEnd + POST_ROLL_FRAMES;
 
-  // Build VO windows in ABSOLUTE composition frames. Music ducks only during
+  // VO windows in absolute composition frames. Music ducks only during
   // these — scene cards + VO pre/post pad sit at full bed volume.
   const voWindows: Array<{ start: number; end: number }> = [];
   for (let i = 0; i < SCENE_AUDIO_FILES.length; i++) {
@@ -1078,35 +781,7 @@ export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({ voiceove
     voWindows.push({ start, end: start + voLengthsFinal[i] });
   }
 
-  // Music volume envelope:
-  //   - fade IN over the pre-roll so the bed rises with the whoosh
-  //   - duck to MUSIC_DUCK during each VO window
-  //   - fade OUT so bed is silent by visualEnd (lets the boom stand alone)
-  const musicVolume = (frame: number) => {
-    const fadeIn = interpolate(
-      frame,
-      [0, PRE_ROLL_FRAMES],
-      [0, 1],
-      { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-    );
-    const fadeOut = interpolate(
-      frame,
-      [visualEnd - MUSIC_FADE_OUT_FRAMES, visualEnd],
-      [1, 0],
-      { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-    );
-    let vol = MUSIC_HIGH;
-    for (const w of voWindows) {
-      const duckVol = interpolate(
-        frame,
-        [w.start, w.start + DUCK_RAMP, w.end - DUCK_RAMP, w.end],
-        [MUSIC_HIGH, MUSIC_DUCK, MUSIC_DUCK, MUSIC_HIGH],
-        { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-      );
-      vol = Math.min(vol, duckVol);
-    }
-    return vol * fadeIn * fadeOut;
-  };
+  const musicVolume = buildMusicVolume({ visualEnd, voWindows });
 
   return (
     <>
@@ -1120,8 +795,8 @@ export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({ voiceove
 
       {/* Intro whoosh — rides the pre-roll; the sweep peaks as the title
           fades in (around frame PRE_ROLL_FRAMES), not after it. */}
-      <Sequence from={0} durationInFrames={SFX_INTRO_LEN_FRAMES} name="SFX-intro">
-        <Audio src={staticFile(SFX_INTRO)} volume={0.45} />
+      <Sequence durationInFrames={SFX_INTRO_LEN_FRAMES} name="SFX-intro">
+        <Audio src={staticFile(SFX_INTRO)} volume={SFX_INTRO_VOLUME} />
       </Sequence>
 
       {/* Outro boom — attack lands SFX_OUTRO_LEAD_IN_FRAMES before visualEnd
@@ -1132,7 +807,7 @@ export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({ voiceove
         durationInFrames={SFX_OUTRO_LEN_FRAMES}
         name="SFX-outro"
       >
-        <Audio src={staticFile(SFX_OUTRO)} volume={0.55} />
+        <Audio src={staticFile(SFX_OUTRO)} volume={SFX_OUTRO_VOLUME} />
       </Sequence>
 
       {/* Voiceover — absolute frames include the visualStart offset. */}

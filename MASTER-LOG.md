@@ -8,12 +8,11 @@ Remotion composition rendering SSL 2026 promotional reel. 1920×1080, 30fps. 8 s
 
 ## Next Up
 
-1. [ ] **Build `src/StackExplainer.tsx`** (Session 11) — 8 scene bodies from the treatment doc, skeleton lifted from TreatmentExplainer. Register in `Root.tsx`. Apply beat snaps from `scripts/music/output/stack-explainer-onsets.json` (cheap snaps only, `Math.max` safety floor). Wire `penguinmusic-wings-196958.mp3` as music bed.
-2. [ ] **Extract `src/explainer-shared/`** (Session 11, same session as #1) — constants (TRANS_FRAMES, VO_PRE_PAD, MUSIC_HIGH/DUCK, PRE/POST_ROLL, SFX bookends), `buildMusicVolume`, `FadeToBlack`, `calculateMetadataFromVO`. Refactor TreatmentExplainer to import — identical render before/after.
+1. [ ] **Danny scrubs StackExplainer in Studio** → per-scene feedback. First watch is the render-quality gate before committing to `render:stack` for an MP4 export.
+2. [ ] **Render StackExplainer to MP4** — `npm run render:stack`. Lands at `out/StackExplainer.mp4`.
 3. [ ] **Write `HOW-TO-SHIP-AN-EXPLAINER.md`** (Session 12) — end-to-end cookbook. Link the 3 explainer MP4s from the repo README.
-4. [ ] **Auto-snap helper** (Session 12 stretch) — script reading an onset JSON + scene-starts array, emits a safe `BEAT_SNAP_TARGETS` literal. Closes the 5/10 beat-detection gap.
+4. [ ] **Auto-snap helper** (Session 12 stretch) — script reading an onset JSON + scene-starts array, emits a safe `BEAT_SNAP_TARGETS` literal. Closes the 5/10 beat-detection gap + would give StackExplainer real snaps (currently all null).
 5. [ ] **Shortlist → code helper** (Session 12 stretch) — CLI reading `shortlisted: true` items from `MANIFEST.json`, emits a TS module of typed SFX path constants. Closes the 3/10 shortlist gap.
-6. [ ] **Add `npm run render:stack`** convenience script (Session 11) — `remotion render StackExplainer out/StackExplainer-$(date +%Y%m%d).mp4`.
 7. [ ] **Write 8 scene scripts** for FormatExplainer VO — still open. Lower priority vs StackExplainer push.
 8. [ ] **Generate 8 VO MP3s** for FormatExplainer.
 9. [ ] **Test FormatExplainer render** — calculateMetadata auto-sizing already wired (Session 7).
@@ -27,10 +26,38 @@ Remotion composition rendering SSL 2026 promotional reel. 1920×1080, 30fps. 8 s
 17. [x] **Auditioner v2** — Session 8.
 18. [x] **TreatmentExplainer audio spine** — music bed + beat-snap + cinematic bookends + fade-to-black + pre/post-roll. Session 9.
 19. [x] **StackExplainer content lock** — treatment doc + 8-scene VO config + 8 MP3s + music bed picked + onsets captured. Session 10.
+20. [x] **StackExplainer composition + explainer-shared extraction** — 8 scenes, music bed + SFX bookends wired, TreatmentExplainer refactored onto shared module. `npm run render:stack` added. Session 11.
 
 ---
 
 ## Session Log
+
+### Session 11 — StackExplainer: composition + explainer-shared extraction (23 Apr)
+
+- **Shipped:** `src/StackExplainer.tsx` (1286 lines) + `src/explainer-shared/` module + TreatmentExplainer refactored onto the shared module. Composition registered in `Root.tsx` at 1920×1080 / 30fps with VO-driven `calculateMetadata`. `npm run render:stack` + `npm run render:treatment` added.
+- **explainer-shared extracted:** 5-file module (~479 lines total) cleaving the TreatmentExplainer skeleton into reusable parts —
+  - `constants.ts` — timing + audio envelope (TRANS_FRAMES, VO_PRE_PAD, MUSIC_HIGH/DUCK, PRE/POST_ROLL, SFX_* defaults).
+  - `tokens.ts` — SSL palette + Inter font + EASE_OUT/TRANS_EASE + grain SVG.
+  - `timeline.ts` — `computeTimeline` + `ChapterCardSpec`/`TimelineItem` types; now parameterised over a `cardBefore` array so configs control card placement.
+  - `components.tsx` — `SceneBG`, `FadeUp`, `SceneExit`, `FadeToBlack`, `TRANS` factory, `ChapterCard`, `easeIn` helper.
+  - `metadata.ts` — `makeCalculateMetadata(config)` factory (reads VO MP3s, sizes scenes, applies beat-snap with safety floor) + `fallbackDurationInFrames(config)` + `buildMusicVolume({visualEnd, voWindows})` factory.
+  - Module contract: a composition-specific config (`SCENE_AUDIO_FILES`, `SCENE_VO_ENABLED`, `FALLBACK_SCENE_DURATIONS`, `CARD_BEFORE`, `BEAT_SNAP_FRAMES`, `MUSIC_BED`, `logPrefix`) plugs into the factories. Everything else is inherited. Adding a video #4 is ~90 lines of scaffolding + scene bodies — no audio/timing boilerplate.
+- **StackExplainer visuals — 8 scenes (no chapter cards, montage cadence):**
+  - **S1 Title** — "From stock Remotion → to a Production Engine" with monospace kicker + gold rule + scaled headline punch-in.
+  - **S2 Stock** — ticking clock (one rotation per second, driven by `useCurrentFrame`) + three monospace tags (`<Sequence>`, `<Audio>`, `useCurrentFrame()`) + "a stage · a clock · a tag" caption. Deliberately stark.
+  - **S3 Plugins** — 6×3 grid of 18 plugin cards (transitions → zod-types), colour-coded by category (gold → cyan → purple → dim), spring-stagger 3 frames per card.
+  - **S4 Design System** — two-column layout: palette swatches (BG gradient, ACCENT, ACCENT_2, TEXT) + scene-skeleton diagram (`calculateMetadata` code fragment + 4-step skeleton ladder).
+  - **S5 Voice** — side-by-side: preset JSON reveal (keys appearing line-by-line) + 8 cascading pseudo-waveforms (deterministic seed per scene) with "Script in — MP3s out." payoff.
+  - **S6 Library** — auditioner UI mock: tab bar (impacts tab highlighted in gold), 6 rows with ⭐/☆ toggle + 📋 copy button + animated star-pulse on row 0 at frame 55.
+  - **S7 Beats** — music waveform (120 bars, sine*cosine envelope, L→R reveal over 45f) + 8 onset markers dropping in at their real `wings-onsets.json` positions + scene-cut line that snaps from 45% to the 27.5s strongest-onset marker (spring anim from frame 95).
+  - **S8 Envelope** — three stacked channel rows: (1) whoosh rising sweep, (2) boom radial burst, (3) fade-to-black progress bar filling. Meta-payoff: the video's own ending enacts the envelope the scene is describing.
+- **TreatmentExplainer refactor** — stripped 325 lines of duplicate constants/tokens/components/metadata-logic, replaced with 32-line import from `./explainer-shared`. Scene bodies (1–6) + chapter cards + config (SCENE_AUDIO_FILES, SCENE_VO_ENABLED, FALLBACK_SCENE_DURATIONS, CARD_BEFORE, MUSIC_BED, BEAT_SNAP_FRAMES) preserved verbatim. Typecheck clean. File size: 1197 → 872 lines.
+- **Beat-snap for StackExplainer — deferred:** The wings bed's strong onsets (376/638/826/1163/1210/1426/1791) don't land within ~25f of the natural scene starts that the VO dictates. Snapping would either bloat the comp by a second+ or ship a long awkward title card. Decision: all `BEAT_SNAP_FRAMES` null for this composition. Session 12 auto-snap helper can revisit with better logic (per-scene budget, looser snap window).
+- **npm scripts added:** `render:stack` + `render:treatment` — `remotion render <Id> out/<Id>.mp4`. Runs locally, no Studio required.
+- **Studio validation:** Running on :3000 across the session; hot-reload picked up both StackExplainer and the refactored TreatmentExplainer cleanly. Both composition IDs visible in Studio index.
+- **Lint state:** StackExplainer + explainer-shared clean. TreatmentExplainer clean (a pre-existing flicker warning at line 465 is untouched). FormatExplainer has a pre-existing `from={0}` redundant-prop error (not touched this session).
+- **Not done (deliberate):** No StackExplainer render yet (Danny scrubs in Studio first). No cookbook / README wiring. No auto-snap helper. No shortlist-to-code helper. Those are Session 12.
+- **Commit:** `session 11: stackexplainer composition + explainer-shared extraction`.
 
 ### Session 10 — StackExplainer: content lock (script + VO + music bed) (23 Apr)
 
