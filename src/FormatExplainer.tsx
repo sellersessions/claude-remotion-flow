@@ -1419,7 +1419,7 @@ export const FormatExplainer: React.FC<FormatExplainerProps> = ({ voiceover }) =
       <Audio src={AUDIO_SRC.musicBed} volume={musicVolume} />
 
       {/* Riser SFX — fixed to scene opener */}
-      <Sequence from={0} durationInFrames={90}>
+      <Sequence  durationInFrames={90}>
         <Audio src={AUDIO_SRC.riser} startFrom={270} volume={0.7} />
       </Sequence>
 

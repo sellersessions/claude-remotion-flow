@@ -1,7 +1,4 @@
 import { Composition } from "remotion";
-import { HelloWorld, myCompSchema } from "./HelloWorld";
-import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
-import { SSDemo, ssDemoSchema } from "./SSDemo";
 import { DEFAULT_MIXER } from "./explainer-shared";
 import {
   FormatExplainer,
@@ -26,51 +23,6 @@ export const RemotionRoot: React.FC = () => {
   return (
     <>
       <Composition
-        id="HelloWorld"
-        component={HelloWorld}
-        durationInFrames={150}
-        fps={30}
-        width={1920}
-        height={1080}
-        schema={myCompSchema}
-        defaultProps={{
-          titleText: "Welcome to Remotion",
-          titleColor: "#000000",
-          logoColor1: "#91EAE4",
-          logoColor2: "#86A8E7",
-        }}
-      />
-
-      <Composition
-        id="OnlyLogo"
-        component={Logo}
-        durationInFrames={150}
-        fps={30}
-        width={1920}
-        height={1080}
-        schema={myCompSchema2}
-        defaultProps={{
-          logoColor1: "#91dAE2" as const,
-          logoColor2: "#86A8E7" as const,
-        }}
-      />
-
-      <Composition
-        id="SSLSpeaker"
-        component={SSDemo}
-        durationInFrames={120}
-        fps={30}
-        width={1920}
-        height={1080}
-        schema={ssDemoSchema}
-        defaultProps={{
-          speakerName: "Danny McMillan",
-          talkTitle: "Building an AI-Powered Amazon Business in 2026",
-          eventDate: "May 2026 · London",
-        }}
-      />
-
-      <Composition
         id="FormatExplainer"
         component={FormatExplainer}
         calculateMetadata={formatExplainerCalculateMetadata}
@@ -81,7 +33,6 @@ export const RemotionRoot: React.FC = () => {
         schema={formatExplainerSchema}
         defaultProps={{}}
       />
-
       <Composition
         id="TreatmentExplainer"
         component={TreatmentExplainer}
@@ -93,7 +44,6 @@ export const RemotionRoot: React.FC = () => {
         schema={treatmentExplainerSchema}
         defaultProps={{ ...DEFAULT_MIXER }}
       />
-
       <Composition
         id="StackExplainer"
         component={StackExplainer}
@@ -103,7 +53,12 @@ export const RemotionRoot: React.FC = () => {
         width={1920}
         height={1080}
         schema={stackExplainerSchema}
-        defaultProps={{ ...DEFAULT_MIXER }}
+        defaultProps={{
+          musicHigh: 1,
+          musicDuck: 0.06,
+          sfxIntroVolume: 1,
+          sfxOutroVolume: 0.55,
+        }}
       />
     </>
   );
