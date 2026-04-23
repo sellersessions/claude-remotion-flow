@@ -120,13 +120,14 @@ export const calculateMetadata = makeCalculateMetadata(CONFIG);
 export const stackExplainerSchema = z.object({
   voiceover: z.array(z.number()).optional(),
   voLengths: z.array(z.number()).optional(),
-  // Live mixer — surfaced in the Studio Props panel as sliders (min/max
-  // hints make Remotion render a range input). Values are absolute gains
-  // (0 = silent, 1 = unity). Defaults in Root.tsx's defaultProps.
-  musicHigh: z.number().min(0).max(1),
-  musicDuck: z.number().min(0).max(1),
-  sfxIntroVolume: z.number().min(0).max(1),
-  sfxOutroVolume: z.number().min(0).max(1),
+  // Live mixer — Remotion's InputDragger in the Props panel; drag
+  // horizontally to scrub, or click to type. .multipleOf(0.01) gives
+  // 0.01 resolution so drag produces fine steps instead of 0→1 jumps.
+  // Values are absolute gains (0 = silent, 1 = unity).
+  musicHigh: z.number().min(0).max(1).multipleOf(0.01),
+  musicDuck: z.number().min(0).max(1).multipleOf(0.01),
+  sfxIntroVolume: z.number().min(0).max(1).multipleOf(0.01),
+  sfxOutroVolume: z.number().min(0).max(1).multipleOf(0.01),
 });
 
 // ---------------------------------------------------------------------------
