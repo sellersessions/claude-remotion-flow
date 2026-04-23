@@ -65,21 +65,63 @@ const CARD_BEFORE: Array<ChapterCardSpec | null> = [
   null, // before S6 (pipeline)
 ];
 
-// SFX — incidental sound design from public/assets/sfx/library/
-// Open stinger uses the wet (delay + hall reverb) version; raw was too dry.
-const SFX_OPEN = "assets/sfx/library/stingers/alex_kizenkov-aggressive-huge-hit-logo-139134-wet.mp3";
-const SFX_OUTRO = "assets/sfx/library/impacts/submority-boom-geomorphism-cinematic-trailer-sound-effects-123876.mp3";
-const SFX_OPEN_LEN_FRAMES = 75; // 2.5s — lets the wet tail breathe before VO lands
-const SFX_OUTRO_POST_VO_GAP_FRAMES = 12; // 0.4s beat after last VO word before the boom
-const SFX_OUTRO_LEN_FRAMES = 150; // 5s decay (may clip at composition end — acceptable)
+// Music bed — calming cinematic ambient, 98.95s source trimmed to comp length.
+// Both volumes dropped −2 dB from the first pass (0.55/0.22 → 0.44/0.18) so the
+// bed sits as incidental backing rather than fighting the VO.
+const MUSIC_BED = "assets/music/ssl-live-beds/penguinmusic-through-the-clouds-calming-cinematic-ambient-200392.mp3";
+const MUSIC_HIGH = 0.44;
+const MUSIC_DUCK = 0.18;
+const DUCK_RAMP = 15; // frames to ramp in/out of a VO window
+const MUSIC_FADE_OUT_FRAMES = 75; // 2.5s tail — source is 99s, comp is 42s, needs a soft landing
+const FADE_TO_BLACK_FRAMES = 60; // 2.0s visual fade, ends aligned with music fade
+
+// Pre-roll lets the intro whoosh BUILD before the title lands — peak of the
+// sweep hits at the moment the title fades in, instead of the sweep starting
+// under an already-visible title.
+// Post-roll gives the outro boom's decay room to finish naturally (its attack
+// is zero-frame so the tail needs space to breathe into silence + black).
+const PRE_ROLL_FRAMES = 30;   // 1.0s — trimmed from 2.0s: black-before-title was dragging
+const POST_ROLL_FRAMES = 60;  // 2.0s — room for boom tail (ends visualEnd+43) + silent black
+// Outro boom fires a bit before visualEnd so it doesn't feel "late": attack
+// lands while the screen is still mid-fade, then decay resolves into black.
+const SFX_OUTRO_LEAD_IN_FRAMES = 20; // boom start = visualEnd − 20
+
+// SFX bookends — Danny's picks. Intro whoosh fires at t=0 over the title.
+// Outro boom starts when the music fade begins so the attack punches the
+// transition and the decay absorbs into the fade-to-black — avoids the
+// perceptual "clipping" of an unsignposted ending.
+const SFX_INTRO = "assets/sfx/library/transitions/pixabay-ksjsbwuil-whoosh-8-6b32a439bc.mp3";
+const SFX_OUTRO = "assets/sfx/library/impacts/pixabay-universfield-impact-cinematic-boom-be1e4daf3e.mp3";
+const SFX_INTRO_LEN_FRAMES = 114; // 3.79s source — peak lands at PRE_ROLL_FRAMES
+const SFX_OUTRO_LEN_FRAMES = 63;  // 2.09s — zero-attack boom + decay
+// Boom attack fires at the end of the visual section (visual_end) so its hit
+// punches the fade-to-black moment; decay rides through the post-roll.
+
+// Beat-snap — shift scene starts onto librosa onset markers where the cost is
+// trivial. Source: scripts/music/output/through-the-clouds-onsets.json.
+// We only snap when the delta is under ~25 frames. Everything else would
+// bloat the comp length for a marginal musical payoff.
+//   S2: native 112 → 134 (+22f, onset strength 0.64 @ 4.46s)
+//   S5: native 859 → 852 (−7f, onset strength 0.74 @ 28.41s)
+// Net comp change: +15 frames (0.5s).
+const BEAT_SNAP_FRAMES: Array<number | null> = [
+  null, // S1 title — no snap (music just starts)
+  134,  // S2 overview — onset at 4.46s
+  null, // S3 brief — nearest onset 68f away, too far
+  null, // S4 skeleton — nearest onset 98f away, too far
+  852,  // S5 treatment — onset at 28.41s, basically already locked
+  null, // S6 pipeline — nearest onset past comp end
+];
 
 // Includes chapter card durations so the composition length is correct when
 // VO files are missing (fallback branch in calculateMetadata).
 const CARD_COUNT = CARD_BEFORE.filter(Boolean).length;
 export const FALLBACK_DURATION_IN_FRAMES =
+  PRE_ROLL_FRAMES +
   FALLBACK_SCENE_DURATIONS.reduce((s, d) => s + d, 0) +
   CARD_COUNT * CARD_DURATION_FRAMES -
-  (FALLBACK_SCENE_DURATIONS.length + CARD_COUNT - 1) * TRANS_FRAMES;
+  (FALLBACK_SCENE_DURATIONS.length + CARD_COUNT - 1) * TRANS_FRAMES +
+  POST_ROLL_FRAMES;
 
 export const treatmentExplainerSchema = z.object({
   voiceover: z.array(z.number()).optional(), // scene durations (frames)
@@ -135,7 +177,23 @@ export const calculateMetadata: CalculateMetadataFunction<TreatmentExplainerProp
       return Math.ceil(Math.max(padded, FALLBACK_SCENE_DURATIONS[i]));
     });
 
-    const { totalFrames } = computeTimeline(sceneDurations);
+    // Beat-snap pass — nudge scene boundaries so targeted scene starts land on
+    // music onsets. We shift by adjusting the PRIOR scene's duration; VO audio
+    // is never sped/slowed and never clipped (safety floor = VO + pre-pad + trans).
+    for (let i = 1; i < sceneDurations.length; i++) {
+      const target = BEAT_SNAP_FRAMES[i];
+      if (target == null) continue;
+      const { sceneStarts } = computeTimeline(sceneDurations);
+      const delta = target - sceneStarts[i];
+      if (delta === 0) continue;
+      const prior = i - 1;
+      const voLenPrior = voLengths[prior] ?? 0;
+      const minPrior = voLenPrior + VO_PRE_PAD_FRAMES + TRANS_FRAMES;
+      sceneDurations[prior] = Math.max(minPrior, sceneDurations[prior] + delta);
+    }
+
+    const { totalFrames: visualFrames } = computeTimeline(sceneDurations);
+    const totalFrames = PRE_ROLL_FRAMES + visualFrames + POST_ROLL_FRAMES;
 
     return {
       durationInFrames: Math.ceil(totalFrames),
@@ -971,6 +1029,26 @@ const SCENE_COMPONENTS: React.FC[] = [
   Scene6Pipeline,
 ];
 
+// Last-N-frames black curtain. Wrapped in its own component so it can call
+// useCurrentFrame without forcing the main composition to subscribe.
+const FadeToBlack: React.FC<{ visualEnd: number }> = ({ visualEnd }) => {
+  const frame = useCurrentFrame();
+  // 0 → 1 across the last FADE_TO_BLACK_FRAMES of the visual section; holds
+  // at 1 through the post-roll so the screen stays black for the boom tail.
+  const opacity = interpolate(
+    frame,
+    [visualEnd - FADE_TO_BLACK_FRAMES, visualEnd],
+    [0, 1],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
+  if (opacity <= 0) return null;
+  return (
+    <AbsoluteFill
+      style={{ backgroundColor: "#000", opacity, pointerEvents: "none" }}
+    />
+  );
+};
+
 export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({ voiceover, voLengths }) => {
   const sceneDurations: number[] =
     voiceover && voiceover.length === SCENE_AUDIO_FILES.length
@@ -982,31 +1060,88 @@ export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({ voiceove
       ? voLengths
       : [...FALLBACK_SCENE_DURATIONS];
 
-  const { sceneStarts, items, totalFrames } = computeTimeline(sceneDurations);
+  const { sceneStarts, items, totalFrames: visualFrames } = computeTimeline(sceneDurations);
 
-  // Outro boom fires just after the last VO word ends in scene 6.
-  const LAST_SCENE = SCENE_AUDIO_FILES.length - 1;
-  const scene6VOEnd =
-    sceneStarts[LAST_SCENE] + VO_PRE_PAD_FRAMES + voLengthsFinal[LAST_SCENE];
-  const outroStart = Math.min(
-    scene6VOEnd + SFX_OUTRO_POST_VO_GAP_FRAMES,
-    totalFrames - 30,
-  );
+  // Absolute-frame anchors in the final composition (which wraps the visual
+  // timeline in a pre-roll + post-roll so the intro whoosh can build before
+  // the title and the outro boom's decay can finish in silence).
+  const visualStart = PRE_ROLL_FRAMES;
+  const visualEnd = PRE_ROLL_FRAMES + visualFrames;
+  const totalFrames = visualEnd + POST_ROLL_FRAMES;
 
-  // TODO: music bed + ducking — pick a track, then lift buildMusicVolume
-  // from FormatExplainer.tsx and wire it here. Pattern:
-  //   <Audio src={MUSIC_BED} volume={buildMusicVolume(sceneStarts, sceneDurations)} />
+  // Build VO windows in ABSOLUTE composition frames. Music ducks only during
+  // these — scene cards + VO pre/post pad sit at full bed volume.
+  const voWindows: Array<{ start: number; end: number }> = [];
+  for (let i = 0; i < SCENE_AUDIO_FILES.length; i++) {
+    if (!SCENE_VO_ENABLED[i]) continue;
+    const start = visualStart + sceneStarts[i] + VO_PRE_PAD_FRAMES;
+    voWindows.push({ start, end: start + voLengthsFinal[i] });
+  }
+
+  // Music volume envelope:
+  //   - fade IN over the pre-roll so the bed rises with the whoosh
+  //   - duck to MUSIC_DUCK during each VO window
+  //   - fade OUT so bed is silent by visualEnd (lets the boom stand alone)
+  const musicVolume = (frame: number) => {
+    const fadeIn = interpolate(
+      frame,
+      [0, PRE_ROLL_FRAMES],
+      [0, 1],
+      { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+    );
+    const fadeOut = interpolate(
+      frame,
+      [visualEnd - MUSIC_FADE_OUT_FRAMES, visualEnd],
+      [1, 0],
+      { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+    );
+    let vol = MUSIC_HIGH;
+    for (const w of voWindows) {
+      const duckVol = interpolate(
+        frame,
+        [w.start, w.start + DUCK_RAMP, w.end - DUCK_RAMP, w.end],
+        [MUSIC_HIGH, MUSIC_DUCK, MUSIC_DUCK, MUSIC_HIGH],
+        { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+      );
+      vol = Math.min(vol, duckVol);
+    }
+    return vol * fadeIn * fadeOut;
+  };
 
   return (
     <>
-      {/* Voiceover — anchored VO_PRE_PAD_FRAMES into each scene, plays for
-          its natural audio length (so the tail pad sits in silence). */}
+      {/* Music bed — fades in with the whoosh during pre-roll, ducks under
+          each VO, fades to zero at visualEnd. endAt trims the 99s source. */}
+      <Audio
+        src={staticFile(MUSIC_BED)}
+        volume={musicVolume}
+        endAt={totalFrames}
+      />
+
+      {/* Intro whoosh — rides the pre-roll; the sweep peaks as the title
+          fades in (around frame PRE_ROLL_FRAMES), not after it. */}
+      <Sequence from={0} durationInFrames={SFX_INTRO_LEN_FRAMES} name="SFX-intro">
+        <Audio src={staticFile(SFX_INTRO)} volume={0.45} />
+      </Sequence>
+
+      {/* Outro boom — attack lands SFX_OUTRO_LEAD_IN_FRAMES before visualEnd
+          so it hits while the screen is still fading, not after it's gone;
+          decay rides through the post-roll in silent black. */}
+      <Sequence
+        from={Math.max(0, visualEnd - SFX_OUTRO_LEAD_IN_FRAMES)}
+        durationInFrames={SFX_OUTRO_LEN_FRAMES}
+        name="SFX-outro"
+      >
+        <Audio src={staticFile(SFX_OUTRO)} volume={0.55} />
+      </Sequence>
+
+      {/* Voiceover — absolute frames include the visualStart offset. */}
       {SCENE_AUDIO_FILES.map((file, i) => {
         if (!SCENE_VO_ENABLED[i]) return null;
         return (
           <Sequence
             key={file}
-            from={sceneStarts[i] + VO_PRE_PAD_FRAMES}
+            from={visualStart + sceneStarts[i] + VO_PRE_PAD_FRAMES}
             durationInFrames={voLengthsFinal[i]}
             name={`VO-${file.split("/").pop()}`}
           >
@@ -1015,20 +1150,9 @@ export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({ voiceove
         );
       })}
 
-      {/* Open stinger — aggressive-huge-hit logo, plays at t=0 */}
-      <Sequence from={0} durationInFrames={SFX_OPEN_LEN_FRAMES} name="SFX-open">
-        <Audio src={staticFile(SFX_OPEN)} volume={0.4} />
-      </Sequence>
-
-      {/* Outro braam — fires after the last VO word lands */}
-      <Sequence
-        from={outroStart}
-        durationInFrames={SFX_OUTRO_LEN_FRAMES}
-        name="SFX-outro"
-      >
-        <Audio src={staticFile(SFX_OUTRO)} volume={0.3} />
-      </Sequence>
-
+      {/* Wrap the visual timeline inside the pre/post-roll envelope so the
+          screen stays black during the whoosh build and the boom's decay. */}
+      <Sequence from={visualStart} durationInFrames={visualFrames} name="visuals">
       <TransitionSeries>
         {items.flatMap((item, i) => {
           const nodes: React.ReactNode[] = [];
@@ -1062,6 +1186,12 @@ export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({ voiceove
           return nodes;
         })}
       </TransitionSeries>
+      </Sequence>
+
+      {/* Curtain — fades to black across the final FADE_TO_BLACK_FRAMES of the
+          visual section; stays fully black through the post-roll so the boom's
+          decay plays into darkness. */}
+      <FadeToBlack visualEnd={visualEnd} />
     </>
   );
 };
