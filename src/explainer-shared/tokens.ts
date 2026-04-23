@@ -18,6 +18,15 @@ export const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
 export const EASE_OUT = Easing.bezier(0.16, 1, 0.3, 1);
 export const TRANS_EASE = Easing.bezier(0.4, 0, 0.2, 1);
 
+// Safe-area margins — keep content inside these bounds at 1920×1080. Danny's
+// rule (Session 11 Loom): fill the full canvas, don't top-align. Allow a
+// little AI drift over these edges — SAFE is the target, not a hard stop.
+// Scene bodies should stretch content to near SAFE_INSET on all sides.
+export const SAFE_INSET_X = 120; // 6.25% of 1920
+export const SAFE_INSET_Y = 80;  // 7.4% of 1080
+export const CANVAS_W = 1920;
+export const CANVAS_H = 1080;
+
 // Subtle film grain overlay — burned-in once as a data URL so the
 // composition has no external asset dependency.
 export const GRAIN_SVG =

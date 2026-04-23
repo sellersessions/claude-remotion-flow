@@ -18,6 +18,8 @@ import {
   EASE_OUT,
   FONT,
   MONO,
+  SAFE_INSET_X,
+  SAFE_INSET_Y,
   PRE_ROLL_FRAMES,
   POST_ROLL_FRAMES,
   SFX_INTRO,
@@ -37,6 +39,7 @@ import {
   makeCalculateMetadata,
   type ExplainerConfig,
   type ExplainerProps,
+  ChapterCard,
   FadeToBlack,
   FadeUp,
   SceneBG,
@@ -57,18 +60,32 @@ const SCENE_AUDIO_FILES = [
   "assets/voice/generated/StackExplainer/scene-6-library.mp3",
   "assets/voice/generated/StackExplainer/scene-7-beats.mp3",
   "assets/voice/generated/StackExplainer/scene-8-envelope.mp3",
+  // S9 has no VO file; calculateMetadata falls back to FALLBACK_SCENE_DURATIONS[8].
+  "assets/voice/generated/StackExplainer/scene-9-recap.mp3",
 ] as const;
 
-const SCENE_VO_ENABLED = [true, true, true, true, true, true, true, true] as const;
+// S1 VO disabled — on-screen title delivers the line; VO was duplicating.
+// S9 VO disabled — silent visual recap; relies on music + animations only.
+const SCENE_VO_ENABLED = [false, true, true, true, true, true, true, true, false] as const;
 
-// Animator floors — rough VO-length estimates + padding so the comp is
-// sensible even if MP3s haven't been generated yet. Real durations come from
-// calculateMetadata reading the audio files.
-const FALLBACK_SCENE_DURATIONS = [120, 210, 300, 240, 270, 240, 300, 240] as const;
+// Animator floors — rough VO-length estimates + padding. Real durations come
+// from calculateMetadata reading the audio files. S9 (recap) has no VO so
+// its fallback IS the scene length: 180f = 6.0s.
+const FALLBACK_SCENE_DURATIONS = [120, 210, 300, 240, 270, 240, 300, 240, 180] as const;
 
-// No chapter cards for StackExplainer — the 8 scenes form a component
-// montage, not a layered teaching arc. Keeping array for type symmetry.
-const CARD_BEFORE = [null, null, null, null, null, null, null, null] as const;
+// Chapter cards — 3-part arc structure + recap card before S9. ~1.5s holding
+// frames give the ear a breath and the eye a title card for the section ahead.
+const CARD_BEFORE = [
+  null,                                       // before S1 (title opens cold)
+  null,                                       // before S2 (continues the hook)
+  { label: "Part 01", title: "The Stack" },   // before S3 — plugins
+  null,                                       // before S4 (continues stack arc)
+  { label: "Part 02", title: "The Voice" },   // before S5 — voice preset
+  null,                                       // before S6 (continues sound arc)
+  { label: "Part 03", title: "The Craft" },   // before S7 — beats + production
+  null,                                       // before S8 (closes the craft arc)
+  { label: "Recap", title: "The Pipeline" },  // before S9 — process flow
+] as const;
 
 // Music bed — penguinmusic-wings (83.5s, 4 onsets ≥ 1.0 strength, different
 // texture from TreatmentExplainer's through-the-clouds). Session 10 pick.
@@ -87,6 +104,7 @@ const BEAT_SNAP_FRAMES = [
   null,
   null,
   null,
+  null, // S9 recap — no snap
 ] as const;
 
 const CONFIG: ExplainerConfig = {
@@ -197,20 +215,21 @@ const Scene2Stock: React.FC = () => {
       <SceneBG />
       <AbsoluteFill
         style={{
+          padding: `${SAFE_INSET_Y}px ${SAFE_INSET_X}px`,
           justifyContent: "center",
           alignItems: "center",
           flexDirection: "column",
-          gap: 60,
+          gap: 110,
         }}
       >
         {/* Ticking clock */}
         <div
           style={{
             position: "relative",
-            width: 140,
-            height: 140,
+            width: 260,
+            height: 260,
             borderRadius: "50%",
-            border: `2px solid ${TEXT_DIM}`,
+            border: `3px solid ${TEXT_DIM}`,
             opacity: clockOp,
           }}
         >
@@ -219,8 +238,8 @@ const Scene2Stock: React.FC = () => {
               position: "absolute",
               top: "50%",
               left: "50%",
-              width: 3,
-              height: 54,
+              width: 5,
+              height: 100,
               background: ACCENT_2,
               transformOrigin: "50% 100%",
               transform: `translate(-50%, -100%) rotate(${clockAngle}deg)`,
@@ -232,8 +251,8 @@ const Scene2Stock: React.FC = () => {
               position: "absolute",
               top: "50%",
               left: "50%",
-              width: 10,
-              height: 10,
+              width: 18,
+              height: 18,
               background: ACCENT_2,
               borderRadius: "50%",
               transform: "translate(-50%, -50%)",
@@ -241,17 +260,17 @@ const Scene2Stock: React.FC = () => {
           />
         </div>
 
-        <div style={{ display: "flex", gap: 28 }}>
+        <div style={{ display: "flex", gap: 42 }}>
           {STOCK_TAGS.map((tag, i) => (
             <FadeUp key={tag.label} delay={30 + i * 12} offsetY={24}>
               <div
                 style={{
                   fontFamily: MONO,
-                  fontSize: 38,
+                  fontSize: 56,
                   color: tag.color,
-                  padding: "18px 30px",
+                  padding: "28px 46px",
                   border: `1px solid ${TEXT_DIM}55`,
-                  borderRadius: 14,
+                  borderRadius: 18,
                   background: "rgba(255,255,255,0.04)",
                 }}
               >
@@ -262,7 +281,7 @@ const Scene2Stock: React.FC = () => {
         </div>
 
         <FadeUp delay={80}>
-          <div style={{ fontSize: 28, color: TEXT_DIM, marginTop: 20 }}>
+          <div style={{ fontSize: 40, color: TEXT_DIM, marginTop: 10, letterSpacing: "0.01em" }}>
             A stage · a clock · a tag that plays a file.
           </div>
         </FadeUp>
@@ -309,35 +328,43 @@ const Scene3Plugins: React.FC = () => {
   return (
     <AbsoluteFill style={{ fontFamily: FONT }}>
       <SceneBG />
-      <AbsoluteFill style={{ padding: "60px 100px" }}>
-        <div
-          style={{
-            opacity: headerOp,
-            fontSize: 46,
-            fontWeight: 700,
-            color: TEXT,
-            marginBottom: 12,
-          }}
-        >
-          We stacked <span style={{ color: ACCENT_2 }}>18 plugins</span> on top.
-        </div>
-        <div
-          style={{
-            opacity: headerOp,
-            fontFamily: MONO,
-            fontSize: 18,
-            color: TEXT_DIM,
-            marginBottom: 36,
-          }}
-        >
-          all pinned · @remotion/* @ 4.0.448
+      <AbsoluteFill
+        style={{
+          padding: `${SAFE_INSET_Y}px ${SAFE_INSET_X}px`,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <div
+            style={{
+              opacity: headerOp,
+              fontSize: 62,
+              fontWeight: 700,
+              color: TEXT,
+              marginBottom: 14,
+            }}
+          >
+            We stacked <span style={{ color: ACCENT_2 }}>18 plugins</span> on top.
+          </div>
+          <div
+            style={{
+              opacity: headerOp,
+              fontFamily: MONO,
+              fontSize: 22,
+              color: TEXT_DIM,
+            }}
+          >
+            all pinned · @remotion/* @ 4.0.448
+          </div>
         </div>
 
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(6, 1fr)",
-            gap: 14,
+            gap: 22,
           }}
         >
           {PLUGIN_PACKAGES.map((pkg, i) => {
@@ -359,15 +386,15 @@ const Scene3Plugins: React.FC = () => {
                   transform: `scale(${scale}) translateY(${y}px)`,
                   border: `1px solid ${pkg.accent}88`,
                   background: `${pkg.accent}12`,
-                  borderRadius: 10,
-                  padding: "14px 12px",
+                  borderRadius: 14,
+                  padding: "26px 18px",
                   textAlign: "center",
                 }}
               >
                 <div
                   style={{
                     fontFamily: MONO,
-                    fontSize: 13,
+                    fontSize: 17,
                     color: TEXT_DIM,
                     letterSpacing: "0.02em",
                   }}
@@ -377,10 +404,10 @@ const Scene3Plugins: React.FC = () => {
                 <div
                   style={{
                     fontFamily: MONO,
-                    fontSize: 18,
+                    fontSize: 26,
                     fontWeight: 600,
                     color: pkg.accent,
-                    marginTop: 2,
+                    marginTop: 4,
                   }}
                 >
                   {pkg.name}
@@ -393,13 +420,12 @@ const Scene3Plugins: React.FC = () => {
         <FadeUp delay={100}>
           <div
             style={{
-              fontSize: 26,
+              fontSize: 36,
               color: TEXT_DIM,
               textAlign: "center",
-              marginTop: 40,
             }}
           >
-            Every cinematic move — a bolt-on.
+            Every cinematic move — an add-on.
           </div>
         </FadeUp>
       </AbsoluteFill>
@@ -419,10 +445,10 @@ const PALETTE = [
 ];
 
 const SKELETON_STEPS = [
-  { n: "01", label: "VO_PRE_PAD" },
-  { n: "02", label: "sceneBody" },
-  { n: "03", label: "SceneExit" },
-  { n: "04", label: "TRANS" },
+  { n: "01", label: "intro breath", code: "VO_PRE_PAD" },
+  { n: "02", label: "the scene", code: "sceneBody" },
+  { n: "03", label: "scene exit", code: "SceneExit" },
+  { n: "04", label: "transition", code: "TRANS" },
 ];
 
 const Scene4DesignSystem: React.FC = () => {
@@ -434,51 +460,72 @@ const Scene4DesignSystem: React.FC = () => {
   return (
     <AbsoluteFill style={{ fontFamily: FONT }}>
       <SceneBG />
-      <AbsoluteFill style={{ padding: "60px 100px" }}>
+      <AbsoluteFill
+        style={{
+          padding: `${SAFE_INSET_Y}px ${SAFE_INSET_X}px`,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <div
           style={{
             opacity: headerOp,
-            fontSize: 46,
+            fontSize: 62,
             fontWeight: 700,
             color: TEXT,
-            marginBottom: 36,
+            marginBottom: 56,
           }}
         >
           The <span style={{ color: ACCENT_2 }}>design system</span>.
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60 }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 100,
+            flex: 1,
+          }}
+        >
           {/* Palette */}
-          <div style={{ opacity: leftOp }}>
+          <div style={{ opacity: leftOp, display: "flex", flexDirection: "column" }}>
             <div
               style={{
                 fontFamily: MONO,
-                fontSize: 16,
+                fontSize: 22,
                 color: TEXT_DIM,
-                letterSpacing: "0.18em",
-                marginBottom: 20,
+                letterSpacing: "0.22em",
+                marginBottom: 32,
                 textTransform: "uppercase",
               }}
             >
               Palette
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 26,
+                justifyContent: "space-between",
+                flex: 1,
+              }}
+            >
               {PALETTE.map((p) => (
-                <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 18 }}>
+                <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 28 }}>
                   <div
                     style={{
-                      width: 56,
-                      height: 56,
-                      borderRadius: 10,
+                      width: 92,
+                      height: 92,
+                      borderRadius: 14,
                       background: p.swatch,
                       border: `1px solid ${TEXT_DIM}33`,
                     }}
                   />
                   <div>
-                    <div style={{ fontFamily: MONO, fontSize: 22, color: TEXT, fontWeight: 600 }}>
+                    <div style={{ fontFamily: MONO, fontSize: 32, color: TEXT, fontWeight: 600 }}>
                       {p.name}
                     </div>
-                    <div style={{ fontFamily: MONO, fontSize: 15, color: TEXT_DIM }}>
+                    <div style={{ fontFamily: MONO, fontSize: 22, color: TEXT_DIM, marginTop: 4 }}>
                       {p.value}
                     </div>
                   </div>
@@ -488,14 +535,14 @@ const Scene4DesignSystem: React.FC = () => {
           </div>
 
           {/* Scene skeleton */}
-          <div style={{ opacity: rightOp }}>
+          <div style={{ opacity: rightOp, display: "flex", flexDirection: "column" }}>
             <div
               style={{
                 fontFamily: MONO,
-                fontSize: 16,
+                fontSize: 22,
                 color: TEXT_DIM,
-                letterSpacing: "0.18em",
-                marginBottom: 20,
+                letterSpacing: "0.22em",
+                marginBottom: 32,
                 textTransform: "uppercase",
               }}
             >
@@ -504,38 +551,51 @@ const Scene4DesignSystem: React.FC = () => {
             <div
               style={{
                 fontFamily: MONO,
-                fontSize: 15,
+                fontSize: 22,
                 color: TEXT_DIM,
                 background: "rgba(0,0,0,0.35)",
                 border: `1px solid ${ACCENT}44`,
-                padding: "16px 18px",
-                borderRadius: 10,
-                marginBottom: 18,
+                padding: "24px 26px",
+                borderRadius: 14,
+                marginBottom: 28,
               }}
             >
               <div style={{ color: ACCENT_2 }}>calculateMetadata</div>
-              <div style={{ color: TEXT }}>
+              <div style={{ color: TEXT, marginTop: 6 }}>
                 {"  "}&rarr; reads VO · sizes scenes · snaps beats
               </div>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 16,
+                justifyContent: "space-between",
+                flex: 1,
+              }}
+            >
               {SKELETON_STEPS.map((step) => (
                 <div
                   key={step.n}
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: 14,
-                    padding: "10px 16px",
+                    gap: 22,
+                    padding: "20px 26px",
                     border: `1px solid ${TEXT_DIM}33`,
-                    borderRadius: 10,
+                    borderRadius: 14,
                   }}
                 >
-                  <div style={{ fontFamily: MONO, fontSize: 14, color: ACCENT_2 }}>
+                  <div style={{ fontFamily: MONO, fontSize: 20, color: ACCENT_2 }}>
                     {step.n}
                   </div>
-                  <div style={{ fontFamily: MONO, fontSize: 20, color: TEXT }}>
-                    {step.label}
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <div style={{ fontFamily: FONT, fontSize: 26, color: TEXT, fontWeight: 600 }}>
+                      {step.label}
+                    </div>
+                    <div style={{ fontFamily: MONO, fontSize: 16, color: TEXT_DIM, marginTop: 2 }}>
+                      {step.code}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -576,21 +636,35 @@ const Scene5Voice: React.FC = () => {
   return (
     <AbsoluteFill style={{ fontFamily: FONT }}>
       <SceneBG />
-      <AbsoluteFill style={{ padding: "60px 100px" }}>
-        <div style={{ opacity: headerOp, fontSize: 46, fontWeight: 700, color: TEXT, marginBottom: 36 }}>
+      <AbsoluteFill
+        style={{
+          padding: `${SAFE_INSET_Y}px ${SAFE_INSET_X}px`,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div style={{ opacity: headerOp, fontSize: 62, fontWeight: 700, color: TEXT, marginBottom: 48 }}>
           The <span style={{ color: ACCENT_2 }}>voice</span>.
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60 }}>
-          {/* Preset JSON */}
-          <div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "minmax(0, 480px) 1fr",
+            gap: 80,
+            flex: 1,
+            alignItems: "stretch",
+          }}
+        >
+          {/* Preset JSON — compact, doesn't stretch to fill height */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
             <div
               style={{
                 fontFamily: MONO,
-                fontSize: 16,
+                fontSize: 20,
                 color: TEXT_DIM,
-                letterSpacing: "0.18em",
-                marginBottom: 18,
+                letterSpacing: "0.22em",
+                marginBottom: 22,
                 textTransform: "uppercase",
               }}
             >
@@ -599,12 +673,12 @@ const Scene5Voice: React.FC = () => {
             <div
               style={{
                 fontFamily: MONO,
-                fontSize: 17,
+                fontSize: 22,
                 background: "rgba(0,0,0,0.45)",
                 border: `1px solid ${ACCENT_3}44`,
-                borderRadius: 12,
-                padding: "20px 22px",
-                lineHeight: 1.7,
+                borderRadius: 14,
+                padding: "28px 30px",
+                lineHeight: 1.8,
               }}
             >
               <div style={{ color: TEXT_DIM }}>{"{"}</div>
@@ -612,7 +686,7 @@ const Scene5Voice: React.FC = () => {
                 const delay = 25 + i * 10;
                 const op = easeIn(frame, delay, delay + 12);
                 return (
-                  <div key={line.k} style={{ opacity: op, marginLeft: 24 }}>
+                  <div key={line.k} style={{ opacity: op, marginLeft: 28 }}>
                     <span style={{ color: ACCENT_3 }}>{line.k}</span>
                     <span style={{ color: TEXT_DIM }}>{": "}</span>
                     <span style={{ color: ACCENT_2 }}>{line.v}</span>
@@ -624,21 +698,29 @@ const Scene5Voice: React.FC = () => {
             </div>
           </div>
 
-          {/* Waveforms cascading in */}
-          <div>
+          {/* Waveforms cascading in — enlarged + spread vertically */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
             <div
               style={{
                 fontFamily: MONO,
-                fontSize: 16,
+                fontSize: 20,
                 color: TEXT_DIM,
-                letterSpacing: "0.18em",
-                marginBottom: 18,
+                letterSpacing: "0.22em",
+                marginBottom: 22,
                 textTransform: "uppercase",
               }}
             >
               → 8 MP3s
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+                flex: 1,
+                justifyContent: "space-between",
+              }}
+            >
               {[1, 2, 3, 4, 5, 6, 7, 8].map((n, i) => {
                 const delay = 40 + i * 8;
                 const s = spring({
@@ -654,7 +736,7 @@ const Scene5Voice: React.FC = () => {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: 12,
+                      gap: 20,
                       opacity: op,
                       transform: `translateX(${x}px)`,
                     }}
@@ -662,9 +744,9 @@ const Scene5Voice: React.FC = () => {
                     <div
                       style={{
                         fontFamily: MONO,
-                        fontSize: 14,
+                        fontSize: 20,
                         color: TEXT_DIM,
-                        width: 52,
+                        width: 86,
                       }}
                     >
                       scene-{n}
@@ -673,24 +755,23 @@ const Scene5Voice: React.FC = () => {
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: 2,
+                        gap: 3,
                         flex: 1,
-                        height: 30,
+                        height: 62,
                       }}
                     >
                       {Array.from({ length: WAVEFORM_BARS }).map((_, barIdx) => {
-                        // Deterministic pseudo-waveform shape per scene.
                         const seed = (n * 13 + barIdx * 7) % 100;
-                        const h = 6 + (seed / 100) * 22;
+                        const h = 14 + (seed / 100) * 46;
                         return (
                           <div
                             key={barIdx}
                             style={{
-                              width: 3,
+                              flex: 1,
                               height: h,
                               background: ACCENT_2,
-                              borderRadius: 1,
-                              opacity: 0.75,
+                              borderRadius: 2,
+                              opacity: 0.8,
                             }}
                           />
                         );
@@ -704,7 +785,7 @@ const Scene5Voice: React.FC = () => {
         </div>
 
         <FadeUp delay={140}>
-          <div style={{ fontSize: 26, color: TEXT_DIM, textAlign: "center", marginTop: 30 }}>
+          <div style={{ fontSize: 36, color: TEXT_DIM, textAlign: "center", marginTop: 40 }}>
             Script in — MP3s out.
           </div>
         </FadeUp>
@@ -731,15 +812,25 @@ const LIBRARY_ROWS: ReadonlyArray<{
   { cat: "ambience", file: "pixabay-deep-wind-ambient", dur: "12.4s" },
 ];
 
+const LIBRARY_TABS = ["transitions", "stingers", "risers", "impacts", "ambience", "music"] as const;
+
 const Scene6Library: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
   const headerOp = easeIn(frame, 5, 25);
 
-  // Star toggle animation on row 0 — ⭐ pulses on around frame 55.
+  // Animated tab cycling — user clicks through each category in turn, lands
+  // on "music" (the bed we picked). Cycles 0→5 over ~150 frames (~5s).
+  const TAB_CYCLE_START = 20;
+  const TAB_HOLD_FRAMES = 25;
+  const rawTab = Math.max(0, Math.floor((frame - TAB_CYCLE_START) / TAB_HOLD_FRAMES));
+  const activeTab = Math.min(LIBRARY_TABS.length - 1, rawTab);
+
+  // Star toggle animation on row 0 — ⭐ pulses when we land on "music" tab.
+  const starPulseStart = TAB_CYCLE_START + (LIBRARY_TABS.length - 1) * TAB_HOLD_FRAMES + 5;
   const starPulse = spring({
-    frame: frame - 55,
+    frame: frame - starPulseStart,
     fps,
     config: { damping: 8, stiffness: 180 },
   });
@@ -748,11 +839,17 @@ const Scene6Library: React.FC = () => {
   return (
     <AbsoluteFill style={{ fontFamily: FONT }}>
       <SceneBG />
-      <AbsoluteFill style={{ padding: "60px 100px" }}>
-        <div style={{ opacity: headerOp, fontSize: 46, fontWeight: 700, color: TEXT, marginBottom: 8 }}>
+      <AbsoluteFill
+        style={{
+          padding: `${SAFE_INSET_Y}px ${SAFE_INSET_X}px`,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div style={{ opacity: headerOp, fontSize: 62, fontWeight: 700, color: TEXT, marginBottom: 10 }}>
           The <span style={{ color: ACCENT_2 }}>library</span>.
         </div>
-        <div style={{ opacity: headerOp, fontFamily: MONO, fontSize: 16, color: TEXT_DIM, marginBottom: 28 }}>
+        <div style={{ opacity: headerOp, fontFamily: MONO, fontSize: 22, color: TEXT_DIM, marginBottom: 40 }}>
           378 items · 6 tabs · MANIFEST.json
         </div>
 
@@ -760,77 +857,95 @@ const Scene6Library: React.FC = () => {
           style={{
             background: "rgba(0,0,0,0.45)",
             border: `1px solid ${ACCENT}44`,
-            borderRadius: 14,
+            borderRadius: 16,
             overflow: "hidden",
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          {/* Tab bar */}
+          {/* Tab bar — active tab animates through the cycle */}
           <div
             style={{
               display: "flex",
-              gap: 4,
-              padding: "12px 16px",
+              gap: 8,
+              padding: "18px 22px",
               borderBottom: `1px solid ${TEXT_DIM}22`,
               fontFamily: MONO,
-              fontSize: 14,
+              fontSize: 20,
             }}
           >
-            {["transitions", "stingers", "risers", "impacts", "ambience", "music"].map((t, i) => (
-              <div
-                key={t}
-                style={{
-                  padding: "6px 12px",
-                  borderRadius: 6,
-                  color: i === 3 ? TEXT : TEXT_DIM,
-                  background: i === 3 ? `${ACCENT_2}22` : "transparent",
-                  border: i === 3 ? `1px solid ${ACCENT_2}88` : "1px solid transparent",
-                }}
-              >
-                {t}
-              </div>
-            ))}
+            {LIBRARY_TABS.map((t, i) => {
+              const isActive = i === activeTab;
+              return (
+                <div
+                  key={t}
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: 8,
+                    color: isActive ? TEXT : TEXT_DIM,
+                    background: isActive ? `${ACCENT_2}22` : "transparent",
+                    border: isActive ? `1px solid ${ACCENT_2}88` : "1px solid transparent",
+                    transition: "none",
+                  }}
+                >
+                  {t}
+                </div>
+              );
+            })}
           </div>
 
-          {/* Rows */}
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          {/* Rows — spread to fill remaining vertical space */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              justifyContent: "space-between",
+            }}
+          >
             {LIBRARY_ROWS.map((row, i) => {
               const delay = 30 + i * 6;
               const op = easeIn(frame, delay, delay + 12);
               const isFirst = i === 0;
+              // Highlight the row whose category matches the active tab.
+              const rowActive = row.cat === LIBRARY_TABS[activeTab];
               return (
                 <div
                   key={row.file}
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: 16,
-                    padding: "14px 18px",
-                    borderBottom: `1px solid ${TEXT_DIM}18`,
+                    gap: 24,
+                    padding: "22px 28px",
+                    borderBottom:
+                      i < LIBRARY_ROWS.length - 1 ? `1px solid ${TEXT_DIM}18` : "none",
                     opacity: op,
                     fontFamily: MONO,
-                    fontSize: 16,
+                    fontSize: 22,
+                    background: rowActive ? `${ACCENT_2}10` : "transparent",
                   }}
                 >
                   <div
                     style={{
-                      fontSize: 24,
+                      fontSize: 34,
                       color: row.starred ? ACCENT_2 : TEXT_DIM,
                       transform: isFirst && row.starred ? `scale(${starScale})` : "scale(1)",
-                      width: 32,
+                      width: 46,
                     }}
                   >
                     {row.starred ? "★" : "☆"}
                   </div>
-                  <div style={{ color: TEXT_DIM, width: 100 }}>{row.cat}</div>
+                  <div style={{ color: TEXT_DIM, width: 160 }}>{row.cat}</div>
                   <div style={{ color: TEXT, flex: 1 }}>{row.file}</div>
-                  <div style={{ color: TEXT_DIM, width: 60, textAlign: "right" }}>{row.dur}</div>
+                  <div style={{ color: TEXT_DIM, width: 90, textAlign: "right" }}>{row.dur}</div>
                   <div
                     style={{
-                      padding: "4px 10px",
+                      padding: "8px 16px",
                       border: `1px solid ${TEXT_DIM}55`,
-                      borderRadius: 6,
+                      borderRadius: 8,
                       color: TEXT_DIM,
-                      fontSize: 14,
+                      fontSize: 18,
                     }}
                   >
                     📋 copy
@@ -842,7 +957,7 @@ const Scene6Library: React.FC = () => {
         </div>
 
         <FadeUp delay={100}>
-          <div style={{ fontSize: 26, color: TEXT_DIM, textAlign: "center", marginTop: 30 }}>
+          <div style={{ fontSize: 36, color: TEXT_DIM, textAlign: "center", marginTop: 36 }}>
             Shortlist · paste the path · done.
           </div>
         </FadeUp>
@@ -877,56 +992,61 @@ const Scene7Beats: React.FC = () => {
   return (
     <AbsoluteFill style={{ fontFamily: FONT }}>
       <SceneBG />
-      <AbsoluteFill style={{ padding: "60px 100px" }}>
-        <div style={{ opacity: headerOp, fontSize: 46, fontWeight: 700, color: TEXT, marginBottom: 8 }}>
+      <AbsoluteFill
+        style={{
+          padding: `${SAFE_INSET_Y}px ${SAFE_INSET_X}px`,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div style={{ opacity: headerOp, fontSize: 62, fontWeight: 700, color: TEXT, marginBottom: 10 }}>
           <span style={{ color: ACCENT_2 }}>Beat tracking</span>.
         </div>
         <div
           style={{
             opacity: headerOp,
             fontFamily: MONO,
-            fontSize: 16,
+            fontSize: 22,
             color: TEXT_DIM,
-            marginBottom: 50,
+            marginBottom: 44,
           }}
         >
           librosa · onset_detect(backtrack=true)
         </div>
 
-        {/* Waveform container */}
+        {/* Waveform container — full bleed, taller */}
         <div
           style={{
             position: "relative",
-            height: 180,
+            height: 280,
             background: "rgba(0,0,0,0.35)",
             border: `1px solid ${ACCENT}44`,
-            borderRadius: 12,
-            padding: "20px 24px",
+            borderRadius: 14,
+            padding: "26px 30px",
             overflow: "hidden",
+            marginBottom: 40,
           }}
         >
-          {/* Waveform bars (deterministic shape, reveals L→R) */}
-          <div style={{ display: "flex", alignItems: "center", gap: 2, height: "100%" }}>
-            {Array.from({ length: 120 }).map((_, i) => {
+          <div style={{ display: "flex", alignItems: "center", gap: 3, height: "100%" }}>
+            {Array.from({ length: 160 }).map((_, i) => {
               const seed = Math.sin(i * 0.8) * Math.cos(i * 0.15);
-              const h = 20 + Math.abs(seed) * 90;
-              const visible = i / 120 < wfProgress;
+              const h = 28 + Math.abs(seed) * 170;
+              const visible = i / 160 < wfProgress;
               return (
                 <div
                   key={i}
                   style={{
-                    width: 4,
+                    flex: 1,
                     height: h,
                     background: ACCENT_3,
-                    borderRadius: 1,
-                    opacity: visible ? 0.55 : 0,
+                    borderRadius: 2,
+                    opacity: visible ? 0.6 : 0,
                   }}
                 />
               );
             })}
           </div>
 
-          {/* Onset markers drop down from the top at their real positions */}
           {ONSET_TIMES_S.map((t, i) => {
             const xPct = (t / MUSIC_DURATION_S) * 100;
             const dropDelay = 55 + i * 6;
@@ -945,21 +1065,21 @@ const Scene7Beats: React.FC = () => {
                   left: `${xPct}%`,
                   top: 0,
                   bottom: 0,
-                  width: 2,
+                  width: 3,
                   background: ACCENT_2,
                   opacity: op,
                   transform: `translateY(${y}px)`,
-                  boxShadow: `0 0 10px ${ACCENT_2}88`,
+                  boxShadow: `0 0 14px ${ACCENT_2}aa`,
                 }}
               >
                 <div
                   style={{
                     position: "absolute",
-                    top: -26,
+                    top: -30,
                     left: "50%",
                     transform: "translateX(-50%)",
                     fontFamily: MONO,
-                    fontSize: 12,
+                    fontSize: 16,
                     color: ACCENT_2,
                     whiteSpace: "nowrap",
                   }}
@@ -969,10 +1089,8 @@ const Scene7Beats: React.FC = () => {
               </div>
             );
           })}
-        </div>
 
-        {/* Scene-cut line snaps onto the 3rd onset (t=27.5s, strongest) */}
-        <div style={{ position: "relative", marginTop: 30, height: 80 }}>
+          {/* Scene-cut line snaps onto the 3rd onset (t=27.5s, strongest) */}
           {(() => {
             const targetX = (27.53 / MUSIC_DURATION_S) * 100;
             const snapStart = 95;
@@ -981,46 +1099,118 @@ const Scene7Beats: React.FC = () => {
               fps,
               config: { damping: 20, stiffness: 180 },
             });
-            // Scene-cut line starts off-center (at 45%) and snaps to targetX.
             const currentX = interpolate(snap, [0, 1], [45, targetX]);
             const op = easeIn(frame, snapStart - 10, snapStart + 5);
             return (
-              <>
+              <div
+                style={{
+                  position: "absolute",
+                  left: `${currentX}%`,
+                  top: 0,
+                  bottom: 0,
+                  width: 4,
+                  background: ACCENT,
+                  opacity: op,
+                  boxShadow: `0 0 22px ${ACCENT}`,
+                }}
+              />
+            );
+          })()}
+        </div>
+
+        {/* ZOOM DETAIL — close-up of the snap point, showing 10 magnified bars
+            with the onset marker centred and the scene-cut line snapping onto
+            it. Danny's Loom ask: "zoom in to show waveform level with cuts." */}
+        <div
+          style={{
+            position: "relative",
+            flex: 1,
+            background: "rgba(0,0,0,0.28)",
+            border: `1px solid ${ACCENT}33`,
+            borderRadius: 14,
+            padding: "22px 30px",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 14,
+            }}
+          >
+            <div style={{ fontFamily: MONO, fontSize: 18, color: TEXT_DIM, letterSpacing: "0.16em", textTransform: "uppercase" }}>
+              zoom · t = 27.5s
+            </div>
+            <div style={{ fontFamily: MONO, fontSize: 16, color: ACCENT, opacity: easeIn(frame, 110, 135) }}>
+              scene-cut → snap ✓
+            </div>
+          </div>
+
+          {/* Magnified bars around the snap point */}
+          <div
+            style={{
+              position: "relative",
+              height: "calc(100% - 44px)",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            {Array.from({ length: 11 }).map((_, i) => {
+              const center = 5;
+              const dist = Math.abs(i - center);
+              const h = i === center ? 95 : 45 + (5 - dist) * 10;
+              const barVisible = easeIn(frame, 70 + i * 3, 85 + i * 3);
+              return (
+                <div
+                  key={i}
+                  style={{
+                    flex: 1,
+                    height: `${h}%`,
+                    background: i === center ? ACCENT_2 : ACCENT_3,
+                    borderRadius: 3,
+                    opacity: (i === center ? 0.95 : 0.55) * barVisible,
+                    boxShadow: i === center ? `0 0 16px ${ACCENT_2}aa` : "none",
+                  }}
+                />
+              );
+            })}
+
+            {/* Scene-cut line snaps onto the centre bar from the left */}
+            {(() => {
+              const snapStart = 110;
+              const snap = spring({
+                frame: frame - snapStart,
+                fps,
+                config: { damping: 22, stiffness: 200 },
+              });
+              // Starts off-centre at 30%, snaps to 50% (centre bar).
+              const currentX = interpolate(snap, [0, 1], [30, 50]);
+              const op = easeIn(frame, snapStart - 5, snapStart + 8);
+              return (
                 <div
                   style={{
                     position: "absolute",
                     left: `${currentX}%`,
                     top: 0,
-                    height: 60,
-                    width: 3,
+                    bottom: 0,
+                    width: 5,
                     background: ACCENT,
                     opacity: op,
-                    boxShadow: `0 0 16px ${ACCENT}`,
+                    boxShadow: `0 0 28px ${ACCENT}`,
+                    transform: "translateX(-50%)",
                   }}
                 />
-                <div
-                  style={{
-                    position: "absolute",
-                    left: `${currentX}%`,
-                    top: 64,
-                    transform: "translateX(-50%)",
-                    fontFamily: MONO,
-                    fontSize: 13,
-                    color: ACCENT,
-                    whiteSpace: "nowrap",
-                    opacity: op,
-                  }}
-                >
-                  scene-cut → snap
-                </div>
-              </>
-            );
-          })()}
+              );
+            })()}
+          </div>
         </div>
 
-        <FadeUp delay={130}>
-          <div style={{ fontSize: 26, color: TEXT_DIM, textAlign: "center", marginTop: 10 }}>
-            Cuts land on phrases — VO stays untouched.
+        <FadeUp delay={140}>
+          <div style={{ fontSize: 36, color: TEXT_DIM, textAlign: "center", marginTop: 30 }}>
+            Cuts land on phrases — the voice stays untouched.
           </div>
         </FadeUp>
       </AbsoluteFill>
@@ -1029,11 +1219,13 @@ const Scene7Beats: React.FC = () => {
 };
 
 // ---------------------------------------------------------------------------
-// Scene 8 — The envelope (whoosh · boom · fade-to-black). The video ends
+// Scene 8 — The production (whoosh · boom · fade-to-black). The video ends
 // with the exact envelope it's describing — so the viewer hears it land.
+// Kicker renamed from "envelope" (Session 11 Loom). Wave 2 adds a stack-arrow
+// grid below the three channel rows.
 // ---------------------------------------------------------------------------
 
-const Scene8Envelope: React.FC = () => {
+const Scene8Production: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -1093,17 +1285,37 @@ const Scene8Envelope: React.FC = () => {
     </div>
   );
 
+  // Production stack pills — fade in left to right, each on a beat.
+  const STACK_PILLS = [
+    "treatment",
+    "script",
+    "voice",
+    "library",
+    "scenes",
+    "transitions",
+    "whoosh",
+    "boom",
+    "fade",
+  ];
+  const stackRevealStart = 95;
+  const stackPerPill = 5;
+
   return (
     <AbsoluteFill style={{ fontFamily: FONT }}>
       <SceneBG />
-      <AbsoluteFill style={{ padding: "60px 100px" }}>
-        <div style={{ opacity: headerOp, fontSize: 46, fontWeight: 700, color: TEXT, marginBottom: 36 }}>
-          The <span style={{ color: ACCENT_2 }}>envelope</span>.
+      <AbsoluteFill
+        style={{
+          padding: `${SAFE_INSET_Y}px ${SAFE_INSET_X}px`,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div style={{ opacity: headerOp, fontSize: 62, fontWeight: 700, color: TEXT, marginBottom: 44 }}>
+          The <span style={{ color: ACCENT_2 }}>production</span>.
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
           <Row label="Whoosh" accent={ACCENT_3}>
-            {/* Rising sweep — thin line that arcs up-right */}
             <div
               style={{
                 position: "absolute",
@@ -1119,7 +1331,6 @@ const Scene8Envelope: React.FC = () => {
           </Row>
 
           <Row label="Boom" accent={ACCENT_2}>
-            {/* Radial burst at center */}
             <div
               style={{
                 position: "absolute",
@@ -1160,9 +1371,179 @@ const Scene8Envelope: React.FC = () => {
           </Row>
         </div>
 
-        <FadeUp delay={140}>
-          <div style={{ fontSize: 26, color: TEXT_DIM, textAlign: "center", marginTop: 40 }}>
+        {/* Production stack — pills with arrows between, fade in after the 3
+            channel rows land. Shows the full sonic+creative chain. */}
+        <div
+          style={{
+            marginTop: 48,
+            display: "flex",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 10,
+            justifyContent: "center",
+          }}
+        >
+          {STACK_PILLS.map((pill, i) => {
+            const delay = stackRevealStart + i * stackPerPill;
+            const s = spring({
+              frame: frame - delay,
+              fps,
+              config: { damping: 22, stiffness: 170 },
+            });
+            const op = interpolate(s, [0, 1], [0, 1]);
+            const y = interpolate(s, [0, 1], [12, 0]);
+            const arrowOp = easeIn(frame, delay + 3, delay + 13);
+            return (
+              <React.Fragment key={pill}>
+                <div
+                  style={{
+                    opacity: op,
+                    transform: `translateY(${y}px)`,
+                    fontFamily: MONO,
+                    fontSize: 22,
+                    padding: "12px 22px",
+                    border: `1px solid ${ACCENT_2}66`,
+                    borderRadius: 999,
+                    color: TEXT,
+                    background: `${ACCENT_2}14`,
+                  }}
+                >
+                  {pill}
+                </div>
+                {i < STACK_PILLS.length - 1 && (
+                  <div style={{ opacity: arrowOp, color: TEXT_DIM, fontSize: 22 }}>→</div>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+
+        <FadeUp delay={150}>
+          <div style={{ fontSize: 40, color: TEXT_DIM, textAlign: "center", marginTop: "auto" }}>
             Ships in one pass.
+          </div>
+        </FadeUp>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Scene 9 — Recap: end-to-end process flow. Silent visual scene (no VO) —
+// Danny's Loom ask: "Our 40-second explainer ships in one pass could go to
+// another screen. Then we could have a process — a scene of every single
+// step." Lands between S8 production and the fade-to-black.
+// ---------------------------------------------------------------------------
+
+const RECAP_STEPS: ReadonlyArray<{ n: string; label: string; hint: string }> = [
+  { n: "01", label: "treatment", hint: "3-layer brief" },
+  { n: "02", label: "voice", hint: "ElevenLabs MP3s" },
+  { n: "03", label: "scenes", hint: "React components" },
+  { n: "04", label: "library", hint: "SFX + music bed" },
+  { n: "05", label: "production", hint: "whoosh · boom · fade" },
+  { n: "06", label: "render", hint: "one command" },
+];
+
+const Scene9Recap: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const headerOp = easeIn(frame, 5, 30);
+
+  return (
+    <AbsoluteFill style={{ fontFamily: FONT }}>
+      <SceneBG />
+      <AbsoluteFill
+        style={{
+          padding: `${SAFE_INSET_Y}px ${SAFE_INSET_X}px`,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
+        <div style={{ opacity: headerOp }}>
+          <div
+            style={{
+              fontFamily: MONO,
+              fontSize: 22,
+              color: TEXT_DIM,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              marginBottom: 14,
+            }}
+          >
+            6 steps · one pass
+          </div>
+          <div style={{ fontSize: 72, fontWeight: 700, color: TEXT, lineHeight: 1.05 }}>
+            From <span style={{ color: ACCENT_2 }}>empty project</span> — to{" "}
+            <span style={{ color: ACCENT_3 }}>finished explainer</span>.
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(6, 1fr)",
+            gap: 18,
+            flex: 1,
+            alignItems: "center",
+            margin: "40px 0",
+          }}
+        >
+          {RECAP_STEPS.map((step, i) => {
+            const delay = 20 + i * 9;
+            const s = spring({
+              frame: frame - delay,
+              fps,
+              config: { damping: 22, stiffness: 160 },
+            });
+            const op = interpolate(s, [0, 1], [0, 1]);
+            const y = interpolate(s, [0, 1], [22, 0]);
+            return (
+              <div
+                key={step.label}
+                style={{
+                  opacity: op,
+                  transform: `translateY(${y}px)`,
+                  padding: "30px 20px",
+                  border: `1px solid ${ACCENT}44`,
+                  borderRadius: 16,
+                  background: "rgba(0,0,0,0.28)",
+                  textAlign: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 14,
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: MONO,
+                    fontSize: 20,
+                    color: ACCENT_2,
+                    letterSpacing: "0.18em",
+                  }}
+                >
+                  {step.n}
+                </div>
+                <div
+                  style={{
+                    fontFamily: MONO,
+                    fontSize: 28,
+                    color: TEXT,
+                    fontWeight: 600,
+                  }}
+                >
+                  {step.label}
+                </div>
+                <div style={{ fontSize: 17, color: TEXT_DIM }}>{step.hint}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        <FadeUp delay={80}>
+          <div style={{ fontSize: 40, color: TEXT_DIM, textAlign: "center" }}>
+            One flow — every explainer comes out the same way.
           </div>
         </FadeUp>
       </AbsoluteFill>
@@ -1182,7 +1563,8 @@ const SCENE_COMPONENTS: React.FC[] = [
   Scene5Voice,
   Scene6Library,
   Scene7Beats,
-  Scene8Envelope,
+  Scene8Production,
+  Scene9Recap,
 ];
 
 export const StackExplainer: React.FC<ExplainerProps> = ({ voiceover, voLengths }) => {
@@ -1265,6 +1647,15 @@ export const StackExplainer: React.FC<ExplainerProps> = ({ voiceover, voLengths 
                   <SceneExit durationInFrames={item.duration}>
                     <SceneComp />
                   </SceneExit>
+                </TransitionSeries.Sequence>,
+              );
+            } else {
+              nodes.push(
+                <TransitionSeries.Sequence
+                  key={`card-${i}-${item.card.label}`}
+                  durationInFrames={item.duration}
+                >
+                  <ChapterCard card={item.card} durationInFrames={item.duration} />
                 </TransitionSeries.Sequence>,
               );
             }

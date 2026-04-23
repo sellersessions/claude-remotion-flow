@@ -19,11 +19,11 @@ export const EXIT_FRAMES = 14;
 // Chapter card default duration (12 fade in · 21 hold · 12 fade out).
 export const CARD_DURATION_FRAMES = 45;
 
-// Music bed levels — default voices were −2 dB from first-pass 0.55/0.22
-// after Danny asked for music to sit further back. Both numbers tuned so
-// the bed reads as incidental rather than as foreground.
-export const MUSIC_HIGH = 0.44;
-export const MUSIC_DUCK = 0.18;
+// Music bed levels — Session 11 Loom feedback round 2: drop another 5 dB.
+// 10^(-5/20) ≈ 0.562 applied: 0.28→0.16, 0.10→0.06. Music reads as
+// atmosphere, never competes with VO. Danny's rule: err on caution.
+export const MUSIC_HIGH = 0.16;
+export const MUSIC_DUCK = 0.06;
 export const DUCK_RAMP = 15;            // frames to ramp into/out of a VO window
 export const MUSIC_FADE_OUT_FRAMES = 75; // 2.5s tail — lets bed exit before boom
 
