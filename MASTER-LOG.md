@@ -8,22 +8,60 @@ Remotion composition rendering SSL 2026 promotional reel. 1920×1080, 30fps. 8 s
 
 ## Next Up
 
-1. [ ] **Write 8 scene scripts** for FormatExplainer VO (scene-opener, scene-0-agenda, scene-1-title, scene-2-problem, scene-3-container, scene-4-interview, scene-5-delegate, scene-6-outro). Apply em-dash cadence rules from the house preset. Danny drafts copy.
-2. [ ] **Generate 8 VO MP3s** via `generate-vo.ts` using `scripts/voice/presets/ssl-2026-house-voice.json`. Drop into `public/voiceover/FormatExplainer/`.
-3. [ ] **Test FormatExplainer render** — calculateMetadata auto-sizes scenes to VO lengths; music ducks 0.55→0.2 during each VO sequence. Infrastructure already in place (Session 7).
-4. [ ] **Round 3 voice polish** — per-word pitch bump on "guys" in "Hey guys" tune-in. Requires DSP post-processing (pedalboard). See task #13.
-5. [ ] **Canvas-only-during-transition bug** — TreatmentExplainer renders canvas only during transitions, empty at rest. Suspected tie to Trail motion-blur bug. Not voice-related.
-6. [ ] Danny scrubs TreatmentExplainer in Studio → feedback on 6 scenes
-7. [ ] **Curate library via auditioner** — run `npm run audition`, ⭐-shortlist winners across 6 tabs (transitions/stingers/risers/impacts/ambience/music). Copy winners back to TSX via 📋 button or selection tray. 378 items total.
-8. [ ] Wire remaining SFX from shortlisted set: glitch-tail stingers at transitions, whooshes at cuts.
-9. [ ] Beat-sync scene cuts to cyberpunk music bed
-10. [ ] Scene 6 CTA button restyle (Danny flagged, deferred)
-11. [x] **Park F5-TTS pipeline** — keep venv + tuning-ui.py on disk as fallback, but stop iterating. Pivot locked to ElevenLabs.
-12. [x] **Auditioner v2** — library model, music tab, ⭐ + 📋 clipboard workflow, HTTP Range streaming. Session 8.
+1. [ ] **Build `src/StackExplainer.tsx`** (Session 11) — 8 scene bodies from the treatment doc, skeleton lifted from TreatmentExplainer. Register in `Root.tsx`. Apply beat snaps from `scripts/music/output/stack-explainer-onsets.json` (cheap snaps only, `Math.max` safety floor). Wire `penguinmusic-wings-196958.mp3` as music bed.
+2. [ ] **Extract `src/explainer-shared/`** (Session 11, same session as #1) — constants (TRANS_FRAMES, VO_PRE_PAD, MUSIC_HIGH/DUCK, PRE/POST_ROLL, SFX bookends), `buildMusicVolume`, `FadeToBlack`, `calculateMetadataFromVO`. Refactor TreatmentExplainer to import — identical render before/after.
+3. [ ] **Write `HOW-TO-SHIP-AN-EXPLAINER.md`** (Session 12) — end-to-end cookbook. Link the 3 explainer MP4s from the repo README.
+4. [ ] **Auto-snap helper** (Session 12 stretch) — script reading an onset JSON + scene-starts array, emits a safe `BEAT_SNAP_TARGETS` literal. Closes the 5/10 beat-detection gap.
+5. [ ] **Shortlist → code helper** (Session 12 stretch) — CLI reading `shortlisted: true` items from `MANIFEST.json`, emits a TS module of typed SFX path constants. Closes the 3/10 shortlist gap.
+6. [ ] **Add `npm run render:stack`** convenience script (Session 11) — `remotion render StackExplainer out/StackExplainer-$(date +%Y%m%d).mp4`.
+7. [ ] **Write 8 scene scripts** for FormatExplainer VO — still open. Lower priority vs StackExplainer push.
+8. [ ] **Generate 8 VO MP3s** for FormatExplainer.
+9. [ ] **Test FormatExplainer render** — calculateMetadata auto-sizing already wired (Session 7).
+10. [ ] **Round 3 voice polish** — per-word pitch bump on "guys" in "Hey guys" tune-in. Requires DSP post-processing.
+11. [ ] **Canvas-only-during-transition bug** — TreatmentExplainer renders canvas only during transitions, empty at rest.
+12. [ ] Danny scrubs TreatmentExplainer in Studio → feedback on 6 scenes.
+13. [ ] **Curate library via auditioner** — ⭐-shortlist winners across 6 tabs.
+14. [ ] Wire remaining SFX from shortlisted set.
+15. [ ] Scene 6 CTA button restyle (Danny flagged, deferred).
+16. [x] **Park F5-TTS pipeline** — fallback-only.
+17. [x] **Auditioner v2** — Session 8.
+18. [x] **TreatmentExplainer audio spine** — music bed + beat-snap + cinematic bookends + fade-to-black + pre/post-roll. Session 9.
+19. [x] **StackExplainer content lock** — treatment doc + 8-scene VO config + 8 MP3s + music bed picked + onsets captured. Session 10.
 
 ---
 
 ## Session Log
+
+### Session 10 — StackExplainer: content lock (script + VO + music bed) (23 Apr)
+
+- **Premise:** Third explainer video — *"how we turned stock Remotion into a production video engine"*. Two goals in one: ship video #3, and use it as a forcing function to extract a reusable one-shot template (video README replacement for non-technical users landing on the repo).
+- **Plan file:** `/Users/dannymcmillan/.claude/plans/vast-baking-crab.md` — three-session arc: S10 content lock, S11 scenes + skeleton extract, S12 cookbook + auto-snap/shortlist helpers.
+- **Pipeline readiness audit:** VO generation 9/10, beat detection 5/10 (manual target picking), shortlist→code 3/10 (manual copy/paste), render loop 2/10 (no npm script). Scene bodies always custom — everything else templatable.
+- **Treatment doc written:** `treatments/stack-explainer-vo.md` — 3-layer protocol, Hook-Hold-Payoff skeleton with component montage, 8 scenes × visual/motion/text/audio columns. Meta-payoff: the video ends with the exact envelope (whoosh/boom/fade) it's describing.
+- **VO config locked:** `scripts/voice/stack-explainer.config.json` — 8 scenes, 804 chars ≈ 804 credits (0.66% of monthly 121k budget). References `ssl-2026-house-voice.json` preset — no per-scene overrides this pass.
+- **VO generated:** 8 MP3s in `public/assets/voice/generated/StackExplainer/`. Total VO runtime **57.92s** (target was ~57s). Per-scene: `1-title 2.97s, 2-stock 6.18s, 3-plugins 9.61s, 4-design-system 7.34s, 5-voice 8.41s, 6-library 7.11s, 7-beats 9.29s, 8-envelope 7.01s`. With pre/post-roll (30f + 60f) + VO padding + transitions, comp target ≈ 62s.
+- **Music bed picked autonomously — `penguinmusic-wings-196958.mp3` (83.5s):**
+  - Ran `detect-onsets.py` on all three candidates (`emotions-cinematic-ambient`, `wings`, `onaldin cherry-orchard piano`); `through-the-clouds` excluded — already on TreatmentExplainer.
+  - Wings scored best: 4 markers ≥ 1.0 strength (vs 1 for emotions, 1 for piano), full-range distribution (12.5s → 59.7s, no dead zones), max strength 1.25 vs TreatmentExplainer's 0.74 top marker — proven different peak profile.
+  - Piano (cherry-orchard) rejected: 356 raw onsets — too dense, would fight the VO under ducking.
+  - Emotions-cinematic rejected: weak peaks (top 1.14, most 0.67–0.89) + texturally too close to through-the-clouds (same Penguinmusic ambient family).
+- **Onset markers captured:** `scripts/music/output/stack-explainer-onsets.json` — 12 markers from 190 raw detections, min_gap 1.5s, strength range 0.84–1.25. Not applied to scene cuts this session (scene bodies don't exist yet). Candidate JSONs kept in `candidates/` for provenance.
+- **Out of scope this session (deliberate):** No `src/StackExplainer.tsx` build. No `src/explainer-shared/` extraction. No beat-snap application. No changes to any existing composition.
+- **Commit:** `session 10: stackexplainer — script + VO + music bed locked`.
+
+### Session 9 — TreatmentExplainer audio: music bed, beat-snap, cinematic bookends (22 Apr)
+
+- **Context:** Session 7 left two SFX picks (wet stinger + submority boom) that Danny wanted replaced by a full music bed for the audio spine, with the boom re-used as an outro impact on fade-to-black.
+- **Music bed wired:** `penguinmusic-through-the-clouds-calming-cinematic-ambient-200392.mp3` (99s source, ~42s visuals). Per-frame ducking callback inside `TreatmentExplainer.tsx`: `MUSIC_HIGH=0.44`, `MUSIC_DUCK=0.18`, `DUCK_RAMP=15f`, `MUSIC_FADE_OUT_FRAMES=75f`. Both high/duck were −2 dB from first pass (Danny: *"keep music much lower when it's incidental"*).
+- **Cinematic bookends:**
+  - `SFX_INTRO` = `pixabay-ksjsbwuil-whoosh-8` (114f/3.79s) — build-up whoosh.
+  - `SFX_OUTRO` = `pixabay-universfield-impact-cinematic-boom` (63f/2.09s) — zero-attack boom.
+  - `FadeToBlack` subcomponent (60f fade-in to opacity 1) added to hide the last visual frame behind a clean finish.
+- **Pre/post-roll envelope refactor:** The whoosh can't peak *before* the title appears if audio starts at frame 0 = visual start. Fix: wrap visuals in a `<Sequence from={visualStart} durationInFrames={visualFrames}>` and extend comp by `PRE_ROLL_FRAMES + POST_ROLL_FRAMES`. Final tune: `PRE_ROLL=30f` (1.0s, trimmed from 60f — too much black before title), `POST_ROLL=60f` (2.0s — room for boom tail), `SFX_OUTRO_LEAD_IN=20f` (boom attack fires at `visualEnd − 20`, mid-fade not after full black).
+- **Beat-snap logic:** New `calculateMetadata` pass adjusts PRIOR scene duration so `sceneStarts[i]` lands on a librosa onset. Safety floor = `voLen + VO_PRE_PAD + TRANS_FRAMES` (scene can never collapse below VO+transition). Applied only cheap snaps: `S2 start → 134f (+22f, onset 4.46s str 0.64)`, `S5 start → 852f (−7f, onset 28.41s str 0.74)`. Far onsets rejected — would bloat comp ≥2s.
+- **Autonomous rule locked:** Danny: *"allow you to autonomously make the decision, because when I give this project to non-video makers, they won't pick."* Applied here: music bed volumes, SFX picks from the auditioner library, beat-snap selection — all chosen by Claude, documented in commit message + master log so decisions are auditable.
+- **New script:** `scripts/music/detect-onsets.py` — librosa spectral-flux onset detector with greedy min-gap filter. JSON output with `time_s`/`frame`/`strength` per marker. Re-run any music swap in ~2s. Through-the-clouds output saved at `scripts/music/output/through-the-clouds-onsets.json`.
+- **Commit:** `ee864b0` — `session 9: treatment audio — music bed, beat-snap, cinematic bookends (intro whoosh / outro boom / fade-to-black)`.
 
 ### Session 8 — Auditioner v2: library model + music + clipboard workflow (22 Apr)
 
