@@ -2,6 +2,7 @@ import { Composition } from "remotion";
 import { HelloWorld, myCompSchema } from "./HelloWorld";
 import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
 import { SSDemo, ssDemoSchema } from "./SSDemo";
+import { DEFAULT_MIXER } from "./explainer-shared";
 import {
   FormatExplainer,
   formatExplainerSchema,
@@ -90,7 +91,7 @@ export const RemotionRoot: React.FC = () => {
         width={1920}
         height={1080}
         schema={treatmentExplainerSchema}
-        defaultProps={{}}
+        defaultProps={{ ...DEFAULT_MIXER }}
       />
 
       <Composition
@@ -102,7 +103,7 @@ export const RemotionRoot: React.FC = () => {
         width={1920}
         height={1080}
         schema={stackExplainerSchema}
-        defaultProps={{}}
+        defaultProps={{ ...DEFAULT_MIXER }}
       />
     </>
   );

@@ -24,11 +24,9 @@ import {
   POST_ROLL_FRAMES,
   SFX_INTRO,
   SFX_INTRO_LEN_FRAMES,
-  SFX_INTRO_VOLUME,
   SFX_OUTRO,
   SFX_OUTRO_LEAD_IN_FRAMES,
   SFX_OUTRO_LEN_FRAMES,
-  SFX_OUTRO_VOLUME,
   TEXT,
   TEXT_DIM,
   VO_PRE_PAD_FRAMES,
@@ -122,6 +120,13 @@ export const calculateMetadata = makeCalculateMetadata(CONFIG);
 export const stackExplainerSchema = z.object({
   voiceover: z.array(z.number()).optional(),
   voLengths: z.array(z.number()).optional(),
+  // Live mixer — surfaced in the Studio Props panel as sliders (min/max
+  // hints make Remotion render a range input). Values are absolute gains
+  // (0 = silent, 1 = unity). Defaults in Root.tsx's defaultProps.
+  musicHigh: z.number().min(0).max(1),
+  musicDuck: z.number().min(0).max(1),
+  sfxIntroVolume: z.number().min(0).max(1),
+  sfxOutroVolume: z.number().min(0).max(1),
 });
 
 // ---------------------------------------------------------------------------
@@ -1567,7 +1572,14 @@ const SCENE_COMPONENTS: React.FC[] = [
   Scene9Recap,
 ];
 
-export const StackExplainer: React.FC<ExplainerProps> = ({ voiceover, voLengths }) => {
+export const StackExplainer: React.FC<ExplainerProps> = ({
+  voiceover,
+  voLengths,
+  musicHigh,
+  musicDuck,
+  sfxIntroVolume,
+  sfxOutroVolume,
+}) => {
   const sceneDurations: number[] =
     voiceover && voiceover.length === SCENE_AUDIO_FILES.length
       ? voiceover
@@ -1596,7 +1608,12 @@ export const StackExplainer: React.FC<ExplainerProps> = ({ voiceover, voLengths 
     voWindows.push({ start, end: start + voLengthsFinal[i] });
   }
 
-  const musicVolume = buildMusicVolume({ visualEnd, voWindows });
+  const musicVolume = buildMusicVolume({
+    visualEnd,
+    voWindows,
+    musicHigh,
+    musicDuck,
+  });
 
   return (
     <>
@@ -1605,7 +1622,7 @@ export const StackExplainer: React.FC<ExplainerProps> = ({ voiceover, voLengths 
 
       {/* Intro whoosh — peak lands at PRE_ROLL_FRAMES, under the title. */}
       <Sequence durationInFrames={SFX_INTRO_LEN_FRAMES} name="SFX-intro">
-        <Audio src={staticFile(SFX_INTRO)} volume={SFX_INTRO_VOLUME} />
+        <Audio src={staticFile(SFX_INTRO)} volume={sfxIntroVolume} />
       </Sequence>
 
       {/* Outro boom — attack lands mid-fade, decay rides into post-roll black. */}
@@ -1614,7 +1631,7 @@ export const StackExplainer: React.FC<ExplainerProps> = ({ voiceover, voLengths 
         durationInFrames={SFX_OUTRO_LEN_FRAMES}
         name="SFX-outro"
       >
-        <Audio src={staticFile(SFX_OUTRO)} volume={SFX_OUTRO_VOLUME} />
+        <Audio src={staticFile(SFX_OUTRO)} volume={sfxOutroVolume} />
       </Sequence>
 
       {/* Voiceover — absolute frames include visualStart offset. */}

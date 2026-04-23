@@ -21,11 +21,9 @@ import {
   POST_ROLL_FRAMES,
   SFX_INTRO,
   SFX_INTRO_LEN_FRAMES,
-  SFX_INTRO_VOLUME,
   SFX_OUTRO,
   SFX_OUTRO_LEAD_IN_FRAMES,
   SFX_OUTRO_LEN_FRAMES,
-  SFX_OUTRO_VOLUME,
   TEXT,
   TEXT_DIM,
   VO_PRE_PAD_FRAMES,
@@ -113,6 +111,12 @@ export const calculateMetadata = makeCalculateMetadata(CONFIG);
 export const treatmentExplainerSchema = z.object({
   voiceover: z.array(z.number()).optional(),
   voLengths: z.array(z.number()).optional(),
+  // Live mixer — Studio Props sliders (min/max auto-renders a range input).
+  // Defaults live in Root.tsx's defaultProps.
+  musicHigh: z.number().min(0).max(1),
+  musicDuck: z.number().min(0).max(1),
+  sfxIntroVolume: z.number().min(0).max(1),
+  sfxOutroVolume: z.number().min(0).max(1),
 });
 
 type TreatmentExplainerProps = ExplainerProps;
@@ -749,6 +753,10 @@ const SCENE_COMPONENTS: React.FC[] = [
 export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({
   voiceover,
   voLengths,
+  musicHigh,
+  musicDuck,
+  sfxIntroVolume,
+  sfxOutroVolume,
 }) => {
   const sceneDurations: number[] =
     voiceover && voiceover.length === SCENE_AUDIO_FILES.length
@@ -781,7 +789,12 @@ export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({
     voWindows.push({ start, end: start + voLengthsFinal[i] });
   }
 
-  const musicVolume = buildMusicVolume({ visualEnd, voWindows });
+  const musicVolume = buildMusicVolume({
+    visualEnd,
+    voWindows,
+    musicHigh,
+    musicDuck,
+  });
 
   return (
     <>
@@ -796,7 +809,7 @@ export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({
       {/* Intro whoosh — rides the pre-roll; the sweep peaks as the title
           fades in (around frame PRE_ROLL_FRAMES), not after it. */}
       <Sequence durationInFrames={SFX_INTRO_LEN_FRAMES} name="SFX-intro">
-        <Audio src={staticFile(SFX_INTRO)} volume={SFX_INTRO_VOLUME} />
+        <Audio src={staticFile(SFX_INTRO)} volume={sfxIntroVolume} />
       </Sequence>
 
       {/* Outro boom — attack lands SFX_OUTRO_LEAD_IN_FRAMES before visualEnd
@@ -807,7 +820,7 @@ export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({
         durationInFrames={SFX_OUTRO_LEN_FRAMES}
         name="SFX-outro"
       >
-        <Audio src={staticFile(SFX_OUTRO)} volume={SFX_OUTRO_VOLUME} />
+        <Audio src={staticFile(SFX_OUTRO)} volume={sfxOutroVolume} />
       </Sequence>
 
       {/* Voiceover — absolute frames include the visualStart offset. */}

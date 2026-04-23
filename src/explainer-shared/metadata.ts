@@ -13,16 +13,35 @@ import {
   MUSIC_HIGH,
   POST_ROLL_FRAMES,
   PRE_ROLL_FRAMES,
+  SFX_INTRO_VOLUME,
+  SFX_OUTRO_VOLUME,
   TRANS_FRAMES,
   VO_POST_PAD_FRAMES,
   VO_PRE_PAD_FRAMES,
 } from "./constants";
 import { computeTimeline, type ChapterCardSpec } from "./timeline";
 
+// Mixer props surfaced to the Studio Props panel as live sliders. Defaults
+// in DEFAULT_MIXER mirror the baseline constants so the render output is
+// identical unless Danny drags a slider.
+export type MixerProps = {
+  musicHigh: number;
+  musicDuck: number;
+  sfxIntroVolume: number;
+  sfxOutroVolume: number;
+};
+
+export const DEFAULT_MIXER: MixerProps = {
+  musicHigh: MUSIC_HIGH,
+  musicDuck: MUSIC_DUCK,
+  sfxIntroVolume: SFX_INTRO_VOLUME,
+  sfxOutroVolume: SFX_OUTRO_VOLUME,
+};
+
 export type ExplainerProps = {
   voiceover?: number[];
   voLengths?: number[];
-};
+} & MixerProps;
 
 export type ExplainerConfig = {
   sceneAudioFiles: readonly string[];
@@ -55,7 +74,7 @@ export function fallbackDurationInFrames(config: ExplainerConfig): number {
 export function makeCalculateMetadata(
   config: ExplainerConfig,
 ): CalculateMetadataFunction<ExplainerProps> {
-  return async () => {
+  return async ({ props }) => {
     const results = await Promise.allSettled(
       config.sceneAudioFiles.map(async (file) => {
         try {
@@ -90,6 +109,7 @@ export function makeCalculateMetadata(
       return {
         durationInFrames: fallbackDurationInFrames(config),
         props: {
+          ...props,
           voiceover: [...config.fallbackSceneDurations],
           voLengths: [...config.fallbackSceneDurations],
         },
@@ -127,7 +147,7 @@ export function makeCalculateMetadata(
 
     return {
       durationInFrames: Math.ceil(totalFrames),
-      props: { voiceover: sceneDurations, voLengths },
+      props: { ...props, voiceover: sceneDurations, voLengths },
     };
   };
 }
@@ -139,8 +159,15 @@ export function makeCalculateMetadata(
 export function buildMusicVolume(args: {
   visualEnd: number;
   voWindows: readonly { start: number; end: number }[];
+  musicHigh?: number;
+  musicDuck?: number;
 }): (frame: number) => number {
-  const { visualEnd, voWindows } = args;
+  const {
+    visualEnd,
+    voWindows,
+    musicHigh = MUSIC_HIGH,
+    musicDuck = MUSIC_DUCK,
+  } = args;
   return (frame: number) => {
     const fadeIn = interpolate(frame, [0, PRE_ROLL_FRAMES], [0, 1], {
       extrapolateLeft: "clamp",
@@ -152,12 +179,12 @@ export function buildMusicVolume(args: {
       [1, 0],
       { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
     );
-    let vol = MUSIC_HIGH;
+    let vol = musicHigh;
     for (const w of voWindows) {
       const duckVol = interpolate(
         frame,
         [w.start, w.start + DUCK_RAMP, w.end - DUCK_RAMP, w.end],
-        [MUSIC_HIGH, MUSIC_DUCK, MUSIC_DUCK, MUSIC_HIGH],
+        [musicHigh, musicDuck, musicDuck, musicHigh],
         { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
       );
       vol = Math.min(vol, duckVol);
