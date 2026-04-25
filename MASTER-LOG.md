@@ -8,34 +8,68 @@ Remotion composition rendering SSL 2026 promotional reel. 1920×1080, 30fps. 8 s
 
 ## Next Up
 
-1. [ ] **Danny scrubs StackExplainer in Studio with the live mixer** → per-scene feedback + fine-tune mixer values. Drag-scrubber step = 0.05 (20 meaningful gain steps). VO-length cache now prevents the "calculating metadata" toast on every drag tick.
-2. [ ] **Render StackExplainer to MP4** — `npm run render:stack`. Lands at `out/StackExplainer.mp4`. Deferred until Danny's satisfied post-scrub.
-3. [ ] **Clarify FormatExplainer intent** — scene scaffolding (`scene-container`, `scene-interview`, `scene-delegate`) suggests delegation/agent-workflow topic, but `HOW-TO-SHIP-AN-EXPLAINER.md` lists it as "output formats + dimensions." Resolve before writing VO script.
-4. [ ] **Write 8 scene scripts** for FormatExplainer VO — blocked on #3.
-5. [ ] **Generate 8 VO MP3s** for FormatExplainer — blocked on #4.
-6. [ ] **Test FormatExplainer render** — calculateMetadata auto-sizing already wired (Session 7).
-7. [ ] **(Stretch) Visible track-and-thumb slider tool** — separate HTML page writing mixer values to a JSON file read via `staticFile()`. Only if the `InputDragger` UX isn't enough. ~1-2h build.
-8. [ ] **(Stretch) Fix pre-compact routing leaks** — `flights_decisions`, `claudeflow_architecture`, `video_editing_flow_decisions` still absorb some remotion content (too-broad regex). Danny handling via session-start/memory/close work in another terminal.
-9. [ ] **Auto-snap against real StackExplainer scene starts** — script exists (`scripts/music/auto-snap.ts`), but `BEAT_SNAP_FRAMES` is still all-null. Re-run with VO-driven starts to see if any snaps emerge.
-10. [ ] **Round 3 voice polish** — per-word pitch bump on "guys" in "Hey guys" tune-in. Requires DSP post-processing.
-11. [ ] **Canvas-only-during-transition bug** — TreatmentExplainer renders canvas only during transitions, empty at rest.
-12. [ ] Danny scrubs TreatmentExplainer in Studio → feedback on 6 scenes.
-13. [ ] **Curate library via auditioner** — ⭐-shortlist winners across 6 tabs.
-14. [ ] Wire remaining SFX from shortlisted set.
-15. [ ] Scene 6 CTA button restyle (Danny flagged, deferred).
-16. [ ] **Fix 2 pre-existing lint warnings** — `@remotion/non-pure-animation` at StackExplainer:894 + TreatmentExplainer:470. Render-farm flicker risk; live renders play fine. Low priority.
-17. [ ] **Embed 3 explainer MP4s in repo README** — deferred by Danny until all fine adjustments land; possibly via hosted (YouTube/Loom) links instead of raw embeds.
-18. [x] **Park F5-TTS pipeline** — fallback-only.
-19. [x] **Auditioner v2** — Session 8.
-20. [x] **TreatmentExplainer audio spine** — music bed + beat-snap + cinematic bookends + fade-to-black + pre/post-roll. Session 9.
-21. [x] **StackExplainer content lock** — treatment doc + 8-scene VO config + 8 MP3s + music bed picked + onsets captured. Session 10.
-22. [x] **StackExplainer composition + explainer-shared extraction** — 8 scenes, music bed + SFX bookends wired, TreatmentExplainer refactored onto shared module. `npm run render:stack` added. Session 11.
-23. [x] **Wave 1-4 Loom feedback + live mixer promotion + cookbook + helper scripts + README refresh** — Session 12.
-24. [x] **Starter-template cleanup + live-mixer drag-scrub fix + VO-length cache** — Session 13.
+1. [ ] **Verify ch03 alignment in Studio (`localhost:3000/WorkshopIntroCh03`)** — Round-2 fix replaces TransitionSeries with absolute-positioned items where card durations = real silence gaps from timings.json. Confirm: cards 2-6 land on inter-scene silences (no drift); source footage end-to-end of every scene (no purple gradient); voice consistency across single stem; scene 4 last-frame hold acceptable (10.97s VO vs 10s clip).
+2. [ ] **Pick A or B for missing first card** — ElevenLabs swallowed the 0.5s lead break tag (scene-1 starts at 0.000s), so no card before scene 1. **(A)** Re-render `--mode chapter` with `BREAK_LEAD_SEC=1.5` in `generate-vo.ts` (~1k credits). **(B)** Live without first card; cards 2-6 still align.
+3. [ ] **Phase 2 — Mirror factory to `WorkshopIntroCh05`** — new `slug + scenes` contract, single-stem VO, clip-fit guard. Inherits everything from `makeIntroChapter`.
+4. [ ] **Phase 3 — Batch ch01/02/04** (3 chapters; ElevenLabs cost only — F5-TTS not in this loop anymore).
+5. [ ] **Danny scrubs StackExplainer in Studio with the live mixer** → per-scene feedback + fine-tune mixer values. Drag-scrubber step = 0.05 (20 meaningful gain steps). VO-length cache now prevents the "calculating metadata" toast on every drag tick.
+6. [ ] **Render StackExplainer to MP4** — `npm run render:stack`. Lands at `out/StackExplainer.mp4`. Deferred until Danny's satisfied post-scrub.
+7. [ ] **Clarify FormatExplainer intent** — scene scaffolding (`scene-container`, `scene-interview`, `scene-delegate`) suggests delegation/agent-workflow topic, but `HOW-TO-SHIP-AN-EXPLAINER.md` lists it as "output formats + dimensions." Resolve before writing VO script.
+8. [ ] **Write 8 scene scripts** for FormatExplainer VO — blocked on #7.
+9. [ ] **Generate 8 VO MP3s** for FormatExplainer — blocked on #8.
+10. [ ] **Test FormatExplainer render** — calculateMetadata auto-sizing already wired (Session 7).
+11. [ ] **(Stretch) Visible track-and-thumb slider tool** — separate HTML page writing mixer values to a JSON file read via `staticFile()`. Only if the `InputDragger` UX isn't enough. ~1-2h build.
+12. [ ] **(Stretch) Fix pre-compact routing leaks** — `flights_decisions`, `claudeflow_architecture`, `video_editing_flow_decisions` still absorb some remotion content (too-broad regex). Danny handling via session-start/memory/close work in another terminal.
+13. [ ] **Auto-snap against real StackExplainer scene starts** — script exists (`scripts/music/auto-snap.ts`), but `BEAT_SNAP_FRAMES` is still all-null. Re-run with VO-driven starts to see if any snaps emerge.
+14. [ ] **Round 3 voice polish** — per-word pitch bump on "guys" in "Hey guys" tune-in. Requires DSP post-processing.
+15. [ ] **Canvas-only-during-transition bug** — TreatmentExplainer renders canvas only during transitions, empty at rest.
+16. [ ] Danny scrubs TreatmentExplainer in Studio → feedback on 6 scenes.
+17. [ ] **Curate library via auditioner** — ⭐-shortlist winners across 6 tabs.
+18. [ ] Wire remaining SFX from shortlisted set.
+19. [ ] Scene 6 CTA button restyle (Danny flagged, deferred).
+20. [ ] **Fix 2 pre-existing lint warnings** — `@remotion/non-pure-animation` at StackExplainer:894 + TreatmentExplainer:470. Render-farm flicker risk; live renders play fine. Low priority.
+21. [ ] **Embed 3 explainer MP4s in repo README** — deferred by Danny until all fine adjustments land; possibly via hosted (YouTube/Loom) links instead of raw embeds.
+22. [x] **Production spine refactor — single-stem VO + peak limiter + factory hardening + ch03 naming migration + docs/CONVENTIONS.md.** Session 14.
+23. [x] **Park F5-TTS pipeline** — fallback-only.
+24. [x] **Auditioner v2** — Session 8.
+25. [x] **TreatmentExplainer audio spine** — music bed + beat-snap + cinematic bookends + fade-to-black + pre/post-roll. Session 9.
+26. [x] **StackExplainer content lock** — treatment doc + 8-scene VO config + 8 MP3s + music bed picked + onsets captured. Session 10.
+27. [x] **StackExplainer composition + explainer-shared extraction** — 8 scenes, music bed + SFX bookends wired, TreatmentExplainer refactored onto shared module. `npm run render:stack` added. Session 11.
+28. [x] **Wave 1-4 Loom feedback + live mixer promotion + cookbook + helper scripts + README refresh** — Session 12.
+29. [x] **Starter-template cleanup + live-mixer drag-scrub fix + VO-length cache** — Session 13.
 
 ---
 
 ## Session Log
+
+### Session 14 — Production spine refactor: single-stem VO, peak limiter, factory hardening (25 Apr, 21:01 BST)
+
+- **Problem named.** Across multiple sessions the same friction: voice distorts on playback even after `post-process.py`; per-scene ElevenLabs generation creates different "rooms" between scenes; chapter cards leave purple-gradient overhang on source clips when VO exceeds natural segment length; production features (mixer, reverb, music bed) get bolted on per-comp instead of inherited; naming drift between `IntroCh03Composition` and `StackExplainer`. Plan: `~/.claude/plans/lazy-baking-willow.md`.
+- **Audio architecture flipped to single-stem.** ElevenLabs now gets the whole chapter in ONE TTS call (`generate-vo.ts --mode chapter`), with scenes joined by `<break time="X.Xs" />` SSML tags (0.5s lead, 1.5s between, 0.7s tail). One decoder context = consistent room across the chapter. Output: `_raw/chapter.mp3` + `chapter.metadata.json` (scene-id order). Per-scene mode preserved as `--mode per-scene` for one-off retakes.
+- **Peak limiter added.** `post-process.py` pipeline is now `loudnorm → reverb → Limiter(-1.0 dBTP) → MP3 encode`. Catches reverb tails that previously pushed past the loudnorm true-peak ceiling and clipped into the encode. New flags: `--limiter-threshold`, `--no-limiter`. Idempotent `_raw/` backup contract unchanged.
+- **timings.json sidecar.** `post-process.py` runs ffmpeg `silencedetect` on the raw stem (default `-40 dBFS / 0.8s min silence`), validates region count == scene count, writes `chapter.timings.json` with `{sceneId, startSec, endSec, durationSec}`. Replaces the per-scene `getAudioDurationInSeconds` loop in `metadata.ts`.
+- **Factory hardening.** New chapter contract is **slug + scenes**, nothing else:
+  ```ts
+  makeIntroChapter({ slug, scenes: [{ id, label, title, sourceStart, clipDurationSeconds }], sourceMp4 })
+  ```
+  Slug derives `voDir`, `chapterMp3`, `timingsJson`, `logPrefix`. `IntroChapterScene` gets `clipDurationSeconds` (mandatory). The factory:
+  - Plays a **single `<Audio>`** over the whole stem (no per-scene Audio sequences).
+  - Wires music bed: `<Audio src={musicBed}>` rendered when `musicBed` field set + `musicHigh > 0` (default off).
+  - Enforces clip-fit: scene VO duration clamped to `clipDurationSeconds * FPS`; warns to console on overshoot.
+  - Defaults `voVolume: 0.65` (~−3.7 dB on top of −16 LUFS, clipping headroom).
+  - `OffthreadVideo` `endAt` clamped to natural clip end so source never repeats / shows wrong footage.
+- **Metadata split.** New `ChapterMetadataConfig` + `makeChapterCalculateMetadata` + `chapterFallbackDurationInFrames` added to `metadata.ts`. Old `ExplainerConfig` + `makeCalculateMetadata` kept untouched for `StackExplainer` / `TreatmentExplainer`. Two-cache design (`chapterTimingsCache` + `chapterStemCache`) keyed by timings.json path, so mixer-prop changes don't re-fetch.
+- **ch03 migrated.**
+  - `src/IntroCh03Composition.tsx` → `src/WorkshopIntroCh03.tsx`
+  - `scripts/voice/intro-ch03.config.json` → `scripts/voice/workshop-intro-ch03.config.json` (cleaned of voice-irrelevant fields — `clipDurationSeconds`/`sourceStart` belong in the .tsx)
+  - `public/assets/voice/generated/IntroCh03/` → `public/assets/voice/generated/workshop-intro-ch03/`
+  - `Root.tsx` ID `IntroCh03` → `WorkshopIntroCh03`
+  - `package.json`: added `render:workshop-intro-ch03` script
+- **Conventions documented.** `docs/CONVENTIONS.md` written — naming table, pipeline diagram, factory contract, troubleshooting matrix. Future sessions read this on focus.
+- **End-to-end run for ch03.** Single ElevenLabs call (1,033 chars + 5 break tags, 1.3 MB raw chapter.mp3) → silence-detect produced 6 clean regions matching scene order, post-process produced 994 KB final chapter.mp3 + chapter.timings.json. Scene 4 (`master-log`) durations: 10.97s VO vs 10s clip → clip-fit clamp will kick in. Studio came up clean (`HTTP 200`, no TS errors).
+- **Round-2 fix — visual timeline locked 1:1 to audio stem.** Round 1 still drifted: cards/scenes used fixed durations while audio was now one continuous stem with variable inter-scene silences. Pulled `TransitionSeries` out of the chapter factory entirely. New layout in `intro-chapter.tsx`: each card + scene becomes an absolute-positioned `<Sequence from={absFrom} durationInFrames={...}>`, where card durations come from `cardDurations[]` returned by `makeChapterCalculateMetadata` (= silence gaps from timings.json: 1.58s / 1.82s / 1.83s / 1.61s / 1.62s for ch03), and scene durations come from non-silent regions. `VO_PRE_PAD` removed from the VO sequence (the stem has its own leading silence baked in). Visual frames sum exactly to `stemFrames` so audio and visuals can never drift.
+- **Verify gate still open at session end.** Studio rebuilt clean (HTTP 200, tsc clean) but Danny tried `localhost:3000/IntroCh03` (old slug) → "Composition not found". Correct URL post-rename: `localhost:3000/WorkshopIntroCh03`. Round-2 alignment fix unverified. Also: timings.json shows scene-1 starts at 0.000s — ElevenLabs swallowed the leading 0.5s break tag → no chapter card before scene 1. Two paths to fix: (A) re-render with `BREAK_LEAD_SEC` 0.5 → 1.5 (~1k credits); (B) live without first card (cards 2-6 still align cleanly).
+- **Out of scope this phase:** Renaming Stack/Treatment/Format to the new convention (post-SSL). Mirroring to ch05 (Phase 2). Batch ch01/02/04 (Phase 3).
 
 ### Session 13 — Live-mixer UX fixes + starter-template cleanup (23 Apr, 19:46 BST)
 

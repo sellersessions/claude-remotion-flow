@@ -18,6 +18,12 @@ import {
   calculateMetadata as stackExplainerCalculateMetadata,
   FALLBACK_DURATION_IN_FRAMES as stackExplainerFallbackDuration,
 } from "./StackExplainer";
+import {
+  WorkshopIntroCh03,
+  workshopIntroCh03Schema,
+  calculateMetadata as workshopIntroCh03CalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as workshopIntroCh03FallbackDuration,
+} from "./WorkshopIntroCh03";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -59,9 +65,25 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         schema={stackExplainerSchema}
         defaultProps={{
-          musicHigh: 0.4,
-          musicDuck: 0.35,
-          sfxIntroVolume: 1,
+          musicHigh: 0.1,
+          musicDuck: 0.5,
+          sfxIntroVolume: 0.55,
+          sfxOutroVolume: 0.55,
+        }}
+      />
+      <Composition
+        id="WorkshopIntroCh03"
+        component={WorkshopIntroCh03}
+        calculateMetadata={workshopIntroCh03CalculateMetadata}
+        durationInFrames={workshopIntroCh03FallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={workshopIntroCh03Schema}
+        defaultProps={{
+          ...DEFAULT_MIXER,
+          musicHigh: 0,        // music bed wired but off — set > 0 when picked
+          sfxIntroVolume: 0.45,
           sfxOutroVolume: 0.55,
         }}
       />

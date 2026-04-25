@@ -41,6 +41,8 @@ export const DEFAULT_MIXER: MixerProps = {
 export type ExplainerProps = {
   voiceover?: number[];
   voLengths?: number[];
+  cardDurations?: number[];
+  chapterDurationFrames?: number;
 } & MixerProps;
 
 export type ExplainerConfig = {
@@ -57,12 +59,15 @@ export type ExplainerConfig = {
 };
 
 // Fallback comp length when no VO files exist on disk.
-export function fallbackDurationInFrames(config: ExplainerConfig): number {
+export function fallbackDurationInFrames(
+  config: ExplainerConfig,
+  cardDurationFrames: number = CARD_DURATION_FRAMES,
+): number {
   const cardCount = config.cardBefore.filter(Boolean).length;
   return (
     PRE_ROLL_FRAMES +
     config.fallbackSceneDurations.reduce((s, d) => s + d, 0) +
-    cardCount * CARD_DURATION_FRAMES -
+    cardCount * cardDurationFrames -
     (config.fallbackSceneDurations.length + cardCount - 1) * TRANS_FRAMES +
     POST_ROLL_FRAMES
   );
@@ -79,6 +84,7 @@ const voLengthsCache = new Map<string, number[]>();
 // prior-scene durations. Never touches the VO audio itself.
 export function makeCalculateMetadata(
   config: ExplainerConfig,
+  cardDurationFrames: number = CARD_DURATION_FRAMES,
 ): CalculateMetadataFunction<ExplainerProps> {
   return async ({ props }) => {
     const cacheKey = config.sceneAudioFiles.join("|");
@@ -121,7 +127,7 @@ export function makeCalculateMetadata(
           `Run the ElevenLabs generation script to populate the VO output dir.`,
       );
       return {
-        durationInFrames: fallbackDurationInFrames(config),
+        durationInFrames: fallbackDurationInFrames(config, cardDurationFrames),
         props: {
           ...props,
           voiceover: [...config.fallbackSceneDurations],
@@ -141,7 +147,11 @@ export function makeCalculateMetadata(
     for (let i = 1; i < sceneDurations.length; i++) {
       const target = config.beatSnapFrames[i];
       if (target == null) continue;
-      const { sceneStarts } = computeTimeline(sceneDurations, config.cardBefore);
+      const { sceneStarts } = computeTimeline(
+        sceneDurations,
+        config.cardBefore,
+        cardDurationFrames,
+      );
       const delta = target - sceneStarts[i];
       if (delta === 0) continue;
       const prior = i - 1;
@@ -156,12 +166,158 @@ export function makeCalculateMetadata(
     const { totalFrames: visualFrames } = computeTimeline(
       sceneDurations,
       config.cardBefore,
+      cardDurationFrames,
     );
     const totalFrames = PRE_ROLL_FRAMES + visualFrames + POST_ROLL_FRAMES;
 
     return {
       durationInFrames: Math.ceil(totalFrames),
       props: { ...props, voiceover: sceneDurations, voLengths },
+    };
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Chapter-mode metadata (single-stem VO)
+//
+// Replaces the per-scene VO measurement above with a single chapter.mp3 +
+// chapter.timings.json read. Scene durations come from the timings sidecar,
+// produced by post-process.py from silencedetect on the raw stem.
+// ---------------------------------------------------------------------------
+
+export type ChapterTiming = {
+  sceneId: string;
+  startSec: number;
+  endSec: number;
+  durationSec: number;
+};
+
+export type ChapterMetadataConfig = {
+  chapterMp3: string;                             // staticFile-ready path
+  chapterTimingsJson: string;                     // staticFile-ready path
+  sceneIds: readonly string[];                    // canonical order
+  clipDurationFrames: readonly number[];          // natural source-clip segment length per scene
+  fallbackSceneDurations: readonly number[];      // floor when timings.json is missing
+  cardBefore: readonly (ChapterCardSpec | null)[];
+  beatSnapFrames: readonly (number | null)[];
+  logPrefix: string;
+};
+
+const chapterTimingsCache = new Map<string, ChapterTiming[]>();
+const chapterStemCache = new Map<string, number>();
+
+export function chapterFallbackDurationInFrames(
+  config: ChapterMetadataConfig,
+  cardDurationFrames: number = CARD_DURATION_FRAMES,
+): number {
+  const cardCount = config.cardBefore.filter(Boolean).length;
+  return (
+    PRE_ROLL_FRAMES +
+    config.fallbackSceneDurations.reduce((s, d) => s + d, 0) +
+    cardCount * cardDurationFrames -
+    (config.fallbackSceneDurations.length + cardCount - 1) * TRANS_FRAMES +
+    POST_ROLL_FRAMES
+  );
+}
+
+export function makeChapterCalculateMetadata(
+  config: ChapterMetadataConfig,
+  cardDurationFrames: number = CARD_DURATION_FRAMES,
+): CalculateMetadataFunction<ExplainerProps> {
+  return async ({ props }) => {
+    const cacheKey = config.chapterTimingsJson;
+
+    let timings = chapterTimingsCache.get(cacheKey);
+    let stemFrames = chapterStemCache.get(cacheKey);
+
+    if (!timings || !stemFrames) {
+      try {
+        const resp = await fetch(staticFile(config.chapterTimingsJson));
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        timings = (await resp.json()) as ChapterTiming[];
+        const stemSecs = await getAudioDurationInSeconds(
+          staticFile(config.chapterMp3),
+        );
+        stemFrames = Math.ceil(stemSecs * FPS);
+        chapterTimingsCache.set(cacheKey, timings);
+        chapterStemCache.set(cacheKey, stemFrames);
+      } catch (err) {
+        console.warn(
+          `[${config.logPrefix}] chapter timings/stem unreadable (${
+            (err as Error).message
+          }). Falling back to animator durations.`,
+        );
+        return {
+          durationInFrames: chapterFallbackDurationInFrames(
+            config,
+            cardDurationFrames,
+          ),
+          props: {
+            ...props,
+            voiceover: [...config.fallbackSceneDurations],
+            voLengths: [...config.fallbackSceneDurations],
+            chapterDurationFrames: config.fallbackSceneDurations.reduce(
+              (s, d) => s + d,
+              0,
+            ),
+          },
+        };
+      }
+    }
+
+    if (timings.length !== config.sceneIds.length) {
+      console.warn(
+        `[${config.logPrefix}] timings.json has ${timings.length} entries but config has ${config.sceneIds.length} scenes. Using fallback durations.`,
+      );
+    }
+
+    // Build visual timeline locked 1:1 to the audio stem. Card durations
+    // come from the actual silences in timings (lead silence + inter-scene
+    // silences), scene durations from non-silent regions. The last scene
+    // extends through any trailing silence so the fade-to-black covers it.
+    const cardDurations: number[] = [];
+    const sceneDurations: number[] = [];
+
+    config.sceneIds.forEach((id, i) => {
+      const timing = timings![i];
+      if (!timing || timing.sceneId !== id) {
+        console.warn(
+          `[${config.logPrefix}] timings[${i}] sceneId mismatch (expected ${id}, got ${timing?.sceneId}). Using fallback.`,
+        );
+      }
+      const startSec = timing?.startSec ?? 0;
+      const endSec = timing?.endSec ?? 0;
+      const prevEndSec = i === 0 ? 0 : timings![i - 1].endSec;
+      // Card duration = silence between previous scene end (or 0) and this scene start.
+      cardDurations.push(Math.max(0, Math.round((startSec - prevEndSec) * FPS)));
+      // Scene duration = non-silent region; extend last scene to stem end.
+      const isLast = i === config.sceneIds.length - 1;
+      const sceneEndSec = isLast ? stemFrames! / FPS : endSec;
+      const sceneFrames = Math.max(1, Math.round((sceneEndSec - startSec) * FPS));
+      // Clip-fit guard: clamp scene visual to natural source-clip length,
+      // last frame holds for any remainder. Audio still plays through.
+      const clipMax = config.clipDurationFrames[i];
+      if (clipMax > 0 && sceneFrames > clipMax) {
+        console.warn(
+          `[${config.logPrefix}] scene ${id}: visual ${sceneFrames}f exceeds clip length ${clipMax}f. Source clip will hold last frame.`,
+        );
+      }
+      sceneDurations.push(sceneFrames);
+    });
+
+    // visualFrames = stem total; cards + scenes sum to stemFrames by construction.
+    const visualFrames = stemFrames!;
+    const totalFrames = PRE_ROLL_FRAMES + visualFrames + POST_ROLL_FRAMES;
+
+    return {
+      durationInFrames: Math.ceil(totalFrames),
+      props: {
+        ...props,
+        voiceover: sceneDurations,
+        voLengths: sceneDurations,
+        cardDurations,
+        chapterDurationFrames: stemFrames,
+      },
     };
   };
 }

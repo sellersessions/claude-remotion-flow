@@ -12,7 +12,8 @@
     "library:migrate": "node scripts/sfx/migrate-manifest.mjs",
     "library:render": "node scripts/sfx/render-library-md.mjs",
     "render:stack": "remotion render StackExplainer out/StackExplainer.mp4",
-    "render:treatment": "remotion render TreatmentExplainer out/TreatmentExplainer.mp4"
+    "render:treatment": "remotion render TreatmentExplainer out/TreatmentExplainer.mp4",
+    "render:workshop-intro-ch03": "remotion render WorkshopIntroCh03 out/workshop-intro-ch03.mp4"
   },
   "repository": {},
   "license": "UNLICENSED",

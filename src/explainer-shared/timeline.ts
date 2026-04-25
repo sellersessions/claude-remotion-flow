@@ -12,6 +12,7 @@ export type TimelineItem =
 export function computeTimeline(
   sceneDurations: number[],
   cardBefore: readonly (ChapterCardSpec | null)[],
+  cardDurationFrames: number = CARD_DURATION_FRAMES,
 ): {
   sceneStarts: number[];
   items: TimelineItem[];
@@ -23,7 +24,7 @@ export function computeTimeline(
   > = [];
   for (let i = 0; i < sceneDurations.length; i++) {
     const card = cardBefore[i];
-    if (card) raw.push({ kind: "card", card, duration: CARD_DURATION_FRAMES });
+    if (card) raw.push({ kind: "card", card, duration: cardDurationFrames });
     raw.push({ kind: "scene", sceneIndex: i, duration: sceneDurations[i] });
   }
 
