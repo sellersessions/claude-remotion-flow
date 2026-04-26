@@ -8,9 +8,9 @@ Remotion composition rendering SSL 2026 promotional reel. 1920×1080, 30fps. 8 s
 
 ## Next Up
 
-1. [ ] **Verify ch03 alignment in Studio (`localhost:3000/WorkshopIntroCh03`)** — Round-2 fix replaces TransitionSeries with absolute-positioned items where card durations = real silence gaps from timings.json. Confirm: cards 2-6 land on inter-scene silences (no drift); source footage end-to-end of every scene (no purple gradient); voice consistency across single stem; scene 4 last-frame hold acceptable (10.97s VO vs 10s clip).
-2. [ ] **Pick A or B for missing first card** — ElevenLabs swallowed the 0.5s lead break tag (scene-1 starts at 0.000s), so no card before scene 1. **(A)** Re-render `--mode chapter` with `BREAK_LEAD_SEC=1.5` in `generate-vo.ts` (~1k credits). **(B)** Live without first card; cards 2-6 still align.
-3. [ ] **Phase 2 — Mirror factory to `WorkshopIntroCh05`** — new `slug + scenes` contract, single-stem VO, clip-fit guard. Inherits everything from `makeIntroChapter`.
+1. [ ] **Render ch03 to MP4 to confirm clicks are studio-preview-only** — `npx remotion render WorkshopIntroCh03 out/WorkshopIntroCh03.mp4`. Strategic pivot Session 15: stop chasing studio-preview mixer artefacts. Final-render summing path differs; if clicks vanish in MP4 we ship as 80–90%-good for editor polish.
+2. [ ] **Decide on missing first card** — ElevenLabs still swallows the 0.5s lead break tag. Lean **(B) ship without first card** since music bed + scene cards 2-6 now mask the sparse opening; only re-render with `BREAK_LEAD_SEC=1.5` (~1k credits) if MP4 review shows the cold-open feels naked.
+3. [ ] **Phase 2 — Mirror factory to `WorkshopIntroCh05`** — new `slug + scenes` contract, single-stem VO, clip-fit guard. Config skeleton already at `scripts/voice/intro-ch05.config.json` — needs rename to `workshop-intro-ch05.config.json` + `clipDurationSeconds` per scene. Inherits everything from `makeIntroChapter` including the new music-bed wiring.
 4. [ ] **Phase 3 — Batch ch01/02/04** (3 chapters; ElevenLabs cost only — F5-TTS not in this loop anymore).
 5. [ ] **Danny scrubs StackExplainer in Studio with the live mixer** → per-scene feedback + fine-tune mixer values. Drag-scrubber step = 0.05 (20 meaningful gain steps). VO-length cache now prevents the "calculating metadata" toast on every drag tick.
 6. [ ] **Render StackExplainer to MP4** — `npm run render:stack`. Lands at `out/StackExplainer.mp4`. Deferred until Danny's satisfied post-scrub.
@@ -29,18 +29,34 @@ Remotion composition rendering SSL 2026 promotional reel. 1920×1080, 30fps. 8 s
 19. [ ] Scene 6 CTA button restyle (Danny flagged, deferred).
 20. [ ] **Fix 2 pre-existing lint warnings** — `@remotion/non-pure-animation` at StackExplainer:894 + TreatmentExplainer:470. Render-farm flicker risk; live renders play fine. Low priority.
 21. [ ] **Embed 3 explainer MP4s in repo README** — deferred by Danny until all fine adjustments land; possibly via hosted (YouTube/Loom) links instead of raw embeds.
-22. [x] **Production spine refactor — single-stem VO + peak limiter + factory hardening + ch03 naming migration + docs/CONVENTIONS.md.** Session 14.
-23. [x] **Park F5-TTS pipeline** — fallback-only.
-24. [x] **Auditioner v2** — Session 8.
-25. [x] **TreatmentExplainer audio spine** — music bed + beat-snap + cinematic bookends + fade-to-black + pre/post-roll. Session 9.
-26. [x] **StackExplainer content lock** — treatment doc + 8-scene VO config + 8 MP3s + music bed picked + onsets captured. Session 10.
-27. [x] **StackExplainer composition + explainer-shared extraction** — 8 scenes, music bed + SFX bookends wired, TreatmentExplainer refactored onto shared module. `npm run render:stack` added. Session 11.
-28. [x] **Wave 1-4 Loom feedback + live mixer promotion + cookbook + helper scripts + README refresh** — Session 12.
-29. [x] **Starter-template cleanup + live-mixer drag-scrub fix + VO-length cache** — Session 13.
+22. [x] **ch03 audio polish pass — surgical fades, source-mp4 audio strip, music bed wired, ducker decommissioned, outro-boom timing** — Session 15.
+23. [x] **Production spine refactor — single-stem VO + peak limiter + factory hardening + ch03 naming migration + docs/CONVENTIONS.md.** Session 14.
+24. [x] **Park F5-TTS pipeline** — fallback-only.
+25. [x] **Auditioner v2** — Session 8.
+26. [x] **TreatmentExplainer audio spine** — music bed + beat-snap + cinematic bookends + fade-to-black + pre/post-roll. Session 9.
+27. [x] **StackExplainer content lock** — treatment doc + 8-scene VO config + 8 MP3s + music bed picked + onsets captured. Session 10.
+28. [x] **StackExplainer composition + explainer-shared extraction** — 8 scenes, music bed + SFX bookends wired, TreatmentExplainer refactored onto shared module. `npm run render:stack` added. Session 11.
+29. [x] **Wave 1-4 Loom feedback + live mixer promotion + cookbook + helper scripts + README refresh** — Session 12.
+30. [x] **Starter-template cleanup + live-mixer drag-scrub fix + VO-length cache** — Session 13.
 
 ---
 
 ## Session Log
+
+### Session 15 — ch03 audio polish: surgical fades, source-mp4 audio strip, music bed, ducker decommissioned (26 Apr, 09:23 BST)
+
+- **Resumed Session 14 verify gate.** Round-2 alignment fix was unverified at end of S14. Danny scrubbed Studio at `localhost:3000/WorkshopIntroCh03` and reported three audio issues: frame ~1430 click ("your recovery surface"), frame ~1864 click on scene-5 entry ("Beyond"), Typora pronounced "typraa", outro explosion needs to shift back a couple of frames.
+- **Misdiagnosis 1 — break-tag joins:** First read was that ElevenLabs single-stem TTS produced amplitude discontinuities at the SSML `<break>` joins. Built a surgical-fades pass into `scripts/voice/post-process.py`: cosine-taper file head/tail (default 30 ms) + per-boundary tapers (10 ms either side of every silence region from `chapter.timings.json`). New helper `apply_surgical_fades(audio, sr, regions, head_ms, tail_ms, boundary_ms)`, new CLI flags `--fade-head-ms`, `--fade-tail-ms`, `--fade-boundary-ms`, `--no-surgical-fades`. Re-encoded `chapter.mp3` from `_raw/`. Click at frame 1430 reduced but did not vanish.
+- **Misdiagnosis 2 — outro-boom alignment:** Danny's screenshot showed his marked playhead at frame 2494 with the boom firing late. Math: `visualEnd = PRE_ROLL_FRAMES (30) + chapter-mp3 frames (2495) = 2525`; existing `SFX_OUTRO_LEAD_IN_FRAMES = 20` placed boom at 2505. Bumped to **31** in `src/explainer-shared/constants.ts` so attack now lands at 2494, decay rides into post-roll silence.
+- **Real cause #1 — source mp4 carries audio.** Danny zoomed the Studio waveform: the source `workshop-intro-chapters.mp4` had its original recording's audio still embedded — even though `<OffthreadVideo muted>`, the raw recording's clicks were bleeding into perceived playback. Stripped audio with `ffmpeg -i in.mp4 -c:v copy -an out.mp4`, produced `workshop-intro-chapters-no-audio.mp4` (87 MB, was 100 MB). Symlinked into `public/assets/source-clips/`. `WorkshopIntroCh03.tsx` repointed: `sourceMp4: "assets/source-clips/workshop-intro-chapters-no-audio.mp4"`.
+- **Real cause #2 — `void musicDuck;` hidden in factory.** Danny flagged music ducking as the suspect. Source-read `intro-chapter.tsx:186` showed `void musicDuck;` — the music ducker was **never wired** in `makeIntroChapter`. The factory takes `musicDuck` as a prop for API parity with `StackExplainer`/`TreatmentExplainer` but ignores it: music renders at flat `volume={musicHigh}` for the whole chapter. So passing 0.05 vs 0.15 made zero difference. This is a documented decommission, not a bug — Danny's strategic call was *"being clever using ducking is causing most of the problems"*. Left the `void` in place; the prop survives in the schema for backward compatibility.
+- **Music bed wired into ch03.** Danny pivoted from per-click-precision to *"add background music to mask imperfections, target 80–90% video for editor polish"*. Reused StackExplainer's bed `assets/music/ssl-live-beds/penguinmusic-wings-196958.mp3` (83.49s, matches 83.17s VO stem). Added `musicBed` to `WorkshopIntroCh03.tsx` factory call. `Root.tsx` defaultProps: `musicHigh: 0.15`, `musicDuck: 0.15` (no-op), `sfxIntroVolume: 0.7`, `sfxOutroVolume: 0.7`. Music gated in factory: `{musicBed && musicHigh > 0 && (...)}` — flat volume, single Audio sequence over `0` to `visualEnd + POST_ROLL_FRAMES`.
+- **Strategic decisions.** **(a) Typora pronunciation** — dropped entirely. Danny: *"I think we just have to let it go."* No phoneme override, no re-render. **(b) Studio-preview clicks** — stop chasing. Studio's audio summing peaks momentarily >1.0 with three sources active (SFX-intro + chapter-VO + music-bed); final-render mixer handles peaks differently. Verification path moves from Studio scrub to MP4 render.
+- **Hot-reload trap.** Danny twice reported "no changes have been made" after edits. Cause: studio cached old composition; HMR doesn't always pick up `defaultProps`/sourceMp4 changes for an already-mounted comp. Fix: kill PIDs (21053, 21027, 21055), `npm run dev` fresh (PID 44768). Pattern catalogued for future sessions: when defaultProps don't reflect, tab-close + studio-restart, not refresh.
+- **Audio file heads verified clean.** Spot-check via ffmpeg pcm_s16le sample dump: music-bed sample 0 = 0, sfx-intro sample 0 = 0, chapter-vo sample 0 = 0 after surgical-fades pass. Nothing in the input streams to cause a hard click at frame 0.
+- **Verify gate handed off.** End of session: ducker decommissioned, mp4 audio stripped, music bed live, surgical fades live, boom landing at 2494. Danny to test playback after a tab refresh; if clicks persist in Studio, the next move is `npm run render:workshop-intro-ch03` to confirm it's a studio-preview-only artefact.
+- **Pre-existing TS error (not from this session):** `'DEFAULT_MIXER' is declared but its value is never read` in `Root.tsx`. Inherited from S14 single-stem refactor — the chapter factory doesn't use it. Safe to remove next session if it bothers tsc strict mode.
+- **Out of scope this session:** Phase 2 (`WorkshopIntroCh05`). Phase 3 (ch01/02/04). FormatExplainer intent. StackExplainer MP4 render.
 
 ### Session 14 — Production spine refactor: single-stem VO, peak limiter, factory hardening (25 Apr, 21:01 BST)
 

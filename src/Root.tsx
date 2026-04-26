@@ -81,10 +81,10 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         schema={workshopIntroCh03Schema}
         defaultProps={{
-          ...DEFAULT_MIXER,
-          musicHigh: 0,        // music bed wired but off — set > 0 when picked
-          sfxIntroVolume: 0.45,
-          sfxOutroVolume: 0.55,
+          musicHigh: 0.15,
+          musicDuck: 0,
+          sfxIntroVolume: 0.7,
+          sfxOutroVolume: 0.7,
         }}
       />
     </>

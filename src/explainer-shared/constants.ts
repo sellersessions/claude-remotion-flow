@@ -40,7 +40,7 @@ export const POST_ROLL_FRAMES = 60;  // 2.0s — room for boom tail + silent bla
 
 // Outro boom fires a bit BEFORE visualEnd so its attack punches the moment
 // the screen is still mid-fade, and the decay rides into post-roll silence.
-export const SFX_OUTRO_LEAD_IN_FRAMES = 20;
+export const SFX_OUTRO_LEAD_IN_FRAMES = 31;
 
 // Default SFX bookends — Danny's Session 9 picks. Reused across every
 // explainer for sonic consistency. Override per-composition if needed.

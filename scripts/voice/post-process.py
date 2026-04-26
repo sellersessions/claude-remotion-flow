@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""VO post-processing — LUFS normalize → reverb bus → peak limiter → MP3.
+"""VO post-processing — LUFS normalize → surgical fades → reverb bus → peak limiter → MP3.
 
 Two output modes per chapter:
   - Single-stem (preferred):  _raw/chapter.mp3   → chapter.mp3 + chapter.timings.json
@@ -7,9 +7,12 @@ Two output modes per chapter:
 
 Pipeline order (per file):
   1. ffmpeg loudnorm to --lufs / --tp dBTP
-  2. pedalboard Reverb (default 2% wet, 100% dry — subtle "air")
-  3. pedalboard Limiter (default −1.0 dBTP) — catches reverb tail before encode
-  4. ffmpeg → MP3 VBR ~190 kbps
+  2. surgical fades — file head (30ms in), file tail (30ms out), and
+     ~10ms tapers around each silence boundary from chapter.timings to kill
+     ElevenLabs break-tag join discontinuities (chapter mode only)
+  3. pedalboard Reverb (default 2% wet, 100% dry — subtle "air")
+  4. pedalboard Limiter (default −1.0 dBTP) — catches reverb tail before encode
+  5. ffmpeg → MP3 VBR ~190 kbps
 
 Idempotent: first run backs up the raw mp3 to <vo-dir>/_raw/, every subsequent
 run re-reads from _raw/ so settings can be tweaked without compounding.
@@ -37,6 +40,10 @@ Config knobs:
   --no-limiter          Skip the limiter (debug only — re-introduces clipping risk)
   --silence-noise       silencedetect noise floor, dB (default -40)
   --silence-min         silencedetect minimum silence, sec (default 0.8)
+  --fade-head-ms        File-head fade-in length, ms (default 30)
+  --fade-tail-ms        File-tail fade-out length, ms (default 30)
+  --fade-boundary-ms    Per-boundary taper length around silences, ms (default 10)
+  --no-surgical-fades   Skip the fade pass (debug — re-introduces click risk)
   --dry-run             Print what would happen, don't write
 """
 
@@ -49,6 +56,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+import numpy as np
 from pedalboard import Limiter, Pedalboard, Reverb
 from pedalboard.io import AudioFile
 
@@ -114,14 +122,11 @@ def detect_nonsilent_regions(
 
 
 def write_timings(
-    raw_chapter_mp3: Path,
     out_path: Path,
     scene_ids: list[str],
-    noise_db: float,
-    min_silence_sec: float,
+    regions: list[tuple[float, float]],
 ) -> None:
-    """Compute timings.json from silence-detect on the raw stem and write to disk."""
-    regions = detect_nonsilent_regions(raw_chapter_mp3, noise_db, min_silence_sec)
+    """Write timings.json from pre-computed regions."""
     if len(regions) != len(scene_ids):
         msg = (
             f"silence-detect found {len(regions)} non-silent regions but config has "
@@ -146,6 +151,75 @@ def write_timings(
     print(f"  timings: {len(timings)} scenes → {out_path.name}")
 
 
+def apply_surgical_fades(
+    audio: np.ndarray,
+    sr: int,
+    regions: list[tuple[float, float]] | None,
+    head_ms: float,
+    tail_ms: float,
+    boundary_ms: float,
+) -> np.ndarray:
+    """Cosine-taper micro-fades to kill amplitude discontinuities.
+
+    Always: 30ms fade-in at file head, 30ms fade-out at file tail.
+    If regions is supplied: ~10ms fade-out ending at each region's endSec
+    and ~10ms fade-in starting at each region's startSec — kills the
+    ElevenLabs break-tag join clicks inside a single-stem chapter mp3.
+
+    Operates on a copy. Audio shape: (channels, samples) per pedalboard.io.
+    """
+    if audio.ndim == 1:
+        n_samples = audio.shape[0]
+    else:
+        n_samples = audio.shape[-1]
+
+    out = audio.copy()
+
+    def taper(n: int, direction: str) -> np.ndarray:
+        # Cosine taper: 'in' = 0→1, 'out' = 1→0
+        n = max(1, n)
+        if direction == "in":
+            return 0.5 * (1 - np.cos(np.linspace(0.0, np.pi, n))).astype(audio.dtype)
+        return 0.5 * (1 - np.cos(np.linspace(np.pi, 0.0, n))).astype(audio.dtype)
+
+    def mul(start: int, end: int, curve: np.ndarray) -> None:
+        start = max(0, start)
+        end = min(n_samples, end)
+        if end <= start:
+            return
+        c = curve[: end - start]
+        if audio.ndim == 1:
+            out[start:end] *= c
+        else:
+            out[..., start:end] *= c
+
+    head_n = int(sr * head_ms / 1000)
+    tail_n = int(sr * tail_ms / 1000)
+    bnd_n = int(sr * boundary_ms / 1000)
+
+    # File head + tail
+    mul(0, head_n, taper(head_n, "in"))
+    mul(n_samples - tail_n, n_samples, taper(tail_n, "out"))
+
+    # Per-boundary tapers around silence joins
+    if regions:
+        for i, (start_sec, end_sec) in enumerate(regions):
+            end_sample = int(round(end_sec * sr))
+            start_sample = int(round(start_sec * sr))
+
+            # Fade-out the last bnd_n samples of every region except the last
+            # (file-tail fade already handles the chapter's final word).
+            if i < len(regions) - 1:
+                mul(end_sample - bnd_n, end_sample, taper(bnd_n, "out"))
+
+            # Fade-in the first bnd_n samples of every region except the first
+            # (file-head fade already handles chapter open).
+            if i > 0:
+                mul(start_sample, start_sample + bnd_n, taper(bnd_n, "in"))
+
+    return out
+
+
 def process_file(
     raw_path: Path,
     out_path: Path,
@@ -156,11 +230,22 @@ def process_file(
     tp: float,
     limiter_threshold: float | None,
     dry_run: bool,
+    regions: list[tuple[float, float]] | None = None,
+    apply_fades: bool = True,
+    fade_head_ms: float = 30.0,
+    fade_tail_ms: float = 30.0,
+    fade_boundary_ms: float = 10.0,
 ) -> None:
     if dry_run:
         steps = []
         if lufs is not None:
             steps.append(f"loudnorm I={lufs} TP={tp}")
+        if apply_fades:
+            bnd_count = len(regions) if regions else 0
+            steps.append(
+                f"fades head={fade_head_ms}ms tail={fade_tail_ms}ms "
+                f"bnd={fade_boundary_ms}ms×{bnd_count}"
+            )
         steps.append(f"reverb wet={wet}")
         if limiter_threshold is not None:
             steps.append(f"limiter @{limiter_threshold}dB")
@@ -196,6 +281,15 @@ def process_file(
             audio = f.read(f.frames)
             sr = f.samplerate
             channels = f.num_channels
+        if apply_fades:
+            audio = apply_surgical_fades(
+                audio,
+                sr,
+                regions,
+                head_ms=fade_head_ms,
+                tail_ms=fade_tail_ms,
+                boundary_ms=fade_boundary_ms,
+            )
         effected = board(audio, sr)
 
         with AudioFile(str(out_wav), "w", sr, channels) as f:
@@ -272,6 +366,10 @@ def main() -> int:
     parser.add_argument("--no-limiter", action="store_true", help="Skip the limiter (debug only)")
     parser.add_argument("--silence-noise", type=float, default=-40.0, help="silencedetect noise floor dB (default -40)")
     parser.add_argument("--silence-min", type=float, default=0.8, help="silencedetect min silence sec (default 0.8)")
+    parser.add_argument("--fade-head-ms", type=float, default=30.0, help="File-head fade-in ms (default 30)")
+    parser.add_argument("--fade-tail-ms", type=float, default=30.0, help="File-tail fade-out ms (default 30)")
+    parser.add_argument("--fade-boundary-ms", type=float, default=10.0, help="Per-boundary taper ms (default 10)")
+    parser.add_argument("--no-surgical-fades", action="store_true", help="Skip the fade pass (debug only)")
     parser.add_argument("--dry-run", action="store_true", help="Preview without writing")
     args = parser.parse_args()
 
@@ -290,10 +388,16 @@ def main() -> int:
     raw_dir.mkdir(exist_ok=True)
     lufs = None if args.no_loudnorm else args.lufs
     limiter_threshold = None if args.no_limiter else args.limiter_threshold
+    apply_fades = not args.no_surgical_fades
 
     print(f"Post-processing ({mode}) in {vo_dir.relative_to(REPO_ROOT)}")
     if lufs is not None:
         print(f"  loudnorm: I={lufs} LUFS  TP={args.tp} dBTP")
+    if apply_fades:
+        print(
+            f"  fades:    head={args.fade_head_ms}ms  tail={args.fade_tail_ms}ms  "
+            f"bnd={args.fade_boundary_ms}ms"
+        )
     print(f"  reverb:   wet={args.wet}  room={args.room}  damping={args.damping}")
     if limiter_threshold is not None:
         print(f"  limiter:  threshold={limiter_threshold} dBTP")
@@ -311,15 +415,17 @@ def main() -> int:
                 print(f"error: {chapter_path} not found and no _raw/{chapter_path.name} backup", file=sys.stderr)
                 return 1
 
+        regions: list[tuple[float, float]] | None = None
         if not args.dry_run:
             scene_ids = load_scene_ids(vo_dir)
+            regions = detect_nonsilent_regions(
+                raw_backup, args.silence_noise, args.silence_min,
+            )
             timings_path = vo_dir / "chapter.timings.json"
             write_timings(
-                raw_chapter_mp3=raw_backup,
                 out_path=timings_path,
                 scene_ids=scene_ids,
-                noise_db=args.silence_noise,
-                min_silence_sec=args.silence_min,
+                regions=regions,
             )
 
         process_file(
@@ -332,6 +438,11 @@ def main() -> int:
             tp=args.tp,
             limiter_threshold=limiter_threshold,
             dry_run=args.dry_run,
+            regions=regions,
+            apply_fades=apply_fades,
+            fade_head_ms=args.fade_head_ms,
+            fade_tail_ms=args.fade_tail_ms,
+            fade_boundary_ms=args.fade_boundary_ms,
         )
     else:  # per-scene legacy
         for mp3 in files:
@@ -350,6 +461,11 @@ def main() -> int:
                 tp=args.tp,
                 limiter_threshold=limiter_threshold,
                 dry_run=args.dry_run,
+                regions=None,  # per-scene mode = head/tail fades only
+                apply_fades=apply_fades,
+                fade_head_ms=args.fade_head_ms,
+                fade_tail_ms=args.fade_tail_ms,
+                fade_boundary_ms=args.fade_boundary_ms,
             )
 
     print()

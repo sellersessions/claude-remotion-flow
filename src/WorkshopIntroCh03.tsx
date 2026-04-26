@@ -29,8 +29,11 @@ const {
 } = makeIntroChapter({
   slug: "workshop-intro-ch03",
   scenes: SCENES,
-  sourceMp4: "assets/source-clips/workshop-intro-chapters.mp4",
+  sourceMp4: "assets/source-clips/workshop-intro-chapters-no-audio.mp4",
   cardDurationFrames: 24, // 0.8s — short title flashes; source clip carries the screen time
+  // House bed shared with StackExplainer — masks micro-artefacts in the
+  // single-stem VO so editors can polish without Claude chasing every click.
+  musicBed: "assets/music/ssl-live-beds/penguinmusic-wings-196958.mp3",
 });
 
 export const workshopIntroCh03Schema: typeof introChapterSchema = schema;
