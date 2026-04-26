@@ -29,3 +29,8 @@ public/assets/voice/generated/
 scripts/voice/reference/*.wav
 scripts/voice/reference/*.mp3
 
+# Source-clip mp4s — large workshop footage. Symlinks were broken by
+# Remotion's webpack bundler in S16; switched to local real-file copies.
+# Recoverable from sibling repo workshop-intro-chapters/.
+public/assets/source-clips/
+

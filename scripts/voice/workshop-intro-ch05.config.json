@@ -1,8 +1,8 @@
 {
-  "_comment": "Workshop Intro Chapter 05 — Screenshots & Typora Markdown Workflow. Frame-aware tighten (5 scenes, ~115 words). Source: workshop-intro-chapters.mp4 chapter 05 (495.1-681.0s). 'Without shift' beat dropped per Danny's note. Themes + Mermaid kept as holding-screen interludes — Remotion will overlay diagrams later. House voice preset.",
+  "_comment": "Workshop Intro Chapter 05 — Screenshots & Typora Markdown Workflow. Single-stem rendering: scenes joined with break tags, one ElevenLabs call. Visual concerns (sourceStart, clipDurationSeconds, label, title) live in src/WorkshopIntroCh05.tsx. Source: workshop-intro-chapters.mp4 chapter 05 (495.1-681.0s). House voice preset.",
   "voice_id": "jQOgcOzmmipekvxJN09W",
   "model_id": "eleven_multilingual_v2",
-  "output_dir": "public/assets/voice/generated/IntroCh05",
+  "output_dir": "public/assets/voice/generated/workshop-intro-ch05",
   "default_voice_settings": {
     "stability": 0.31,
     "similarity_boost": 1.0,

@@ -50,18 +50,24 @@ import {
 //   - Clip-fit guard (warns when VO exceeds natural source-segment length)
 // ---------------------------------------------------------------------------
 
+export type SceneVisualProps = {
+  durationInFrames: number;
+  sceneId: string;
+};
+
 export type IntroChapterScene = {
   id: string;                  // matches voice config scene id
   title: string;               // chapter-card display title
   label: string;               // chapter-card eyebrow label
-  sourceStart: number;         // seconds into the source mp4
-  clipDurationSeconds: number; // natural length of the source-clip segment
+  sourceStart: number;         // seconds into the source mp4 (ignored when `visual` set)
+  clipDurationSeconds: number; // natural length of the source-clip segment (clip-fit guard)
+  visual?: React.ComponentType<SceneVisualProps>; // override: replaces source-mp4 clip for this scene
 };
 
 export type IntroChapterFactoryConfig = {
   slug: string;                // canonical slug, e.g. "workshop-intro-ch03"
   scenes: readonly IntroChapterScene[];
-  sourceMp4: string;           // staticFile path
+  sourceMp4?: string;          // staticFile path — required only if any scene lacks `visual`
   // Chapter card before each scene. Default: true. Pass false / array of
   // booleans|specs|null for fine control.
   cardBefore?: boolean | readonly (boolean | ChapterCardSpec | null)[];
@@ -269,6 +275,7 @@ export function makeIntroChapter(
           if (item.kind === "scene") {
             const scene = scenes[item.sceneIndex];
             const clipFrames = Math.ceil(scene.clipDurationSeconds * FPS);
+            const Visual = scene.visual;
             return (
               <Sequence
                 key={`scene-${scene.id}-${i}`}
@@ -277,12 +284,19 @@ export function makeIntroChapter(
                 name={`scene-${scene.id}`}
               >
                 <SceneExit durationInFrames={item.duration}>
-                  <SourceVideoScene
-                    sourceMp4={sourceMp4}
-                    startSeconds={scene.sourceStart}
-                    durationFrames={item.duration}
-                    clipDurationFrames={clipFrames}
-                  />
+                  {Visual ? (
+                    <AbsoluteFill>
+                      <SceneBG />
+                      <Visual durationInFrames={item.duration} sceneId={scene.id} />
+                    </AbsoluteFill>
+                  ) : sourceMp4 ? (
+                    <SourceVideoScene
+                      sourceMp4={sourceMp4}
+                      startSeconds={scene.sourceStart}
+                      durationFrames={item.duration}
+                      clipDurationFrames={clipFrames}
+                    />
+                  ) : null}
                 </SceneExit>
               </Sequence>
             );

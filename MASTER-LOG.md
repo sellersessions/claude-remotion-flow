@@ -8,9 +8,10 @@ Remotion composition rendering SSL 2026 promotional reel. 1920×1080, 30fps. 8 s
 
 ## Next Up
 
-1. [ ] **Render ch03 to MP4 to confirm clicks are studio-preview-only** — `npx remotion render WorkshopIntroCh03 out/WorkshopIntroCh03.mp4`. Strategic pivot Session 15: stop chasing studio-preview mixer artefacts. Final-render summing path differs; if clicks vanish in MP4 we ship as 80–90%-good for editor polish.
-2. [ ] **Decide on missing first card** — ElevenLabs still swallows the 0.5s lead break tag. Lean **(B) ship without first card** since music bed + scene cards 2-6 now mask the sparse opening; only re-render with `BREAK_LEAD_SEC=1.5` (~1k credits) if MP4 review shows the cold-open feels naked.
-3. [ ] **Phase 2 — Mirror factory to `WorkshopIntroCh05`** — new `slug + scenes` contract, single-stem VO, clip-fit guard. Config skeleton already at `scripts/voice/intro-ch05.config.json` — needs rename to `workshop-intro-ch05.config.json` + `clipDurationSeconds` per scene. Inherits everything from `makeIntroChapter` including the new music-bed wiring.
+1. [ ] **Build kinetic-typography motion recipe for ScenePlaceholder (RESUME HERE)** — Danny green-lit fastest-path approach: keep placeholder layout, add staggered motion. Per-scene: eyebrow label slide+fade (0–0.4s), title scale+stagger word-by-word (0.2–1.0s), caption word-reveal left-to-right (0.6–1.4s), accent line draw under title (0.8–1.2s). Continuous: gradient drift through scene + micro-breathe on title (1.000→1.005 over 4s). Replace "scaffold · scene-id · 9.3s" debug strip with thin progress bar. Easing 400–800ms, no bounce, per Danny's motion rules. Build time ~15 min — recipe applies to all future chapters with zero extra work. Then re-render `npm run render:workshop-intro-ch05`.
+2. [ ] **Render ch03 to MP4 to confirm clicks are studio-preview-only** — `npm run render:workshop-intro-ch03`. Strategic pivot Session 15. Note: source-clip symlink was replaced with a real copy in S16 to fix Remotion webpack 404 — ch03 should now render the same way.
+3. [ ] **Decide on missing first card** — ElevenLabs still swallows the 0.5s lead break tag. Lean **(B) ship without first card** since music bed + scene cards 2-6 now mask the sparse opening; only re-render with `BREAK_LEAD_SEC=1.5` (~1k credits) if MP4 review shows the cold-open feels naked.
+4. [ ] **Phonemes dictionary for brand mispronunciations** — Typora ("typraa"), Mermaid, GitHub. Build `data/phonemes.json` + SSML `<phoneme>` injection in generate-vo pre-process. Will recur on every ch01/02/04 with brand mentions. Catalogued as G7 in CH05-TEMPLATE-HARDENING.md.
 4. [ ] **Phase 3 — Batch ch01/02/04** (3 chapters; ElevenLabs cost only — F5-TTS not in this loop anymore).
 5. [ ] **Danny scrubs StackExplainer in Studio with the live mixer** → per-scene feedback + fine-tune mixer values. Drag-scrubber step = 0.05 (20 meaningful gain steps). VO-length cache now prevents the "calculating metadata" toast on every drag tick.
 6. [ ] **Render StackExplainer to MP4** — `npm run render:stack`. Lands at `out/StackExplainer.mp4`. Deferred until Danny's satisfied post-scrub.
@@ -29,7 +30,9 @@ Remotion composition rendering SSL 2026 promotional reel. 1920×1080, 30fps. 8 s
 19. [ ] Scene 6 CTA button restyle (Danny flagged, deferred).
 20. [ ] **Fix 2 pre-existing lint warnings** — `@remotion/non-pure-animation` at StackExplainer:894 + TreatmentExplainer:470. Render-farm flicker risk; live renders play fine. Low priority.
 21. [ ] **Embed 3 explainer MP4s in repo README** — deferred by Danny until all fine adjustments land; possibly via hosted (YouTube/Loom) links instead of raw embeds.
-22. [x] **ch03 audio polish pass — surgical fades, source-mp4 audio strip, music bed wired, ducker decommissioned, outro-boom timing** — Session 15.
+22. [x] **ch05 one-shot pipeline executed end-to-end** — config rename, single-stem ElevenLabs (769 credits), post-process w/ `--silence-min 1.3`, factory extended for per-scene visual override, ScenePlaceholder rendered, talking head dropped per Danny's call. Session 16.
+23. [x] **CH05-TEMPLATE-HARDENING.md briefing** — failings catalogue (1–18), gates G1–G12, recommended path. Saved at `docs/CH05-TEMPLATE-HARDENING.md`. Session 16.
+24. [x] **ch03 audio polish pass — surgical fades, source-mp4 audio strip, music bed wired, ducker decommissioned, outro-boom timing** — Session 15.
 23. [x] **Production spine refactor — single-stem VO + peak limiter + factory hardening + ch03 naming migration + docs/CONVENTIONS.md.** Session 14.
 24. [x] **Park F5-TTS pipeline** — fallback-only.
 25. [x] **Auditioner v2** — Session 8.
@@ -42,6 +45,28 @@ Remotion composition rendering SSL 2026 promotional reel. 1920×1080, 30fps. 8 s
 ---
 
 ## Session Log
+
+### Session 16 — Failings catalogue + ch05 one-shot + factory visual-override extension (26 Apr, 13:00–14:30 BST)
+
+- **Failings catalogue + hardening doc.** Pulled together every friction from S7–S15 ranked by time-cost: music ducking decommissioned (`void musicDuck;` lie), live mixer 3-session drag, Studio≠MP4 verify, source-mp4 audio bleed (S15), ElevenLabs lead-break swallowing, per-scene "rooms", visual-timeline drift, hot-reload trap, misdiagnosis cycles, naming drift, phoneme dictionary missing, retake credit cost, reverb opt-in, no fixture/golden, no clip-fit gate. Wrote to `docs/CH05-TEMPLATE-HARDENING.md` with G1–G12 gate proposals. Danny pivoted: skip the gate spec, build ch05 directly, let his ear/eye verify empirically.
+- **ch05 one-shot — 8-step pipeline executed.**
+  1. Renamed `intro-ch05.config.json` → `workshop-intro-ch05.config.json`, `output_dir` → `public/assets/voice/generated/workshop-intro-ch05`
+  2. Source mp4 audio strip already done in S15 (reused `workshop-intro-chapters-no-audio.mp4`)
+  3. `node --strip-types scripts/voice/generate-vo.ts ... --mode chapter` → 769 credits, 5 scenes joined by break tags, 1 MB raw
+  4. `python3 scripts/voice/post-process.py --target workshop-intro-ch05 --silence-min 1.3` (default 0.8s detected 7 regions vs 5 scenes — ElevenLabs put natural pauses inside scene-3 and scene-5 that registered as inter-scene silence; bumping min to 1.3s filtered internal pauses while keeping the real 1.5s break tags). Final 718.5 KB chapter.mp3 + chapter.timings.json
+  5. Wrote `src/WorkshopIntroCh05.tsx` mirroring ch03 contract (5 scenes, sourceStart 495.1–543.1, clipDuration 10–17s, musicBed = penguinmusic-wings)
+  6. Registered in `Root.tsx` + added `render:workshop-intro-ch05` npm script. Tsc clean (only pre-existing S14 DEFAULT_MIXER unused noise)
+  7. First render 404'd at frame 32 — **`workshop-intro-chapters-no-audio.mp4` was a symlink and Remotion webpack bundler doesn't follow symlinks.** Replaced symlink with real 87 MB copy. Re-rendered cleanly. 1991 frames @ 30fps, 8.4 MB MP4.
+  8. Danny watched: audio architecture works (music, narration, scene separation good), but visual was wrong — talking-head footage doesn't match a Typora/markdown chapter. Strategic pivot.
+- **Pivot: drop talking head, build per-scene React visuals.** Danny: "I'm wondering if Claude has eyes and ears and timing." Architecture: extend factory to support per-scene visual override; build native Remotion components for scenes 2/4/5; animate scene 1 drag-drop natively; scene 3 markdown side-by-side as native panel. Self-feedback loop: I extract frames from rendered MP4, Read PNGs, audit before showing Danny.
+- **Factory extension shipped.** `IntroChapterScene` gained optional `visual?: React.ComponentType<SceneVisualProps>`. `IntroChapterFactoryConfig.sourceMp4` now optional. Render loop branches: `Visual` wins over `SourceVideoScene` when set. ch03 backwards-compatible (no visual prop = same as before). New exported type: `SceneVisualProps`.
+- **ScenePlaceholder + v2 render.** Built `src/workshop-intro-ch05/ScenePlaceholder.tsx` — eyebrow label (mono, ACCENT_2 amber, uppercase tracked) + bold title + caption + debug strip ("scaffold · scene-id · Xs"). All 5 scenes wired to use it via `makePlaceholder(id)` factory. Tsc clean. Re-rendered: 6.4 MB, 66s. Frames 1/3/5 audited visually before hand-off — hierarchy + legibility solid.
+- **Fastest-path motion pitch.** Danny: "What's the fastest animation that we can do?" Pitched kinetic-typography card recipe — staggered reveals (label/title/caption/accent line), continuous gradient drift + title micro-breathe, progress bar replacing debug strip. ~15 min build time, scales to all 18 chapters. Awaiting green light at session close.
+- **Memory feedback locked.**
+  - `feedback_obsidian_vault_default.md` — Obsidian = default surface for markdown briefings; vault root is repo root.
+  - `feedback_no_uri_delivery.md` — clickable means clickable; iTerm2 only auto-detects `http/https/file`; default to `open` via Bash, never print custom-scheme URIs as a delivery channel; promise check before writing the word "click."
+- **Symlink-in-public bug catalogued.** Goes on the hardening list as G13 (or as a new pre-flight check inside `chapter:ship`): "Verify `public/assets/source-clips/<file>` is a real file, not a symlink — Remotion webpack bundler doesn't follow." Will hit ch01/02/04 if not fixed in template.
+- **Out of scope this session:** Render ch03 to MP4 (still item #2 Next Up). Phoneme dictionary build. The remaining real visuals for scenes 1–5 (deferred — if kinetic-typography pattern reads well, may not be needed at all).
 
 ### Session 15 — ch03 audio polish: surgical fades, source-mp4 audio strip, music bed, ducker decommissioned (26 Apr, 09:23 BST)
 

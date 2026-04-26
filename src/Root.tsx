@@ -24,6 +24,12 @@ import {
   calculateMetadata as workshopIntroCh03CalculateMetadata,
   FALLBACK_DURATION_IN_FRAMES as workshopIntroCh03FallbackDuration,
 } from "./WorkshopIntroCh03";
+import {
+  WorkshopIntroCh05,
+  workshopIntroCh05Schema,
+  calculateMetadata as workshopIntroCh05CalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as workshopIntroCh05FallbackDuration,
+} from "./WorkshopIntroCh05";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -82,7 +88,23 @@ export const RemotionRoot: React.FC = () => {
         schema={workshopIntroCh03Schema}
         defaultProps={{
           musicHigh: 0.15,
-          musicDuck: 0,
+          musicDuck: 1,
+          sfxIntroVolume: 0.7,
+          sfxOutroVolume: 0.7,
+        }}
+      />
+      <Composition
+        id="WorkshopIntroCh05"
+        component={WorkshopIntroCh05}
+        calculateMetadata={workshopIntroCh05CalculateMetadata}
+        durationInFrames={workshopIntroCh05FallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={workshopIntroCh05Schema}
+        defaultProps={{
+          musicHigh: 0.15,
+          musicDuck: 1,
           sfxIntroVolume: 0.7,
           sfxOutroVolume: 0.7,
         }}
