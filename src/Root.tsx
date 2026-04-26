@@ -1,5 +1,4 @@
 import { Composition } from "remotion";
-import { DEFAULT_MIXER } from "./explainer-shared";
 import {
   FormatExplainer,
   formatExplainerSchema,
@@ -30,6 +29,30 @@ import {
   calculateMetadata as workshopIntroCh05CalculateMetadata,
   FALLBACK_DURATION_IN_FRAMES as workshopIntroCh05FallbackDuration,
 } from "./WorkshopIntroCh05";
+import {
+  WorkshopVideo01TheSetup,
+  workshopVideo01TheSetupSchema,
+  calculateMetadata as workshopVideo01TheSetupCalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as workshopVideo01TheSetupFallbackDuration,
+} from "./WorkshopVideo01TheSetup";
+import {
+  WorkshopVideo02TheSystem,
+  workshopVideo02TheSystemSchema,
+  calculateMetadata as workshopVideo02TheSystemCalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as workshopVideo02TheSystemFallbackDuration,
+} from "./WorkshopVideo02TheSystem";
+import {
+  WorkshopVideo03TheToolkit,
+  workshopVideo03TheToolkitSchema,
+  calculateMetadata as workshopVideo03TheToolkitCalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as workshopVideo03TheToolkitFallbackDuration,
+} from "./WorkshopVideo03TheToolkit";
+import {
+  WorkshopOverview,
+  workshopOverviewSchema,
+  calculateMetadata as workshopOverviewCalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as workshopOverviewFallbackDuration,
+} from "./WorkshopOverview";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -104,6 +127,70 @@ export const RemotionRoot: React.FC = () => {
         schema={workshopIntroCh05Schema}
         defaultProps={{
           musicHigh: 0.15,
+          musicDuck: 1,
+          sfxIntroVolume: 0.7,
+          sfxOutroVolume: 0.7,
+        }}
+      />
+      <Composition
+        id="WorkshopVideo01TheSetup"
+        component={WorkshopVideo01TheSetup}
+        calculateMetadata={workshopVideo01TheSetupCalculateMetadata}
+        durationInFrames={workshopVideo01TheSetupFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={workshopVideo01TheSetupSchema}
+        defaultProps={{
+          musicHigh: 0.15,
+          musicDuck: 1,
+          sfxIntroVolume: 0.7,
+          sfxOutroVolume: 0.7,
+        }}
+      />
+      <Composition
+        id="WorkshopVideo02TheSystem"
+        component={WorkshopVideo02TheSystem}
+        calculateMetadata={workshopVideo02TheSystemCalculateMetadata}
+        durationInFrames={workshopVideo02TheSystemFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={workshopVideo02TheSystemSchema}
+        defaultProps={{
+          musicHigh: 0.15,
+          musicDuck: 1,
+          sfxIntroVolume: 0.7,
+          sfxOutroVolume: 0.7,
+        }}
+      />
+      <Composition
+        id="WorkshopVideo03TheToolkit"
+        component={WorkshopVideo03TheToolkit}
+        calculateMetadata={workshopVideo03TheToolkitCalculateMetadata}
+        durationInFrames={workshopVideo03TheToolkitFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={workshopVideo03TheToolkitSchema}
+        defaultProps={{
+          musicHigh: 0.15,
+          musicDuck: 1,
+          sfxIntroVolume: 0.7,
+          sfxOutroVolume: 0.7,
+        }}
+      />
+      <Composition
+        id="WorkshopOverview"
+        component={WorkshopOverview}
+        calculateMetadata={workshopOverviewCalculateMetadata}
+        durationInFrames={workshopOverviewFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={workshopOverviewSchema}
+        defaultProps={{
+          musicHigh: 0.35,
           musicDuck: 1,
           sfxIntroVolume: 0.7,
           sfxOutroVolume: 0.7,
