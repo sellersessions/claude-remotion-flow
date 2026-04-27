@@ -1,14 +1,18 @@
-# Claude Remotion Flow
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="assets/logo-light.svg">
+  <img alt="Claude Remotion Flow" src="assets/logo-dark.svg" width="600">
+</picture>
 
-> Programmatic video production pipeline.
-> Treatment-driven, Claude-controlled, beat-synced.
-
----
+<br/>
 
 ![Status](https://img.shields.io/badge/Status-Active-4A9BD9?style=for-the-badge)
 ![Version](https://img.shields.io/badge/Remotion-4.0.448-6C5CE7?style=for-the-badge)
 ![Packages](https://img.shields.io/badge/Packages-29-E74C3C?style=for-the-badge)
 ![Examples](https://img.shields.io/badge/3-Example_Comps-00B894?style=for-the-badge)
+
+**Programmatic video production pipeline.**
+**Treatment-driven, Claude-controlled, beat-synced.**
 
 > **New here?** The end-to-end recipe lives in [HOW-TO-SHIP-AN-EXPLAINER.md](./HOW-TO-SHIP-AN-EXPLAINER.md) — six steps from treatment to MP4.
 
