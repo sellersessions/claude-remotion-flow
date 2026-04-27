@@ -8,6 +8,7 @@
 ![Status](https://img.shields.io/badge/Status-Active-4A9BD9?style=for-the-badge)
 ![Version](https://img.shields.io/badge/Remotion-4.0.448-6C5CE7?style=for-the-badge)
 ![Packages](https://img.shields.io/badge/Packages-29-E74C3C?style=for-the-badge)
+![Examples](https://img.shields.io/badge/3-Example_Comps-00B894?style=for-the-badge)
 
 > **New here?** The end-to-end recipe lives in [HOW-TO-SHIP-AN-EXPLAINER.md](./HOW-TO-SHIP-AN-EXPLAINER.md) — six steps from treatment to MP4.
 
@@ -20,6 +21,22 @@ Video production has always been tool-first. Open After Effects, open Premiere, 
 This system flips it. **The treatment is the source code.** You describe what you want in a structured document — who's watching, what they should feel, what each scene shows, what audio plays when. Claude turns that into Remotion code. Remotion turns that into video. Every frame is a React render, every cut is a function call, every audio duck is a volume curve.
 
 The result: anyone who can describe a video can ship one. No timeline. No keyframes. No After Effects license. Just a treatment and a conversation.
+
+---
+
+## Claude Remotion Flow vs Traditional Video Pipelines
+
+| Dimension | After Effects / Premiere | Loom / Descript | Claude Remotion Flow |
+|---|---|---|---|
+| **Source of truth** | Project file (`.aep` / `.prproj`) | Recording + transcript | Treatment markdown — versioned, diffable, replayable |
+| **Animation** | Keyframes by hand | Templates only | `spring()` + `interpolate()` per scene, code-defined |
+| **Audio handling** | Manual ducking per clip | Auto-leveling only | `buildMusicVolume()` callback ducks under VO windows |
+| **Voice generation** | Record + edit manually | Pre-built voice tools | ElevenLabs cloned voice, regenerated on script change |
+| **Beat sync** | Drag clips to peaks manually | Not supported | librosa onset detector + auto-snap helper |
+| **Aspect ratios** | Re-edit per ratio | One per recording | Same TSX, render at any size (`--width=` / `--height=`) |
+| **Iteration cost** | Re-export per change | Re-record | Hot-reload in Studio, `npm run render` when locked |
+| **Collaboration** | `.aep` files in Dropbox | Cloud workspace | Git diff on a treatment doc |
+| **License** | Adobe CC subscription | SaaS subscription | MIT (Remotion is free for personal + < $5M revenue) |
 
 ---
 
@@ -438,6 +455,31 @@ Each explainer's schema exposes four mixer props as live sliders in the Studio P
 Drag any slider during playback — the render updates live, no code changes needed. Defaults live in `DEFAULT_MIXER` (`src/explainer-shared/metadata.ts`); overrides sit in each composition's `defaultProps` in `src/Root.tsx`.
 
 Remotion renders numeric schema props as `InputDragger` (drag-scrub). Step increments come from `.multipleOf()` on the Zod schema — the shipped examples use `0.05` for ~20 meaningful steps across the `0–1` range.
+
+---
+
+## Build Timeline
+
+| Milestone | What |
+|---|---|
+| Sessions 1–8 | SFX pipeline — scrape + audition + categorise. MANIFEST-driven library with shortlist-to-code helper. |
+| Sessions 9–11 | First explainers — TreatmentExplainer (3-layer treatment system) + StackExplainer (multi-scene). Beat-sync via librosa onsets. |
+| Session 12 | Live mixer via Zod schema. HOW-TO-SHIP-AN-EXPLAINER cookbook. Auto-snap helper. Shortlist-to-code generator. |
+| Sessions 13–14 | Production spine refactor — single-stem VO + peak limiter + factory hardening. Studio-tuned mixer defaults. |
+| Sessions 15–16 | Audio polish — surgical fades, music bed wired-on, ducker decommissioned. Intro chapter factory + visual override. |
+| Session 17 | Workshop video factory + V2 split + WorkshopOverview (chapter-mode VO with timings sidecar). |
+
+---
+
+## Repos
+
+| Repo | What |
+|---|---|
+| [`claude-remotion-flow`](https://github.com/sellersessions/claude-remotion-flow) | This repo — programmatic video production. Treatment-driven, beat-synced. |
+| [`claude-video-editing-flow`](https://github.com/sellersessions/claude-video-editing-flow) | Selection-led short-form cuts. Drop a video, tick candidates, render. |
+| [`claude-ui-workflow`](https://github.com/sellersessions/claude-ui-workflow) | Design intelligence pipeline — turn inspiration into production UI. |
+
+Built on top of [`ClaudeFlow-Agent`](https://github.com/sellersessions/ClaudeFlow-Agent) — the personal AI operating system that ties them together.
 
 ---
 
