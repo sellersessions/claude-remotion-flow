@@ -21,7 +21,7 @@ type SceneCopy = { label: string; title: string; caption: string };
 const COPY: Record<string, SceneCopy> = {
   "scene-1-welcome": { label: "AI Workshop · 01 / 04", title: "Self-Drive Course",       caption: "You read · you ask Claude · Claude builds. No instructor. No helpdesk." },
   "scene-2-loop":    { label: "AI Workshop · 02 / 04", title: "The Module Loop",         caption: "Read README · right-click the setup file · copy path · paste into Claude · verify." },
-  "scene-3-path":    { label: "AI Workshop · 03 / 04", title: "Seven Modules, In Order", caption: "Install · CLAUDE.md · Master Log · Slash · MCPs · Agents — each one builds on the last." },
+  "scene-3-path":    { label: "AI Workshop · 03 / 04", title: "Seven Modules, In Order", caption: "Install · Copilot · CLAUDE.md · Master Log · Slash · MCPs · Agents — each one builds on the last." },
   "scene-4-start":   { label: "AI Workshop · 04 / 04", title: "Start Here",              caption: "Open Module-000 · install Claude Code · the rest unlocks one module at a time." },
 };
 

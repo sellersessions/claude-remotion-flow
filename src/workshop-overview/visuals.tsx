@@ -76,7 +76,7 @@ export const KineticThreeBeat: React.FC<{ durationInFrames: number }> = ({ durat
 const LOOP_TILES = [
   { cmd: "read README",          hint: "understand what you're building" },
   { cmd: "right-click · copy path", hint: "get the setup file path" },
-  { cmd: "paste path into Claude",   hint: "Clawd opens it for you" },
+  { cmd: "paste path into Claude",   hint: "Claude opens it for you" },
   { cmd: "answer + verify",      hint: "run · check · then move on" },
 ] as const;
 
@@ -208,10 +208,9 @@ export const ModulePathDiagram: React.FC<{ durationInFrames: number }> = ({ dura
         style={{
           display: "flex",
           alignItems: "center",
-          flexWrap: "wrap",
           justifyContent: "center",
-          gap: 8,
-          maxWidth: "92%",
+          gap: 4,
+          maxWidth: "100%",
         }}
       >
         {MODULES.map((mod, i) => {
@@ -222,20 +221,20 @@ export const ModulePathDiagram: React.FC<{ durationInFrames: number }> = ({ dura
           });
           const isActive = i === activeIdx;
           return (
-            <div key={mod.code} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div key={mod.code} style={{ display: "flex", alignItems: "center", gap: 4 }}>
               <div
                 style={{
                   opacity: reveal,
                   transform: `translateY(${(1 - reveal) * 10}px) scale(${isActive ? 1.06 : 1})`,
-                  padding: "12px 16px",
+                  padding: "10px 12px",
                   borderRadius: 10,
                   background: isActive ? `${ACCENT}22` : "rgba(255, 255, 255, 0.04)",
                   border: `1.5px solid ${isActive ? ACCENT : `${TEXT_DIM}55`}`,
-                  minWidth: 76,
+                  minWidth: 60,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  gap: 4,
+                  gap: 3,
                   transition: "all 0.2s",
                   boxShadow: isActive ? `0 12px 28px ${ACCENT}30` : "none",
                 }}
@@ -244,7 +243,7 @@ export const ModulePathDiagram: React.FC<{ durationInFrames: number }> = ({ dura
                   style={{
                     fontFamily: MONO,
                     color: isActive ? ACCENT : ACCENT_2,
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: 700,
                     letterSpacing: "0.02em",
                   }}
@@ -255,8 +254,9 @@ export const ModulePathDiagram: React.FC<{ durationInFrames: number }> = ({ dura
                   style={{
                     fontFamily: FONT,
                     color: isActive ? TEXT : TEXT_DIM,
-                    fontSize: 13,
+                    fontSize: 11,
                     letterSpacing: "0.02em",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   {mod.name}
@@ -267,7 +267,7 @@ export const ModulePathDiagram: React.FC<{ durationInFrames: number }> = ({ dura
                   style={{
                     fontFamily: MONO,
                     color: i < activeIdx ? ACCENT : `${TEXT_DIM}99`,
-                    fontSize: 22,
+                    fontSize: 16,
                     transition: "color 0.2s",
                   }}
                 >
@@ -291,13 +291,13 @@ export const CdTerminal: React.FC<{ durationInFrames: number }> = () => {
     extrapolateRight: "clamp",
     easing: EASE_OUT,
   });
-  const cmdReveal = interpolate(frame, [30, 78], [0, 44], {
+  const fullCmd = "cd Module-000-Installing-Claude-Code-Terminal";
+  const cmdReveal = interpolate(frame, [30, 78], [0, fullCmd.length], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: EASE_OUT,
   });
   const cursorBlink = Math.floor(frame / 18) % 2 === 0;
-  const fullCmd = "cd Module-000-Installing-Claude-Code-Terminal";
   const visibleCmd = fullCmd.slice(0, Math.floor(cmdReveal));
 
   return (
