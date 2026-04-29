@@ -53,6 +53,24 @@ import {
   calculateMetadata as workshopOverviewCalculateMetadata,
   FALLBACK_DURATION_IN_FRAMES as workshopOverviewFallbackDuration,
 } from "./WorkshopOverview";
+import {
+  UmbrellaTutorial,
+  umbrellaTutorialSchema,
+  calculateUmbrellaTutorialMetadata,
+  UMBRELLA_TUTORIAL_DURATION,
+} from "./compositions/UmbrellaTutorial";
+import {
+  ClaudeCodeToolsWindows,
+  claudeCodeToolsWindowsSchema,
+  calculateMetadata as claudeCodeToolsWindowsCalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as claudeCodeToolsWindowsFallbackDuration,
+} from "./ClaudeCodeToolsWindows";
+import {
+  ClaudeUiWorkflowExplainer,
+  claudeUiWorkflowExplainerSchema,
+  calculateMetadata as claudeUiWorkflowExplainerCalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as claudeUiWorkflowExplainerFallbackDuration,
+} from "./ClaudeUiWorkflowExplainer";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -78,10 +96,12 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         schema={treatmentExplainerSchema}
         defaultProps={{
-          musicHigh: 0.4,
-          musicDuck: 0.05,
           sfxIntroVolume: 0.65,
           sfxOutroVolume: 0.55,
+          // musicHigh/musicDuck retained at 0 for type compat with shared
+          // ExplainerProps — no longer used (BED_VOLUME is hard-coded in source).
+          musicHigh: 0,
+          musicDuck: 0,
         }}
       />
       <Composition
@@ -94,10 +114,12 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         schema={stackExplainerSchema}
         defaultProps={{
-          musicHigh: 0.1,
-          musicDuck: 0.5,
           sfxIntroVolume: 0.55,
           sfxOutroVolume: 0.55,
+          // musicHigh/musicDuck retained at 0 for type compat with shared
+          // ExplainerProps — no longer used (BED_VOLUME is hard-coded in source).
+          musicHigh: 0,
+          musicDuck: 0,
         }}
       />
       <Composition
@@ -194,6 +216,48 @@ export const RemotionRoot: React.FC = () => {
           musicDuck: 1,
           sfxIntroVolume: 0.7,
           sfxOutroVolume: 0.7,
+        }}
+      />
+      <Composition
+        id="UmbrellaTutorial"
+        component={UmbrellaTutorial}
+        calculateMetadata={calculateUmbrellaTutorialMetadata}
+        durationInFrames={UMBRELLA_TUTORIAL_DURATION}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={umbrellaTutorialSchema}
+        defaultProps={{ sfxIntroVolume: 1, sfxOutroVolume: 0.55 }}
+      />
+      <Composition
+        id="ClaudeCodeToolsWindows"
+        component={ClaudeCodeToolsWindows}
+        calculateMetadata={claudeCodeToolsWindowsCalculateMetadata}
+        durationInFrames={claudeCodeToolsWindowsFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={claudeCodeToolsWindowsSchema}
+        defaultProps={{
+          bedVolume: 0.1,
+          sfxIntroVolume: 0.5,
+          sfxOutroVolume: 0.5,
+        }}
+      />
+      <Composition
+        id="ClaudeUiWorkflowExplainer"
+        component={ClaudeUiWorkflowExplainer}
+        calculateMetadata={claudeUiWorkflowExplainerCalculateMetadata}
+        durationInFrames={claudeUiWorkflowExplainerFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={claudeUiWorkflowExplainerSchema}
+        defaultProps={{
+          musicHigh: 0.10,
+          musicDuck: 0,
+          sfxIntroVolume: 0.55,
+          sfxOutroVolume: 0.55,
         }}
       />
     </>

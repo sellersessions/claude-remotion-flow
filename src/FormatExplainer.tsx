@@ -21,6 +21,8 @@ import { noise2D } from "@remotion/noise";
 import { getAudioDurationInSeconds } from "@remotion/media-utils";
 import { z } from "zod";
 
+import { BEDS } from "./explainer-shared/audio-beds";
+
 // ---------------------------------------------------------------------------
 // VO scaffolding
 // ---------------------------------------------------------------------------
@@ -1342,47 +1344,16 @@ const SceneExit: React.FC<{ durationInFrames: number; children: React.ReactNode 
 };
 
 const AUDIO_SRC = {
-  musicBed: staticFile("assets/sfx/library/impacts/vasilyatsevich-brain-implant-cyberpunk-sci-fi-trailer-action-intro-330416.mp3"),
+  musicBed: staticFile(BEDS.HOUSE_DEFAULT),
   riser: staticFile("assets/sfx/library/risers/soundreality-riser-wildfire-285209.mp3"),
   impact: staticFile("assets/sfx/library/stingers/alex_kizenkov-aggressive-huge-hit-logo-139134.mp3"),
 };
 
 // ---------------------------------------------------------------------------
-// Music ducking helper
+// Music bed volume (flat — no ducking)
 // ---------------------------------------------------------------------------
 
-const MUSIC_HIGH = 0.55;
-const MUSIC_DUCK = 0.2;
-const DUCK_RAMP = 15; // frames to ramp in/out
-
-/**
- * Returns a frame-dependent volume callback that ducks from MUSIC_HIGH to
- * MUSIC_DUCK during each VO window, then ramps back. Pass cumulativeStarts
- * (absolute frame start of each VO) and sceneDurations so we know where
- * each VO ends.
- */
-function buildMusicVolume(
-  cumulativeStarts: number[],
-  sceneDurations: number[],
-): (frame: number) => number {
-  return (frame: number) => {
-    let vol = MUSIC_HIGH;
-    for (let i = 0; i < cumulativeStarts.length; i++) {
-      const start = cumulativeStarts[i];
-      const dur = sceneDurations[i];
-      const end = start + dur;
-      const duckVol = interpolate(
-        frame,
-        [start, start + DUCK_RAMP, end - DUCK_RAMP, end],
-        [MUSIC_HIGH, MUSIC_DUCK, MUSIC_DUCK, MUSIC_HIGH],
-        { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-      );
-      // Apply ducking for this window — take the minimum so windows don't fight
-      vol = Math.min(vol, duckVol);
-    }
-    return vol;
-  };
-}
+const BED_VOLUME = 0.08;
 
 /**
  * Compute the absolute timeline start of each scene, accounting for
@@ -1411,12 +1382,11 @@ export const FormatExplainer: React.FC<FormatExplainerProps> = ({ voiceover }) =
       : [...FALLBACK_SCENE_DURATIONS];
 
   const cumulativeStarts = computeCumulativeStarts(sceneDurations);
-  const musicVolume = buildMusicVolume(cumulativeStarts, sceneDurations);
 
   return (
     <>
-      {/* Music bed — volume ducks during each VO window */}
-      <Audio src={AUDIO_SRC.musicBed} volume={musicVolume} />
+      {/* Music bed — flat volume, no ducking */}
+      <Audio src={AUDIO_SRC.musicBed} volume={BED_VOLUME} />
 
       {/* Riser SFX — fixed to scene opener */}
       <Sequence  durationInFrames={90}>

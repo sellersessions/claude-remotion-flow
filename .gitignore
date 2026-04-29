@@ -34,3 +34,11 @@ scripts/voice/reference/*.mp3
 # Recoverable from sibling repo workshop-intro-chapters/.
 public/assets/source-clips/
 
+# Loom-cut MP4 binaries — large, sourced from sibling repo
+# Claude-Video-Editing-Flow/assets/loom-cuts/<series>_mastered/.
+_loom-cuts/
+public/assets/loom-cuts/
+
+# Screenshots / browser-automation captures — per CLAUDE.md project rule.
+_captures/
+

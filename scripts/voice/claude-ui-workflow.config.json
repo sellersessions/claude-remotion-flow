@@ -1,0 +1,43 @@
+{
+  "_comment": "Claude UI Workflow explainer — SSL 2026 conference (9 May). 7 scenes, ~166 words. Single-stem chapter render: scenes joined with break tags, one ElevenLabs call. Visual concerns (titles, motion, on-screen text) live in src/ClaudeUiWorkflowExplainer.tsx and treatments/claude-ui-workflow-vo.md — this file is voice-generation only.",
+  "voice_id": "jQOgcOzmmipekvxJN09W",
+  "model_id": "eleven_multilingual_v2",
+  "output_dir": "public/assets/voice/generated/claude-ui-workflow",
+  "default_voice_settings": {
+    "stability": 0.31,
+    "similarity_boost": 1.0,
+    "style": 0.0,
+    "use_speaker_boost": true,
+    "speed": 0.9
+  },
+  "scenes": [
+    {
+      "id": "scene-1-hook",
+      "text": "You're an Amazon seller. You need a landing page. The AI tools you've tried — they give you something that looks like AI made it."
+    },
+    {
+      "id": "scene-2-turn",
+      "text": "What if you could have agency-quality design — without the agency? Without three weeks. Without twenty grand."
+    },
+    {
+      "id": "scene-3-intake",
+      "text": "Drop in a URL. The system extracts the brand DNA. Colours. Fonts. Voice. Hierarchy. All of it — locked as your source of truth."
+    },
+    {
+      "id": "scene-4-system",
+      "text": "From there, fifteen design databases — a hundred and sixty-five rules — write the brief themselves. Stitch paints the page. The audit catches every drift before you see it."
+    },
+    {
+      "id": "scene-5-proof",
+      "text": "Three real brands ran the full pipeline. Re Tech UK — twenty-seven out of thirty. Databrill — twenty-seven. Push-Pull Agency — twenty-eight. All shipped first-pass."
+    },
+    {
+      "id": "scene-6-time",
+      "text": "Push-Pull took about fifty minutes of operator time. Most of that — making taste calls in Stitch. The system did the rest."
+    },
+    {
+      "id": "scene-7-cta",
+      "text": "It's free. It's yours. Pull the repo. Run it on your brand. Get to work."
+    }
+  ]
+}

@@ -30,7 +30,6 @@ import {
   TEXT,
   TEXT_DIM,
   VO_PRE_PAD_FRAMES,
-  buildMusicVolume,
   computeTimeline,
   easeIn,
   fallbackDurationInFrames,
@@ -43,6 +42,7 @@ import {
   SceneBG,
   SceneExit,
   TRANS,
+  BEDS,
 } from "./explainer-shared";
 
 // ---------------------------------------------------------------------------
@@ -85,9 +85,10 @@ const CARD_BEFORE = [
   { label: "Recap", title: "The Pipeline" },  // before S9 — process flow
 ] as const;
 
-// Music bed — penguinmusic-wings (83.5s, 4 onsets ≥ 1.0 strength, different
-// texture from TreatmentExplainer's through-the-clouds). Session 10 pick.
-const MUSIC_BED = "assets/music/ssl-live-beds/penguinmusic-wings-196958.mp3";
+// Music bed — HOUSE_DEFAULT (10:13 cinematic-ambient drop-in bed). Plays at
+// BED_VOLUME flat across the whole comp — no ducking.
+const MUSIC_BED = BEDS.HOUSE_DEFAULT;
+const BED_VOLUME = 0.10;
 
 // Beat-snap left empty in the first pass — the wings bed's strong onsets
 // (376/638/826/1163/1210/1426/1791) don't land within ~25f of the natural
@@ -125,8 +126,6 @@ export const stackExplainerSchema = z.object({
   // 20 meaningful steps across the 0–1 gain range; 0.01 was too fine
   // to feel responsive during drag.
   // Values are absolute gains (0 = silent, 1 = unity).
-  musicHigh: z.number().min(0).max(1).multipleOf(0.05),
-  musicDuck: z.number().min(0).max(1).multipleOf(0.05),
   sfxIntroVolume: z.number().min(0).max(1).multipleOf(0.05),
   sfxOutroVolume: z.number().min(0).max(1).multipleOf(0.05),
 });
@@ -1577,8 +1576,6 @@ const SCENE_COMPONENTS: React.FC[] = [
 export const StackExplainer: React.FC<ExplainerProps> = ({
   voiceover,
   voLengths,
-  musicHigh,
-  musicDuck,
   sfxIntroVolume,
   sfxOutroVolume,
 }) => {
@@ -1601,26 +1598,10 @@ export const StackExplainer: React.FC<ExplainerProps> = ({
   const visualEnd = PRE_ROLL_FRAMES + visualFrames;
   const totalFrames = visualEnd + POST_ROLL_FRAMES;
 
-  // Build VO windows in absolute composition frames for the music-duck
-  // envelope. Each scene's VO starts at visualStart + sceneStart + pre-pad.
-  const voWindows: Array<{ start: number; end: number }> = [];
-  for (let i = 0; i < SCENE_AUDIO_FILES.length; i++) {
-    if (!SCENE_VO_ENABLED[i]) continue;
-    const start = visualStart + sceneStarts[i] + VO_PRE_PAD_FRAMES;
-    voWindows.push({ start, end: start + voLengthsFinal[i] });
-  }
-
-  const musicVolume = buildMusicVolume({
-    visualEnd,
-    voWindows,
-    musicHigh,
-    musicDuck,
-  });
-
   return (
     <>
-      {/* Music bed — wings (83.5s source, trimmed at totalFrames). */}
-      <Audio src={staticFile(MUSIC_BED)} volume={musicVolume} endAt={totalFrames} />
+      {/* Music bed — flat volume, no ducking */}
+      <Audio src={staticFile(MUSIC_BED)} volume={BED_VOLUME} endAt={totalFrames} />
 
       {/* Intro whoosh — peak lands at PRE_ROLL_FRAMES, under the title. */}
       <Sequence durationInFrames={SFX_INTRO_LEN_FRAMES} name="SFX-intro">

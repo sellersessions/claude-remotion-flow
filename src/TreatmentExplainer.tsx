@@ -27,7 +27,6 @@ import {
   TEXT,
   TEXT_DIM,
   VO_PRE_PAD_FRAMES,
-  buildMusicVolume,
   computeTimeline,
   easeIn,
   fallbackDurationInFrames,
@@ -41,6 +40,7 @@ import {
   SceneBG,
   SceneExit,
   TRANS,
+  BEDS,
 } from "./explainer-shared";
 
 // ---------------------------------------------------------------------------
@@ -77,9 +77,13 @@ const CARD_BEFORE: Array<ChapterCardSpec | null> = [
   null, // before S6 (pipeline)
 ];
 
-// Music bed — calming cinematic ambient, 98.95s source trimmed to comp length.
-const MUSIC_BED =
-  "assets/music/ssl-live-beds/penguinmusic-through-the-clouds-calming-cinematic-ambient-200392.mp3";
+// Music bed — HOUSE_DEFAULT (10:13 cinematic-ambient drop-in bed). Plays at
+// BED_VOLUME flat across the whole comp — no ducking. The BEAT_SNAP_FRAMES
+// below were tuned against the previous through-the-clouds source — they no
+// longer land on bed onsets, but the cuts still happen at those frames and
+// the visual rhythm is unchanged.
+const MUSIC_BED = BEDS.HOUSE_DEFAULT;
+const BED_VOLUME = 0.12;
 
 // Beat-snap — shift scene starts onto librosa onset markers where the cost is
 // trivial. Source: scripts/music/output/through-the-clouds-onsets.json.
@@ -114,8 +118,6 @@ export const treatmentExplainerSchema = z.object({
   // Live mixer — Remotion's InputDragger in the Props panel; drag
   // horizontally to scrub, or click to type. .multipleOf(0.05) gives
   // 20 meaningful steps across the 0–1 gain range.
-  musicHigh: z.number().min(0).max(1).multipleOf(0.05),
-  musicDuck: z.number().min(0).max(1).multipleOf(0.05),
   sfxIntroVolume: z.number().min(0).max(1).multipleOf(0.05),
   sfxOutroVolume: z.number().min(0).max(1).multipleOf(0.05),
 });
@@ -754,8 +756,6 @@ const SCENE_COMPONENTS: React.FC[] = [
 export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({
   voiceover,
   voLengths,
-  musicHigh,
-  musicDuck,
   sfxIntroVolume,
   sfxOutroVolume,
 }) => {
@@ -781,29 +781,12 @@ export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({
   const visualEnd = PRE_ROLL_FRAMES + visualFrames;
   const totalFrames = visualEnd + POST_ROLL_FRAMES;
 
-  // VO windows in absolute composition frames. Music ducks only during
-  // these — scene cards + VO pre/post pad sit at full bed volume.
-  const voWindows: Array<{ start: number; end: number }> = [];
-  for (let i = 0; i < SCENE_AUDIO_FILES.length; i++) {
-    if (!SCENE_VO_ENABLED[i]) continue;
-    const start = visualStart + sceneStarts[i] + VO_PRE_PAD_FRAMES;
-    voWindows.push({ start, end: start + voLengthsFinal[i] });
-  }
-
-  const musicVolume = buildMusicVolume({
-    visualEnd,
-    voWindows,
-    musicHigh,
-    musicDuck,
-  });
-
   return (
     <>
-      {/* Music bed — fades in with the whoosh during pre-roll, ducks under
-          each VO, fades to zero at visualEnd. endAt trims the 99s source. */}
+      {/* Music bed — flat volume, no ducking. endAt trims at totalFrames. */}
       <Audio
         src={staticFile(MUSIC_BED)}
-        volume={musicVolume}
+        volume={BED_VOLUME}
         endAt={totalFrames}
       />
 
