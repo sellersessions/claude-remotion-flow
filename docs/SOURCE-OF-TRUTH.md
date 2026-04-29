@@ -66,7 +66,7 @@ B = pre-recorded tutorial. **Bed** column shows what's wired today.
 | 7 | `WorkshopVideo02TheSystem` | A (factory) | wings | factory | ⚠️ same | 0.7 / 0.7 | factory | single-stem chapter |
 | 8 | `WorkshopVideo03TheToolkit` | A (factory) | wings | factory | ⚠️ same | 0.7 / 0.7 | factory | single-stem chapter |
 | 9 | `WorkshopOverview` | A (factory) | cherry-orchard (deliberate signature pick) | factory `musicHigh 0.35` | ⚠️ same | 0.7 / 0.7 | factory | single-stem chapter |
-| 10 | `UmbrellaTutorial` | B (custom) | none | n/a | n/a | 1.0 / 0.55 | manual SFX, no shared envelope | n/a (recorded VO) |
+| 10 | `UmbrellaTutorial` | B (custom) | HOUSE_DEFAULT | flat 0.10 | ❌ never had it | 1.0 / 0.55 | manual SFX, no shared envelope | loudnorm + limiter (Loom) |
 | 11 | `ClaudeCodeToolsWindows` | B (TimelineAudio) | HOUSE_DEFAULT | `bed.volume=0.1` via `TimelineAudio` | ❌ never had it | 0.5 / 0.5 | `TimelineAudio` (sequential mode) | n/a (recorded VO, Loom cuts) |
 
 **What this table tells us:**

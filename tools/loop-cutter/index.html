@@ -197,7 +197,9 @@ input[type=range] { cursor: pointer; }
 .ruler-wrap {
   position: relative; height: 28px; background: rgba(12,3,34,0.55);
   border-bottom: 1px solid var(--color-divider); overflow: hidden;
+  cursor: cell;
 }
+.ruler-wrap:hover { background: rgba(251,191,36,0.08); }
 #rulerCanvas { position:absolute; inset:0; width:100%; height:100%; }
 .waveform-wrap {
   position: relative; height: 240px; cursor: crosshair; overflow: hidden;
@@ -437,6 +439,83 @@ kbd {
   box-shadow: 0 0 14px rgba(117,62,247,0.45);
 }
 
+/* ── Anchor cluster (Lock first beat) ─── */
+.anchor-group {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 8px; border-radius: 999px;
+  background: rgba(12,3,34,0.45); border: 1px solid var(--color-border);
+  transition: all var(--transition);
+}
+.anchor-group.locked { border-color: rgba(251,191,36,0.40); background: rgba(251,191,36,0.06); }
+.anchor-group .anchor-label { font-size: 11px; color: var(--color-text-muted); font-weight: 500; }
+.anchor-group .anchor-time {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  background: transparent; border: none; color: var(--color-text);
+  width: 76px; padding: 2px 4px; border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+.anchor-group .anchor-time:not(:disabled):hover,
+.anchor-group .anchor-time:focus {
+  background: var(--color-surface-offset); outline: none;
+}
+.anchor-group .anchor-time:disabled { color: var(--ss-gold); cursor: default; }
+.anchor-group.locked .anchor-time { color: var(--ss-gold); }
+.btn-anchor-lock {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 999px;
+  border: 1px solid var(--color-border); color: var(--color-text-muted);
+  background: rgba(26,26,46,0.55); transition: all var(--transition);
+}
+.btn-anchor-lock:hover { color: var(--color-text); border-color: var(--color-primary); }
+.btn-anchor-lock.locked { color: var(--ss-gold); border-color: rgba(251,191,36,0.55); background: rgba(251,191,36,0.10); }
+.btn-anchor-lock svg { width: 13px; height: 13px; }
+.btn-anchor-set {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  padding: 4px 9px; border-radius: 6px; color: var(--color-text-muted);
+  background: rgba(26,26,46,0.55); border: 1px solid var(--color-border);
+  letter-spacing: 0.4px; transition: all var(--transition);
+}
+.btn-anchor-set:hover:not(:disabled) { color: #fff; background: rgba(117,62,247,0.18); border-color: var(--color-primary); }
+.btn-anchor-set:disabled { opacity: 0.4; cursor: not-allowed; }
+.anchor-nudge { display: inline-flex; gap: 2px; }
+.anchor-nudge button {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+  padding: 4px 6px; min-width: 22px; border-radius: 4px;
+  background: rgba(26,26,46,0.55); border: 1px solid var(--color-border);
+  color: var(--color-text-muted); transition: all var(--transition);
+}
+.anchor-nudge button:hover:not(:disabled) { color: #fff; background: rgba(117,62,247,0.18); border-color: var(--color-primary); }
+.anchor-nudge button:disabled { opacity: 0.4; cursor: not-allowed; }
+.beat-pill.locked { color: var(--ss-gold); border-color: rgba(251,191,36,0.40); background: rgba(251,191,36,0.08); }
+.beat-lock-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 999px;
+  border: 1px solid rgba(251,191,36,0.40); background: rgba(251,191,36,0.08);
+  color: var(--ss-gold);
+}
+.beat-lock-chip button {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 999px;
+  background: rgba(251,191,36,0.15); color: var(--ss-gold);
+  font-size: 11px; line-height: 1; border: none;
+  transition: all var(--transition);
+}
+.beat-lock-chip button:hover { background: var(--ss-gold); color: #1a0d3d; }
+.btn-add-lock {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  padding: 4px 9px; border-radius: 6px;
+  background: rgba(26,26,46,0.55); border: 1px solid var(--color-border);
+  color: var(--color-text-muted); letter-spacing: 0.4px;
+  transition: all var(--transition);
+}
+.btn-add-lock:hover { color: var(--ss-gold); background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.40); }
+.mini-input.derived {
+  color: var(--ss-gold); border-color: rgba(251,191,36,0.45); background: rgba(251,191,36,0.06);
+}
+.mini-input.derived:focus { box-shadow: 0 0 0 3px rgba(251,191,36,0.18); }
+
 /* ── Tap tempo flash ─────────────────── */
 .tap-flash { animation: tap-pulse 0.18s ease-out; }
 @keyframes tap-pulse {
@@ -453,6 +532,26 @@ kbd {
 }
 .btn-audition:hover { background: rgba(117,62,247,0.18); border-color: var(--color-primary); color: #fff; }
 .btn-audition svg { width: 13px; height: 13px; }
+
+/* ── Discoverability hint pill ─────────── */
+.hint-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: 8px 16px; padding: 6px 12px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--ss-gold);
+  background: rgba(251,191,36,0.06);
+  border: 1px solid rgba(251,191,36,0.32);
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+.hint-pill button {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 999px;
+  background: rgba(251,191,36,0.18); color: var(--ss-gold);
+  font-size: 11px; line-height: 1; border: none;
+  transition: all var(--transition);
+}
+.hint-pill button:hover { background: var(--ss-gold); color: #1a0d3d; }
 
 /* ── Hidden helper ─────────────────────── */
 .hidden { display: none !important; }
@@ -483,7 +582,7 @@ kbd {
   </div>
   <div class="topbar-actions">
     <button class="btn btn-primary btn-sm" id="btnCopyClaudeCmd" data-tip="Copy loop_bed.py command for Claude" data-tip-pos="below"><i data-lucide="terminal"></i> Copy Claude command</button>
-    <button class="theme-btn" id="btnHelp" data-tip="Space play · I/O set in/out · [/] nudge in · {/} nudge out · L loop · Esc stop" data-tip-pos="below" aria-label="Keyboard shortcuts">
+    <button class="theme-btn" id="btnHelp" data-tip="Space play/pause · Shift+Space restart from anchor · I/O set in/out · [/] nudge in · {/} nudge out · L loop · Esc stop" data-tip-pos="below" aria-label="Keyboard shortcuts">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
     </button>
     <button class="theme-btn" id="themeToggle" data-tip="Toggle dark / light" data-tip-pos="below" aria-label="Toggle theme">
@@ -519,9 +618,24 @@ kbd {
       <button class="btn btn-ghost btn-sm" id="btnTapTempo" data-tip="Tap 4× in time to set BPM">Tap</button>
       <label for="beatsPerBar">Beats/bar</label>
       <input class="mini-input" type="number" id="beatsPerBar" min="1" max="12" step="1" value="4">
-      <label for="barOffset">Bar 1 @</label>
-      <input class="mini-input" type="text" id="barOffset" value="0:00.000">
-      <span class="beat-pill" id="barInfo">1 bar = 2.000s</span>
+      <span class="anchor-group locked" id="anchorGroup" data-tip="Lock first beat (Traktor-style anchor). When locked, BPM changes reflow grid around this point.">
+        <button class="btn-anchor-lock locked" id="btnAnchorLock" aria-label="Lock anchor" data-tip="Toggle anchor lock"><i data-lucide="lock"></i></button>
+        <span class="anchor-label">Anchor</span>
+        <input class="anchor-time" type="text" id="barOffset" value="0:00.000" disabled>
+        <button class="btn-anchor-set" id="btnAnchorSet" disabled data-tip="Set anchor to current playhead position">Set @ playhead</button>
+        <span class="anchor-nudge" data-tip="Nudge anchor (ms)">
+          <button data-nudge="-10" disabled aria-label="Nudge -10ms">«</button>
+          <button data-nudge="-1" disabled aria-label="Nudge -1ms">‹</button>
+          <button data-nudge="1" disabled aria-label="Nudge +1ms">›</button>
+          <button data-nudge="10" disabled aria-label="Nudge +10ms">»</button>
+        </span>
+      </span>
+      <button class="btn-add-lock" id="btnAddBeatLock" data-tip="Scrub to a beat you can clearly hear (e.g. snare/rim shot), then click to lock it. BPM is derived from the gap.">+ Beat lock</button>
+      <span class="beat-lock-chip hidden" id="beatLockChip">
+        <span id="beatLockText">b? @ 0:00.000</span>
+        <button id="btnClearBeatLock" aria-label="Clear beat lock" data-tip="Remove beat lock — BPM becomes editable again">✕</button>
+      </span>
+      <span class="beat-pill locked" id="barInfo">Locked · 1 bar = 2.000s</span>
       <span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;">
         <label style="font-size:11px; color:var(--color-text-muted);">Snap</label>
         <span class="seg" id="snapSeg" data-tip="Magnetic snap on marker drop">
@@ -531,6 +645,10 @@ kbd {
         </span>
       </span>
     </div>
+    <span class="hint-pill hidden" id="beatHintPill">
+      <span>Tip: scrub to the 2nd downbeat, then click <strong>+ Beat lock</strong> to derive BPM.</span>
+      <button id="btnDismissBeatHint" aria-label="Dismiss tip">✕</button>
+    </span>
     <div class="ruler-wrap"><canvas id="rulerCanvas"></canvas></div>
     <div class="waveform-wrap" id="waveformWrap">
       <canvas id="waveformCanvas"></canvas>
@@ -568,7 +686,7 @@ kbd {
       <div class="playhead-time" id="playheadTime">0:00.000</div>
       <div class="btn-row">
         <button class="btn-icon" id="btnStop" data-tip="Stop · Esc" aria-label="Stop"><i data-lucide="square"></i></button>
-        <button class="btn btn-primary" id="btnPlay" data-tip="Play / Pause · Space" style="flex:1;"><i data-lucide="play"></i> Play</button>
+        <button class="btn btn-primary" id="btnPlay" data-tip="Play / Pause · Space · Shift+Space restart from anchor" style="flex:1;"><i data-lucide="play"></i> Play</button>
         <button class="btn-icon" id="btnLoop" data-tip="Toggle Loop · L" aria-label="Toggle loop">
           <i data-lucide="repeat"></i>
         </button>
@@ -661,12 +779,16 @@ let zoom = 1;
 let scrollOffset = 0;    // seconds from start shown at left edge
 let bpm = 120;
 let beatsPerBar = 4;
-let barOffset = 0;
+let barOffset = 0;           // anchor time in seconds (Bar 1 position)
+let anchorLocked = true;     // when locked, BPM/beats reflow grid around anchor; anchor itself is read-only
+let beatLock2 = null;        // { time, beatNumber } — second lock; when set, BPM is derived
+let bpmDerived = false;      // true when bpm came from beatLock2 (BPM input is read-only)
 let snapMode = 'off';        // 'off' | 'beat' | 'bar'
 let zoomDrag = null;         // { x0, x1 } during drag-to-zoom
 let auditionSource = null;   // currently-playing audition BufferSource
 let tapTimes = [];           // recent tap timestamps (ms)
 let lockedBars = null;       // currently-active loop-length chip (1|2|4|8|16|32|64) or null
+let anchorPulseUntil = 0;    // performance.now() until which anchor renders pulsed (visual feedback on move)
 
 // ── DOM refs ──────────────────────────────────────────────────────────────
 const dropZone = document.getElementById('dropZone');
@@ -726,6 +848,11 @@ async function loadFile(file) {
   bpm = parseFloat(bpmInput.value || '120');
   beatsPerBar = parseInt(beatsPerBarInput.value || '4', 10);
   barOffset = parseTime(barOffsetInput.value) || 0;
+  anchorLocked = true;
+  beatLock2 = null;
+  bpmDerived = false;
+  applyAnchorLockUI();
+  applyBpmDerivedUI();
   lockedBars = null;
   document.querySelectorAll('#loopChips .chip').forEach(c => c.classList.remove('active'));
   zoomSlider.value = 1;
@@ -738,6 +865,7 @@ async function loadFile(file) {
   buildWaveformData();
   drawWaveform();
   updateMarkerUI();
+  applyBeatHintPill();
   setStatus('ready', 'Loaded: ' + file.name);
 }
 
@@ -827,11 +955,27 @@ function drawBeatGrid() {
     if (t < 0) continue;
     const x = timeToX(t, W);
     const barNum = i + 1;
-    const major = barNum === 1 || barNum % 32 === 0 || barNum % 16 === 0 || barNum % 8 === 0 || barNum % 4 === 0;
-    wfCtx.strokeStyle = major ? cs.getPropertyValue('--color-primary').trim() : cs.getPropertyValue('--color-border').trim();
-    wfCtx.globalAlpha = major ? 0.35 : 0.22;
-    wfCtx.lineWidth = major ? 1.2 : 0.8;
+    const isAnchor = barNum === 1;
+    const major = barNum % 32 === 0 || barNum % 16 === 0 || barNum % 8 === 0 || barNum % 4 === 0;
+    if (isAnchor) {
+      wfCtx.strokeStyle = cs.getPropertyValue('--ss-gold').trim();
+      wfCtx.globalAlpha = 0.85;
+      wfCtx.lineWidth = 2;
+    } else {
+      wfCtx.strokeStyle = major ? cs.getPropertyValue('--color-primary').trim() : cs.getPropertyValue('--color-border').trim();
+      wfCtx.globalAlpha = major ? 0.35 : 0.22;
+      wfCtx.lineWidth = major ? 1.2 : 0.8;
+    }
     wfCtx.beginPath(); wfCtx.moveTo(x, 0); wfCtx.lineTo(x, H); wfCtx.stroke();
+    wfCtx.globalAlpha = 1;
+  }
+  // Beat lock 2: gold line on waveform
+  if (beatLock2 && beatLock2.time >= visStart && beatLock2.time <= visEnd) {
+    const lx = timeToX(beatLock2.time, W);
+    wfCtx.strokeStyle = cs.getPropertyValue('--ss-gold').trim();
+    wfCtx.globalAlpha = 0.55;
+    wfCtx.lineWidth = 1.5;
+    wfCtx.beginPath(); wfCtx.moveTo(lx, 0); wfCtx.lineTo(lx, H); wfCtx.stroke();
     wfCtx.globalAlpha = 1;
   }
 }
@@ -856,15 +1000,36 @@ function drawRuler() {
     if (t < 0) continue;
     const x = timeToX(t, W);
     const barNum = i + 1;
-    const major = barNum === 1 || barNum % 32 === 0 || barNum % 16 === 0 || barNum % 8 === 0 || barNum % 4 === 0;
-    rulerCtx.strokeStyle = major ? cs.getPropertyValue('--color-primary').trim() : cs.getPropertyValue('--color-border').trim();
-    rulerCtx.globalAlpha = major ? 0.95 : 0.55;
-    rulerCtx.lineWidth = major ? 1.2 : 0.8;
-    rulerCtx.beginPath(); rulerCtx.moveTo(x, H); rulerCtx.lineTo(x, major ? 2 : 10); rulerCtx.stroke();
-    if (major) {
+    const isAnchor = barNum === 1;
+    const major = barNum % 32 === 0 || barNum % 16 === 0 || barNum % 8 === 0 || barNum % 4 === 0;
+    if (isAnchor) {
+      rulerCtx.strokeStyle = cs.getPropertyValue('--ss-gold').trim();
+      rulerCtx.globalAlpha = 1;
+      rulerCtx.lineWidth = 2.2;
+    } else {
+      rulerCtx.strokeStyle = major ? cs.getPropertyValue('--color-primary').trim() : cs.getPropertyValue('--color-border').trim();
+      rulerCtx.globalAlpha = major ? 0.95 : 0.55;
+      rulerCtx.lineWidth = major ? 1.2 : 0.8;
+    }
+    rulerCtx.beginPath(); rulerCtx.moveTo(x, H); rulerCtx.lineTo(x, (isAnchor || major) ? 2 : 10); rulerCtx.stroke();
+    if (isAnchor) {
+      // Gold ▼ glyph + label at anchor
+      rulerCtx.fillStyle = cs.getPropertyValue('--ss-gold').trim();
+      rulerCtx.fillText('▼ Bar 1', x + 4, 4);
+    } else if (major) {
       rulerCtx.fillStyle = cs.getPropertyValue('--color-text-muted').trim();
       rulerCtx.fillText('Bar ' + barNum, x + 4, 4);
     }
+  }
+  // Beat lock 2: render a gold ▼ marker at its time
+  if (beatLock2 && beatLock2.time >= visStart && beatLock2.time <= visEnd) {
+    const lx = timeToX(beatLock2.time, W);
+    rulerCtx.strokeStyle = cs.getPropertyValue('--ss-gold').trim();
+    rulerCtx.globalAlpha = 1;
+    rulerCtx.lineWidth = 1.6;
+    rulerCtx.beginPath(); rulerCtx.moveTo(lx, H); rulerCtx.lineTo(lx, 2); rulerCtx.stroke();
+    rulerCtx.fillStyle = cs.getPropertyValue('--ss-gold').trim();
+    rulerCtx.fillText('▼ b' + beatLock2.beatNumber, lx + 4, 4);
   }
   rulerCtx.globalAlpha = 1;
 }
@@ -875,7 +1040,8 @@ function getBarDuration() {
 
 function updateBeatUI() {
   const barDur = getBarDuration();
-  barInfo.textContent = '1 bar = ' + formatTime(barDur) + ' · marks 4 / 8 / 16 / 32';
+  const state = anchorLocked ? 'Locked' : 'Adjusting';
+  barInfo.textContent = state + ' · 1 bar = ' + formatTime(barDur);
 }
 
 function drawOverlay() {
@@ -918,6 +1084,19 @@ function drawOverlay() {
     ovCtx.beginPath();
     ovCtx.moveTo(phX - 5, 0); ovCtx.lineTo(phX + 5, 0); ovCtx.lineTo(phX, 8);
     ovCtx.closePath(); ovCtx.fill();
+  }
+
+  // Anchor pulse (500ms after setAnchor) — gold halo at anchor X for visual confirmation
+  if (anchorPulseUntil > performance.now() && audioBuffer) {
+    const aX = timeToX(barOffset, W);
+    if (aX >= -10 && aX <= W + 10) {
+      const remain = (anchorPulseUntil - performance.now()) / 500; // 1 → 0
+      ovCtx.strokeStyle = cs.getPropertyValue('--ss-gold').trim();
+      ovCtx.globalAlpha = remain * 0.9;
+      ovCtx.lineWidth = 4 + remain * 6;
+      ovCtx.beginPath(); ovCtx.moveTo(aX, 0); ovCtx.lineTo(aX, H); ovCtx.stroke();
+      ovCtx.globalAlpha = 1;
+    }
   }
 
   // Zoom-drag rectangle
@@ -1041,9 +1220,156 @@ function parseTime(str) {
 
 inTimeEl.addEventListener('change', () => { const t = parseTime(inTimeEl.value); if (t !== null && !isNaN(t)) setIn(t); else updateMarkerUI(); });
 outTimeEl.addEventListener('change', () => { const t = parseTime(outTimeEl.value); if (t !== null && !isNaN(t)) setOut(t); else updateMarkerUI(); });
-bpmInput.addEventListener('input', () => { bpm = Math.max(20, Math.min(300, parseFloat(bpmInput.value || '120'))); updateMarkerUI(); drawWaveform(); drawOverlay(); });
-beatsPerBarInput.addEventListener('input', () => { beatsPerBar = Math.max(1, Math.min(12, parseInt(beatsPerBarInput.value || '4', 10))); updateMarkerUI(); drawWaveform(); drawOverlay(); });
-barOffsetInput.addEventListener('change', () => { const t = parseTime(barOffsetInput.value); barOffset = t !== null && !isNaN(t) ? Math.max(0, Math.min(duration || 0, t)) : 0; barOffsetInput.value = formatTime(barOffset); updateMarkerUI(); drawWaveform(); drawOverlay(); });
+function applyBpmFromInput() {
+  const raw = parseFloat(bpmInput.value);
+  if (!isFinite(raw)) return; // mid-typing or empty: keep last good bpm
+  bpm = Math.max(20, Math.min(300, raw));
+  updateMarkerUI(); drawWaveform(); drawOverlay();
+}
+bpmInput.addEventListener('input', applyBpmFromInput);
+bpmInput.addEventListener('change', applyBpmFromInput);
+function applyBeatsFromInput() {
+  const raw = parseInt(beatsPerBarInput.value, 10);
+  if (!isFinite(raw)) return;
+  beatsPerBar = Math.max(1, Math.min(12, raw));
+  updateMarkerUI(); drawWaveform(); drawOverlay();
+}
+beatsPerBarInput.addEventListener('input', applyBeatsFromInput);
+beatsPerBarInput.addEventListener('change', applyBeatsFromInput);
+barOffsetInput.addEventListener('change', () => {
+  if (anchorLocked) { barOffsetInput.value = formatTime(barOffset); return; }
+  const t = parseTime(barOffsetInput.value);
+  setAnchor(t !== null && !isNaN(t) ? t : 0);
+});
+
+// ── Anchor (Lock first beat) ──────────────────────────────────────────────
+function setAnchor(t) {
+  barOffset = Math.max(0, Math.min(duration || t || 0, t || 0));
+  barOffsetInput.value = formatTime(barOffset);
+  anchorPulseUntil = performance.now() + 500;
+  clearLockedBars();
+  updateMarkerUI();
+  drawWaveform();
+  drawOverlay();
+  applyBeatHintPill();
+  setStatus('ready', 'Anchor → ' + formatTime(barOffset));
+}
+function nudgeAnchor(ms) { setAnchor(barOffset + (ms / 1000)); }
+function applyAnchorLockUI() {
+  const group = document.getElementById('anchorGroup');
+  const lockBtn = document.getElementById('btnAnchorLock');
+  const setBtn = document.getElementById('btnAnchorSet');
+  const nudgeBtns = document.querySelectorAll('.anchor-nudge button');
+  const rulerWrap = document.querySelector('.ruler-wrap');
+  group.classList.toggle('locked', anchorLocked);
+  lockBtn.classList.toggle('locked', anchorLocked);
+  lockBtn.innerHTML = anchorLocked ? '<i data-lucide="lock"></i>' : '<i data-lucide="lock-open"></i>';
+  lockBtn.setAttribute('aria-label', anchorLocked ? 'Unlock anchor' : 'Lock anchor');
+  barOffsetInput.disabled = anchorLocked;
+  setBtn.disabled = anchorLocked;
+  nudgeBtns.forEach(b => b.disabled = anchorLocked);
+  barInfo.classList.toggle('locked', anchorLocked);
+  if (rulerWrap) rulerWrap.classList.toggle('unlocked', !anchorLocked);
+  if (window.lucide) lucide.createIcons();
+  updateBeatUI();
+}
+document.getElementById('btnAnchorLock').addEventListener('click', () => {
+  anchorLocked = !anchorLocked;
+  applyAnchorLockUI();
+  applyBeatHintPill();
+});
+document.getElementById('btnAnchorSet').addEventListener('click', () => {
+  if (!anchorLocked) setAnchor(getCurrentTime());
+});
+document.querySelectorAll('.anchor-nudge button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (!anchorLocked) nudgeAnchor(parseInt(btn.dataset.nudge, 10));
+  });
+});
+
+// B1/N4 — Click in the ruler strip = set anchor (DAW convention: timeline-strip clicks place markers).
+// Waveform body stays for scrubbing only. Click works whether anchor is locked or not — the lock
+// guards against accidental edits via input/nudge, but a deliberate timeline click is "move it here".
+document.querySelector('.ruler-wrap').addEventListener('click', e => {
+  if (!audioBuffer) return;
+  const rect = rulerCanvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const W = rect.width;
+  const t = xToTime(x, W);
+  setAnchor(t);
+});
+
+// ── Beat lock 2 (derive BPM from two locks) ───────────────────────────────
+function setBeatLock2(time, beatNumber) {
+  if (time <= barOffset) { setStatus('error', 'Lock must be after the anchor'); return; }
+  if (!beatNumber || beatNumber < 2) { setStatus('error', 'Beat number must be 2 or higher'); return; }
+  beatLock2 = { time, beatNumber };
+  const beatDur = (time - barOffset) / (beatNumber - 1);
+  bpm = 60 / beatDur;
+  bpmInput.value = bpm.toFixed(2);
+  bpmDerived = true;
+  applyBpmDerivedUI();
+  clearLockedBars();
+  updateMarkerUI();
+  drawWaveform();
+  drawOverlay();
+  setStatus('ready', 'BPM derived from beat ' + beatNumber + ': ' + bpm.toFixed(2));
+}
+function clearBeatLock2() {
+  beatLock2 = null;
+  bpmDerived = false;
+  applyBpmDerivedUI();
+  drawWaveform();
+  drawOverlay();
+}
+function applyBpmDerivedUI() {
+  bpmInput.readOnly = bpmDerived;
+  bpmInput.classList.toggle('derived', bpmDerived);
+  const chip = document.getElementById('beatLockChip');
+  const text = document.getElementById('beatLockText');
+  if (beatLock2) {
+    chip.classList.remove('hidden');
+    text.textContent = 'b' + beatLock2.beatNumber + ' @ ' + formatTime(beatLock2.time);
+  } else {
+    chip.classList.add('hidden');
+  }
+  applyBeatHintPill();
+}
+
+function applyBeatHintPill() {
+  const pill = document.getElementById('beatHintPill');
+  if (!pill) return;
+  const dismissed = localStorage.getItem('loopCutter:beatHintDismissed') === '1';
+  // Show only when: file loaded, anchor locked AND set past 0, no beat-2 yet, not dismissed
+  const show = !!audioBuffer && anchorLocked && barOffset > 0.001 && !beatLock2 && !dismissed;
+  pill.classList.toggle('hidden', !show);
+}
+const dismissBtn = document.getElementById('btnDismissBeatHint');
+if (dismissBtn) {
+  dismissBtn.addEventListener('click', () => {
+    localStorage.setItem('loopCutter:beatHintDismissed', '1');
+    applyBeatHintPill();
+  });
+}
+document.getElementById('btnAddBeatLock').addEventListener('click', () => {
+  if (!audioBuffer) { setStatus('error', 'Load a track first'); return; }
+  const t = getCurrentTime();
+  if (t <= barOffset + 0.001) { setStatus('error', 'Scrub past Bar 1 before adding a beat lock'); return; }
+  const defaultBeat = beatLock2 ? beatLock2.beatNumber : 2;
+  const input = window.prompt(
+    'Beat number at playhead (' + formatTime(t) + ')?\n\n' +
+    '• 2 = the 2nd beat (just after Bar 1)\n' +
+    '• 5 = first beat of Bar 2\n' +
+    '• 17 = first beat of Bar 5\n' +
+    '• Any beat where you can clearly hear the transient',
+    String(defaultBeat)
+  );
+  if (input === null) return;
+  const n = parseInt(input, 10);
+  if (isNaN(n) || n < 2) { setStatus('error', 'Invalid beat number'); return; }
+  setBeatLock2(t, n);
+});
+document.getElementById('btnClearBeatLock').addEventListener('click', clearBeatLock2);
 
 document.getElementById('btnSetIn').addEventListener('click', () => setIn(getCurrentTime()));
 document.getElementById('btnSetOut').addEventListener('click', () => setOut(getCurrentTime()));
@@ -1069,9 +1395,26 @@ document.getElementById('volSlider').addEventListener('input', e => {
 });
 
 // ── Zoom & Scroll ─────────────────────────────────────────────────────────
+// Anchor zoom on a stable focal point so IN/OUT/Bar 1 don't visually drift.
+function pickZoomFocus() {
+  const visStart = scrollOffset;
+  const visEnd = scrollOffset + duration / zoom;
+  // Priority: anchor (Bar 1) if visible → playhead if visible → IN if visible → centre
+  if (audioBuffer && barOffset >= visStart && barOffset <= visEnd) return barOffset;
+  const ph = getCurrentTime();
+  if (audioBuffer && ph >= visStart && ph <= visEnd) return ph;
+  if (audioBuffer && inPoint >= visStart && inPoint <= visEnd) return inPoint;
+  return (visStart + visEnd) / 2;
+}
 zoomSlider.addEventListener('input', e => {
+  if (!audioBuffer) { zoom = parseFloat(e.target.value); zoomVal.textContent = zoom.toFixed(1) + '×'; return; }
+  const focus = pickZoomFocus();
+  const W = wfWrap.clientWidth;
+  const fx = ((focus - scrollOffset) / (duration / zoom)) * W; // px of focus before zoom change
   zoom = parseFloat(e.target.value);
   zoomVal.textContent = zoom.toFixed(1) + '×';
+  // Hold focus fixed at fx
+  scrollOffset = focus - (fx / W) * (duration / zoom);
   clampScroll();
   drawWaveform(); drawOverlay();
 });
@@ -1091,12 +1434,17 @@ wfWrap.addEventListener('wheel', e => {
     const rect = wfWrap.getBoundingClientRect();
     const cx = e.clientX - rect.left;
     const W = rect.width;
-    const tAtCursor = scrollOffset + (cx / W) * (duration / zoom);
     const factor = (e.ctrlKey || e.metaKey) ? 0.003 : 0.01;
     const newZoom = Math.max(1, Math.min(80, zoom * (1 - e.deltaY * factor)));
-    zoom = newZoom;
-    // Anchor: keep tAtCursor under the cursor
-    scrollOffset = tAtCursor - (cx / W) * (duration / zoom);
+    // N1: cursor in left 20% → lock front (scrollOffset=0). Else cursor-anchor.
+    if (cx / W < 0.20) {
+      zoom = newZoom;
+      scrollOffset = 0;
+    } else {
+      const tAtCursor = scrollOffset + (cx / W) * (duration / zoom);
+      zoom = newZoom;
+      scrollOffset = tAtCursor - (cx / W) * (duration / zoom);
+    }
     zoomSlider.value = Math.min(parseFloat(zoomSlider.max), zoom);
     zoomVal.textContent = zoom.toFixed(1) + '×';
   }
@@ -1118,6 +1466,7 @@ overlayCanvas.addEventListener('mousedown', e => {
   const W = overlayCanvas.width;
   const inX = timeToX(inPoint, W);
   const outX = outPoint !== null ? timeToX(outPoint, W) : -99;
+  const phX = timeToX(getCurrentTime(), W);
   if (Math.abs(x - inX) < 10) { draggingMarker = 'in'; return; }
   if (Math.abs(x - outX) < 10) { draggingMarker = 'out'; return; }
   // Shift-drag = zoom-to-region. Plain click = seek.
@@ -1126,6 +1475,8 @@ overlayCanvas.addEventListener('mousedown', e => {
     drawOverlay();
     return;
   }
+  // B3: drag the playhead — within 10px of phX starts a play-drag (scrub).
+  if (Math.abs(x - phX) < 10) { draggingMarker = 'play'; }
   const t = xToTime(x, W);
   startOffset = Math.max(0, Math.min(t, duration));
   if (isPlaying) { playFrom(startOffset); } else { drawOverlay(); }
@@ -1136,6 +1487,14 @@ window.addEventListener('mousemove', e => {
   const rect = overlayCanvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const W = overlayCanvas.width;
+  // Cursor feedback over IN/OUT/playhead grab zones (only when over the canvas, not dragging)
+  if (!draggingMarker && !zoomDrag && x >= 0 && x <= W && (e.clientY - rect.top) >= 0 && (e.clientY - rect.top) <= rect.height) {
+    const inX = timeToX(inPoint, W);
+    const outX = outPoint !== null ? timeToX(outPoint, W) : -99;
+    const phX = timeToX(getCurrentTime(), W);
+    const near = Math.abs(x - phX) < 10 || Math.abs(x - inX) < 10 || Math.abs(x - outX) < 10;
+    wfWrap.style.cursor = near ? 'ew-resize' : 'crosshair';
+  }
   if (zoomDrag) {
     zoomDrag.x1 = Math.max(0, Math.min(W, x));
     drawOverlay();
@@ -1145,6 +1504,12 @@ window.addEventListener('mousemove', e => {
   const t = xToTime(x, W);
   if (draggingMarker === 'in') setIn(t);
   else if (draggingMarker === 'out') setOut(t);
+  else if (draggingMarker === 'play') {
+    // Live scrub: move playhead, kill any audio so we don't blast through during drag
+    if (isPlaying) stopAudio(false);
+    startOffset = Math.max(0, Math.min(t, duration));
+    drawOverlay();
+  }
 });
 
 window.addEventListener('mouseup', () => {
@@ -1177,7 +1542,17 @@ document.addEventListener('keydown', e => {
   if (!audioBuffer) return;
   if (e.target.tagName === 'INPUT') return;
   switch(e.key) {
-    case ' ': e.preventDefault(); togglePlay(); break;
+    case ' ':
+      e.preventDefault();
+      if (e.shiftKey) {
+        // Shift+Space = stop, jump playhead to anchor, play from anchor (Logic-style restart)
+        stopAudio(false);
+        startOffset = barOffset;
+        playFrom(barOffset);
+      } else {
+        togglePlay();
+      }
+      break;
     case 'Escape':
       if (zoomDrag) { zoomDrag = null; drawOverlay(); break; }
       stopAudio(true); stopAudition(); drawOverlay(); break;
@@ -1301,14 +1676,30 @@ function audioBufferToWav(buffer) {
 }
 
 // ── Load New File Button ──────────────────────────────────────────────────
-document.getElementById('btnLoadNew').addEventListener('click', () => {
+function resetToDropZone() {
   stopAudio(true);
   waveformSection.classList.add('hidden');
   controlsRow.classList.add('hidden');
   dropZone.classList.remove('hidden');
   audioBuffer = null; peakData = [];
+  // Reset Phase 1/2 state so a cancelled file pick doesn't strand the UI
+  barOffset = 0;
+  barOffsetInput.value = '0:00.000';
+  anchorLocked = true;
+  beatLock2 = null;
+  bpmDerived = false;
+  bpm = 120;
+  bpmInput.value = '120';
+  beatsPerBar = 4;
+  beatsPerBarInput.value = '4';
+  lockedBars = null;
+  document.querySelectorAll('#loopChips .chip').forEach(c => c.classList.remove('active'));
+  applyAnchorLockUI();
+  applyBpmDerivedUI();
+  fileInput.value = ''; // ensure 'change' fires even if same file picked
   setStatus('ready', 'Ready — load an audio file to start');
-});
+}
+document.getElementById('btnLoadNew').addEventListener('click', resetToDropZone);
 
 // ── Snap modes ────────────────────────────────────────────────────────────
 function snapTime(t) {
@@ -1342,10 +1733,17 @@ function auditionRange(start, end) {
   const src = audioCtx.createBufferSource();
   src.buffer = audioBuffer;
   const g = audioCtx.createGain();
-  g.gain.value = parseFloat(document.getElementById('volSlider').value);
+  const vol = parseFloat(document.getElementById('volSlider').value);
   src.connect(g).connect(audioCtx.destination);
   const s = Math.max(0, start);
   const dur = Math.min(duration - s, end - start);
+  // N3: 10 ms fade in/out so audition doesn't click on entry/exit.
+  const FADE = 0.010;
+  const t0 = audioCtx.currentTime;
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(vol, t0 + Math.min(FADE, dur / 2));
+  g.gain.setValueAtTime(vol, t0 + Math.max(0, dur - FADE));
+  g.gain.linearRampToValueAtTime(0, t0 + dur);
   src.start(0, s, dur);
   auditionSource = src;
   src.onended = () => { if (auditionSource === src) auditionSource = null; };
@@ -1367,8 +1765,19 @@ function applyLoopLength(bars) {
   if (!audioBuffer) return;
   const barDur = getBarDuration();
   if (!barDur || !isFinite(barDur) || barDur <= 0) { setStatus('error', 'BPM / beats per bar invalid'); return; }
-  // 1. Snap IN to nearest bar so the downbeat is locked
-  inPoint = snapToNearestBar(inPoint);
+  // 1. Place IN. Anchor wins when close. Otherwise the active Snap mode controls placement
+  //    granularity (bar / beat / off). Chip = length (always N bars), Snap = where IN lands.
+  const ph = getCurrentTime();
+  const candidate = (ph > 0 && Math.abs(ph - inPoint) < 0.001) ? ph : inPoint;
+  if (anchorLocked && Math.abs(candidate - barOffset) < barDur / 2) {
+    inPoint = barOffset;
+  } else if (snapMode === 'beat') {
+    inPoint = snapTime(candidate);
+  } else if (snapMode === 'off') {
+    inPoint = candidate;
+  } else {
+    inPoint = snapToNearestBar(candidate);
+  }
   // 2. Set OUT = IN + N×bar (clamp to file end)
   const targetOut = inPoint + bars * barDur;
   if (targetOut > duration) {
@@ -1443,6 +1852,8 @@ function formatTime(s) {
 const repeatCountInput = document.getElementById('repeatCount');
 if (repeatCountInput) repeatCountInput.addEventListener('input', updateMarkerUI);
 updateBeatUI();
+applyAnchorLockUI();
+applyBpmDerivedUI();
 
 lucide.createIcons();
 </script>

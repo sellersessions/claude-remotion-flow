@@ -32,10 +32,11 @@ import {
   SFX_OUTRO,
   SFX_OUTRO_LEN_FRAMES,
 } from "../explainer-shared/constants";
+import { BEDS } from "../explainer-shared/audio-beds";
 
 const VIDEO_SRC = "assets/loom-cuts/ai-workshop-umbrella-v2/preview.mp4";
 
-const VIDEO_DURATION_S = 261.32;
+const VIDEO_DURATION_S = 255.7;
 const VIDEO_DURATION_FRAMES = Math.ceil(VIDEO_DURATION_S * FPS);
 
 const INTRO_FRAMES = Math.round(5 * FPS); // 5s brand title card
@@ -302,6 +303,7 @@ const RoundupCard: React.FC<{ durationInFrames: number }> = ({
 };
 
 export const umbrellaTutorialSchema = z.object({
+  bedVolume: z.number().min(0).max(1).multipleOf(0.05),
   sfxIntroVolume: z.number().min(0).max(1).multipleOf(0.05),
   sfxOutroVolume: z.number().min(0).max(1).multipleOf(0.05),
 });
@@ -323,16 +325,22 @@ export const calculateUmbrellaTutorialMetadata: CalculateMetadataFunction<
 };
 
 export const UmbrellaTutorial: React.FC<UmbrellaTutorialProps> = ({
+  bedVolume,
   sfxIntroVolume,
   sfxOutroVolume,
 }) => {
   const videoStart = INTRO_FRAMES;
   const outroStart = INTRO_FRAMES + VIDEO_DURATION_FRAMES;
   const sfxIntroFrom = 90;
-  const sfxOutroFrom = 8000;
+  const sfxOutroFrom = 7831;
 
   return (
     <AbsoluteFill style={{ background: "#000" }}>
+      <Audio
+        src={staticFile(BEDS.HOUSE_DEFAULT)}
+        volume={bedVolume}
+        endAt={TOTAL_FRAMES}
+      />
       <Sequence from={0} durationInFrames={INTRO_FRAMES} name="intro-card">
         <IntroCard durationInFrames={INTRO_FRAMES} />
       </Sequence>

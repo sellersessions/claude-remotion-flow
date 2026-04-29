@@ -227,7 +227,7 @@ export const RemotionRoot: React.FC = () => {
         width={1920}
         height={1080}
         schema={umbrellaTutorialSchema}
-        defaultProps={{ sfxIntroVolume: 1, sfxOutroVolume: 0.55 }}
+        defaultProps={{ bedVolume: 0.1, sfxIntroVolume: 1, sfxOutroVolume: 0.55 }}
       />
       <Composition
         id="ClaudeCodeToolsWindows"
