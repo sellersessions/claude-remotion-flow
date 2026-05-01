@@ -14,11 +14,15 @@
 **Programmatic video production pipeline.**
 **Treatment-driven, Claude-controlled, beat-synced.**
 
+<!-- VIDEO PLACEHOLDER -->
+> **Walkthrough video** _(coming soon: recording this week. Replace this block with the YouTube embed once shipped.)_
+<!-- /VIDEO PLACEHOLDER -->
+
 > **New here?** The end-to-end recipe lives in [HOW-TO-SHIP-AN-EXPLAINER.md](./HOW-TO-SHIP-AN-EXPLAINER.md) — six steps from treatment to MP4.
 
 ---
 
-## Why This Exists
+## Why this exists
 
 Video production has always been tool-first. Open After Effects, open Premiere, start dragging clips. The creative brief lives in someone's head or a Slack thread. By the time the edit is done, nobody remembers what the video was supposed to *do*.
 
@@ -44,7 +48,7 @@ The result: anyone who can describe a video can ship one. No timeline. No keyfra
 
 ---
 
-## What It Does
+## What it does
 
 ```mermaid
 %%{init: {'theme': 'dark', 'themeVariables': {'nodeTextColor': '#e8e8e8', 'primaryTextColor': '#e8e8e8', 'secondaryTextColor': '#cccccc', 'tertiaryTextColor': '#cccccc', 'clusterBkg': 'transparent', 'clusterBorder': '#8b949e'}}}%%
@@ -167,7 +171,7 @@ Select a composition from the Studio dropdown. Scrub the timeline, pause on any 
 
 ---
 
-## How The System Works
+## How it works
 
 ### 1. Write a Treatment
 
@@ -268,7 +272,7 @@ graph LR
 
 ---
 
-## What If...
+## What if...
 
 ### ...I don't know what video I want?
 
@@ -472,18 +476,23 @@ Remotion renders numeric schema props as `InputDragger` (drag-scrub). Step incre
 | Sessions 13–14 | Production spine refactor — single-stem VO + peak limiter + factory hardening. Studio-tuned mixer defaults. |
 | Sessions 15–16 | Audio polish — surgical fades, music bed wired-on, ducker decommissioned. Intro chapter factory + visual override. |
 | Session 17 | Workshop video factory + V2 split + WorkshopOverview (chapter-mode VO with timings sidecar). |
+| Sessions 18-19 | README polish: 4th badge, vs-traditional comparison table, Build Timeline + Repos cross-link, gradient text logo SVG pair (dark/light) wired via `<picture>`. |
+| Session 20 | Loop Cutter v2 (DJ chip-row workflow) + Seller Sessions rebrand pass + Wave 1 Loom strip-back. |
+| Session 21 | `SOURCE-OF-TRUTH.md` consolidation (882 lines, ducking dead globally) + `ClaudeUiWorkflowExplainer` end-to-end build. |
+| Session 22 | UmbrellaTutorial audio finish: Loom VO loudnormed (-25.8 to -15.9 LUFS) + `HOUSE_DEFAULT` bed at 0.10 inline + two unnatural Loom welds cut surgically (-5.62s) + render (4:38, 35 MB). |
 
 ---
 
-## Repos
+## Companion repos
 
-| Repo | What |
+This repo ships with two siblings: same author, same operating principles, different production surface.
+
+| Repo | What it does |
 |---|---|
-| [`claude-remotion-flow`](https://github.com/sellersessions/claude-remotion-flow) | This repo — programmatic video production. Treatment-driven, beat-synced. |
-| [`claude-video-editing-flow`](https://github.com/sellersessions/claude-video-editing-flow) | Selection-led short-form cuts. Drop a video, tick candidates, render. |
-| [`claude-ui-workflow`](https://github.com/sellersessions/claude-ui-workflow) | Design intelligence pipeline — turn inspiration into production UI. |
+| [`claude-video-editing-flow`](https://github.com/sellersessions/claude-video-editing-flow) | Selection-led short-form cuts. Drop a video, tick candidates in markdown, render. |
+| [`claude-ui-workflow`](https://github.com/sellersessions/claude-ui-workflow) | Design intelligence pipeline. 10 stages from brand brief to production UI. |
 
-Built on top of [`ClaudeFlow-Agent`](https://github.com/sellersessions/ClaudeFlow-Agent) — the personal AI operating system that ties them together.
+All three are designed to run alongside [`ClaudeFlow-Agent`](https://github.com/sellersessions/ClaudeFlow-Agent), the personal AI operating system that ties them together.
 
 ---
 
