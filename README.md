@@ -14,9 +14,17 @@
 **Programmatic video production pipeline.**
 **Treatment-driven, Claude-controlled, beat-synced.**
 
-<!-- VIDEO PLACEHOLDER -->
-> **Walkthrough video** _(coming soon: recording this week. Replace this block with the YouTube embed once shipped.)_
-<!-- /VIDEO PLACEHOLDER -->
+<!-- VIDEOS START -->
+### Walkthroughs
+
+<video src="https://github.com/sellersessions/claude-remotion-flow/releases/download/v0.1-readme-videos/StackExplainer.mp4" controls muted></video>
+
+**The stack tour.** Remotion, Claude, treatment files, ducking, beat sync. What's under the hood.
+
+<video src="https://github.com/sellersessions/claude-remotion-flow/releases/download/v0.1-readme-videos/TreatmentExplainer.mp4" controls muted></video>
+
+**Treatment-driven flow.** How a treatment doc becomes a rendered MP4, end to end.
+<!-- VIDEOS END -->
 
 > **New here?** The end-to-end recipe lives in [HOW-TO-SHIP-AN-EXPLAINER.md](./HOW-TO-SHIP-AN-EXPLAINER.md) — six steps from treatment to MP4.
 
