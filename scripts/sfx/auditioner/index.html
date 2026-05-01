@@ -33,6 +33,14 @@
     --copy: var(--ss-purple-light);
     --radius: 8px;
     --font: "Plus Jakarta Sans", "Inter", -apple-system, system-ui, sans-serif;
+    /* Traktor-style categorical stripe — one hue per top-level category. 4px left edge. */
+    --cat-transitions: #22D3EE;
+    --cat-stingers:    #F59E0B;
+    --cat-risers:      #EC4899;
+    --cat-impacts:     #EF4444;
+    --cat-ambience:    #94A3B8;
+    --cat-music:       var(--ss-gold);
+    --cat-fallback:    var(--ss-purple-light);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 13px; line-height: 1.4; }
@@ -74,9 +82,17 @@
   .tray button.primary { background: var(--accent); border-color: var(--accent); color: var(--chip-on-ink); font-weight: 500; }
   .content { padding: 14px 20px 60px; }
   .sub-heading { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 16px 0 6px; padding: 0 10px; }
-  .row { display: grid; grid-template-columns: 26px 22px 1fr 260px 48px 34px 34px; gap: 10px; align-items: center; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  .row { display: grid; grid-template-columns: 4px 26px 22px 1fr 260px 48px 34px 34px 34px; gap: 10px; align-items: center; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--line); position: relative; }
+  /* Categorical stripe: 4px inline column tinted per data-category. Default is fallback purple. */
+  .row .stripe { width: 4px; align-self: stretch; background: var(--cat-fallback); border-radius: 0 2px 2px 0; opacity: 0.8; }
+  .row[data-category="transitions"] .stripe { background: var(--cat-transitions); }
+  .row[data-category="stingers"]    .stripe { background: var(--cat-stingers); }
+  .row[data-category="risers"]      .stripe { background: var(--cat-risers); }
+  .row[data-category="impacts"]     .stripe { background: var(--cat-impacts); }
+  .row[data-category="ambience"]    .stripe { background: var(--cat-ambience); }
+  .row[data-category="music"]       .stripe { background: var(--cat-music); }
   .row.shortlisted { background: rgba(255, 177, 29, 0.06); }
-  .row.selected { box-shadow: inset 3px 0 0 var(--copy); }
+  .row.selected .stripe { opacity: 1; box-shadow: 0 0 8px currentColor; }
   .row .sel { width: 14px; height: 14px; accent-color: var(--copy); cursor: pointer; margin: 0; }
   .idx { color: var(--ink-muted); font-variant-numeric: tabular-nums; font-size: 11px; text-align: right; }
   .meta-cell { display: flex; flex-direction: column; min-width: 0; }
@@ -92,7 +108,7 @@
   button.act.copy.flash { background: var(--copy); color: white; border-color: var(--copy); }
   button.act.cut:hover { color: var(--accent); border-color: var(--accent); }
   .empty { padding: 80px 20px; text-align: center; color: var(--ink-muted); }
-  .note { grid-column: 3 / -1; margin-top: 2px; }
+  .note { grid-column: 4 / -1; margin-top: 2px; }
   .note input { width: 100%; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); padding: 4px 8px; font-size: 11px; font-family: var(--font); }
   .note input:focus { outline: none; border-color: var(--accent); }
   .save-indicator { font-size: 11px; color: var(--ink-muted); margin-left: 8px; }
@@ -105,7 +121,7 @@
   .modal textarea { width: 100%; min-height: 160px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); padding: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
   .modal .close-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
   @media (max-width: 900px) {
-    .row { grid-template-columns: 20px 1fr 38px 34px 34px; gap: 8px; }
+    .row { grid-template-columns: 4px 20px 1fr 38px 34px 34px; gap: 8px; }
     .idx { display: none; }
     .meta-cell { grid-column: span 1; }
     audio { grid-column: 1 / -1; }
@@ -343,6 +359,12 @@ function renderContent() {
 function renderRow(item, idx) {
   const row = document.createElement('div');
   row.className = 'row' + (item.shortlisted ? ' shortlisted' : '') + (state.selection.has(item.id) ? ' selected' : '');
+  // Categorical stripe — Traktor pattern. Drives the 4px left-edge tint via CSS.
+  row.dataset.category = item.category || '';
+
+  const stripe = document.createElement('div');
+  stripe.className = 'stripe';
+  row.appendChild(stripe);
 
   const idxCell = document.createElement('div');
   idxCell.className = 'idx';
