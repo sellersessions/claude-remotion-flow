@@ -204,9 +204,9 @@ input[type=range] { cursor: pointer; }
   padding: 12px 16px; border-bottom: 1px solid var(--line-soft);
   gap: 12px; flex-wrap: wrap;
 }
-.file-name { font-family: var(--font-mono); font-size: 12px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 320px; font-weight: 500; }
+.file-name { font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 12px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 320px; font-weight: 500; }
 .duration-badge {
-  font-family: var(--font-mono); font-size: 11px; color: var(--copy);
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 11px; color: var(--copy);
   background: var(--copy-dim); border: 1px solid rgba(117,62,247,0.30);
   padding: 3px 8px; border-radius: 999px; font-weight: 600;
 }
@@ -218,7 +218,7 @@ input[type=range] { cursor: pointer; }
 }
 .beat-bar label { font-size: 11px; color: var(--ink-muted); white-space: nowrap; font-weight: 500; }
 .beat-bar .mini-input {
-  font-family: var(--font-mono); font-size: 12px; background: var(--panel-3);
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 12px; background: var(--panel-3);
   border: 1px solid var(--line); border-radius: var(--radius-sm);
   padding: 5px 8px; color: var(--ink); width: 76px;
   transition: all var(--transition);
@@ -227,7 +227,7 @@ input[type=range] { cursor: pointer; }
 .beat-pill {
   display:inline-flex; align-items:center; gap:6px; padding:4px 10px;
   border:1px solid rgba(117,62,247,0.28); background: var(--copy-dim);
-  border-radius:999px; color:var(--copy); font-size:11px; font-family:var(--font-mono); font-weight:500;
+  border-radius:999px; color:var(--copy); font-size:11px; font-family:var(--font-body); font-variant-numeric:tabular-nums; font-weight:500;
 }
 .ruler-wrap {
   position: relative; height: 28px; background: rgba(12,3,34,0.55);
@@ -252,7 +252,7 @@ input[type=range] { cursor: pointer; }
 }
 .zoom-bar label { font-size: 11px; color: var(--ink-muted); white-space: nowrap; font-weight: 500; }
 #zoomSlider { flex: 1; accent-color: var(--copy); height: 4px; }
-.zoom-val { font-family: var(--font-mono); font-size: 11px; color: var(--copy); min-width: 38px; text-align: right; font-weight: 600; }
+.zoom-val { font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 11px; color: var(--copy); min-width: 38px; text-align: right; font-weight: 600; }
 
 /* ── Controls Row ─────────────────────── */
 .controls-row { display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap; justify-content: center; }
@@ -305,7 +305,7 @@ input[type=range] { cursor: pointer; }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
 .playhead-time {
-  font-family: var(--font-mono); font-size: 26px; font-weight: 700;
+  font-family: "JetBrains Mono", monospace; font-size: 26px; font-weight: 700;
   letter-spacing: -0.8px;
   background: linear-gradient(135deg, #FAFAFC 0%, var(--ss-purple-glow) 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -323,7 +323,7 @@ input[type=range] { cursor: pointer; }
   font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px;
   white-space: nowrap; padding: 5px 9px; border-radius: 999px;
   border: 1px solid var(--line);
-  font-family: var(--font-mono); letter-spacing: 0.5px;
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: 0.5px;
 }
 .marker-label.in-label  { color: var(--marker-in);  border-color: rgba(16,185,129,0.35);  background: rgba(16,185,129,0.10); }
 .marker-label.out-label { color: var(--marker-out); border-color: rgba(249,115,22,0.35);  background: rgba(249,115,22,0.10); }
@@ -331,14 +331,14 @@ input[type=range] { cursor: pointer; }
 .dot-in { background: var(--marker-in); color: var(--marker-in); }
 .dot-out { background: var(--marker-out); color: var(--marker-out); }
 .marker-time {
-  font-family: var(--font-mono); font-size: 13px; background: var(--panel-3);
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 13px; background: var(--panel-3);
   border: 1px solid var(--line); border-radius: var(--radius-sm);
   padding: 6px 9px; color: var(--ink); width: 100%;
   transition: all var(--transition);
 }
 .marker-time:focus { outline: none; border-color: var(--copy); box-shadow: 0 0 0 3px var(--copy-dim); }
 .loop-duration {
-  font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted);
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 11px; color: var(--ink-muted);
   padding: 8px 10px; border-radius: var(--radius-sm);
   background: rgba(117,62,247,0.06); border: 1px solid rgba(117,62,247,0.18);
 }
@@ -347,7 +347,7 @@ input[type=range] { cursor: pointer; }
 .vol-row { display: flex; align-items: center; gap: 10px; }
 .vol-row label { font-size: 11px; color: var(--ink-muted); white-space: nowrap; display: inline-flex; align-items: center; }
 #volSlider { flex: 1; accent-color: var(--copy); height: 4px; }
-.vol-val { font-family: var(--font-mono); font-size: 11px; color: var(--copy); min-width: 36px; text-align: right; font-weight: 600; }
+.vol-val { font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 11px; color: var(--copy); min-width: 36px; text-align: right; font-weight: 600; }
 
 /* ── Export Card ─────────────────────── */
 .export-card {
@@ -367,7 +367,7 @@ input[type=range] { cursor: pointer; }
   border-top: 1px solid var(--line-soft);
   backdrop-filter: blur(8px);
   padding: 8px 18px; display: flex; align-items: center; gap: 12px; font-size: 11px;
-  color: var(--ink-muted); font-family: var(--font-mono);
+  color: var(--ink-muted); font-family: var(--font-body); font-variant-numeric: tabular-nums;
 }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-faint); flex-shrink: 0; transition: all var(--transition); }
 .status-dot.playing { background: var(--success); box-shadow: 0 0 10px var(--success); }
@@ -386,7 +386,7 @@ input[type=range] { cursor: pointer; }
 
 /* ── Kbd ─────────────────────────────── */
 kbd {
-  display: inline-block; font-family: var(--font-mono); font-size: 10px;
+  display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 10px;
   background: rgba(117,62,247,0.10); border: 1px solid rgba(117,62,247,0.28);
   border-radius: 4px; padding: 2px 6px; color: var(--copy); font-weight: 600;
   box-shadow: 0 1px 0 rgba(0,0,0,0.4);
@@ -432,7 +432,7 @@ kbd {
   border-radius: var(--radius-md);
 }
 .seg button {
-  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 10px; font-weight: 600;
   padding: 4px 9px; border-radius: 6px; color: var(--ink-muted);
   letter-spacing: 0.5px; text-transform: uppercase;
   transition: all var(--transition);
@@ -457,7 +457,7 @@ kbd {
 }
 .loop-chips { display: inline-flex; gap: 6px; flex-wrap: wrap; }
 .loop-chips .chip {
-  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 600;
   padding: 7px 12px; border-radius: 999px;
   border: 1px solid var(--line);
   background: rgba(26,26,46,0.55); color: var(--ink-muted);
@@ -484,7 +484,7 @@ kbd {
 .anchor-group.locked { border-color: rgba(251,191,36,0.40); background: rgba(251,191,36,0.06); }
 .anchor-group .anchor-label { font-size: 11px; color: var(--ink-muted); font-weight: 500; }
 .anchor-group .anchor-time {
-  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 600;
   background: transparent; border: none; color: var(--ink);
   width: 76px; padding: 2px 4px; border-radius: var(--radius-sm);
   transition: all var(--transition);
@@ -505,7 +505,7 @@ kbd {
 .btn-anchor-lock.locked { color: var(--ss-gold); border-color: rgba(251,191,36,0.55); background: rgba(251,191,36,0.10); }
 .btn-anchor-lock svg { width: 13px; height: 13px; }
 .btn-anchor-set {
-  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 10px; font-weight: 600;
   padding: 4px 9px; border-radius: 6px; color: var(--ink-muted);
   background: rgba(26,26,46,0.55); border: 1px solid var(--line);
   letter-spacing: 0.4px; transition: all var(--transition);
@@ -514,7 +514,7 @@ kbd {
 .btn-anchor-set:disabled { opacity: 0.4; cursor: not-allowed; }
 .anchor-nudge { display: inline-flex; gap: 2px; }
 .anchor-nudge button {
-  font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 10px; font-weight: 700;
   padding: 4px 6px; min-width: 22px; border-radius: 4px;
   background: rgba(26,26,46,0.55); border: 1px solid var(--line);
   color: var(--ink-muted); transition: all var(--transition);
@@ -524,7 +524,7 @@ kbd {
 .beat-pill.locked { color: var(--ss-gold); border-color: rgba(251,191,36,0.40); background: rgba(251,191,36,0.08); }
 .beat-lock-chip {
   display: inline-flex; align-items: center; gap: 6px;
-  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 11px; font-weight: 600;
   padding: 4px 10px; border-radius: 999px;
   border: 1px solid rgba(251,191,36,0.40); background: rgba(251,191,36,0.08);
   color: var(--ss-gold);
@@ -539,7 +539,7 @@ kbd {
 .beat-lock-chip button:hover { background: var(--ss-gold); color: #1a0d3d; }
 .btn-add-lock {
   display: inline-flex; align-items: center; gap: 4px;
-  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 10px; font-weight: 600;
   padding: 4px 9px; border-radius: 6px;
   background: rgba(26,26,46,0.55); border: 1px solid var(--line);
   color: var(--ink-muted); letter-spacing: 0.4px;
@@ -572,7 +572,7 @@ kbd {
 .hint-pill {
   display: inline-flex; align-items: center; gap: 8px;
   margin: 8px 16px; padding: 6px 12px;
-  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 11px; font-weight: 600;
   color: var(--ss-gold);
   background: rgba(251,191,36,0.06);
   border: 1px solid rgba(251,191,36,0.32);
