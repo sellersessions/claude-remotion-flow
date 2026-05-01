@@ -65,8 +65,8 @@
   .meta-cell { display: flex; flex-direction: column; min-width: 0; }
   .title { font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sub { color: var(--ink-muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  audio { width: 100%; height: 32px; }
-  audio::-webkit-media-controls-panel { background: var(--panel-2); }
+  /* Force native light controls so the player chrome reads white, not dark/purple. */
+  audio { width: 100%; height: 32px; color-scheme: light; }
   .duration { font-variant-numeric: tabular-nums; color: var(--ink-muted); font-size: 12px; text-align: right; }
   button.act { background: transparent; border: 1px solid var(--line); border-radius: var(--radius); color: var(--ink-muted); width: 32px; height: 28px; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
   button.act:hover { background: var(--panel-2); color: var(--ink); }
