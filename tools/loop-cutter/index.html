@@ -124,27 +124,16 @@ input[type=range] { cursor: pointer; }
 
 .main { display: flex; flex-direction: column; flex: 1; padding: 18px; gap: 14px; max-width: 1280px; width: 100%; margin: 0 auto; position: relative; }
 
-/* ── Glow card primitive ─────────────────── */
+/* ── Flat panel primitive (was: glow card) ─ */
 .gcard {
   position: relative;
-  background: linear-gradient(180deg, var(--ss-card) 0%, var(--ss-deep-2) 100%);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   overflow: hidden;
-  transition: box-shadow var(--transition), transform var(--transition);
-}
-.gcard::before {
-  content: ''; position: absolute; inset: 0;
-  border-radius: var(--radius-xl); padding: 1px;
-  background: linear-gradient(180deg, rgba(117,62,247,0.55) 0%, rgba(70,20,153,0.32) 38%, rgba(70,20,153,0.10) 70%, rgba(46,30,95,0.30) 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; mask-composite: exclude;
-  pointer-events: none; z-index: 1;
 }
 [data-theme="light"] .gcard {
-  background: linear-gradient(180deg, #ffffff 0%, #f8f4ff 100%);
-}
-[data-theme="light"] .gcard::before {
-  background: linear-gradient(180deg, rgba(70,20,153,0.30) 0%, rgba(70,20,153,0.10) 60%, rgba(70,20,153,0.04) 100%);
+  background: var(--color-surface);
 }
 
 /* ── Drop Zone ─────────────────────────── */
