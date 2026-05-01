@@ -42,3 +42,7 @@ public/assets/loom-cuts/
 # Screenshots / browser-automation captures — per CLAUDE.md project rule.
 _captures/
 
+# Internal-only files: untracked for speaker handover
+MASTER-LOG.md
+README.personal.md
+

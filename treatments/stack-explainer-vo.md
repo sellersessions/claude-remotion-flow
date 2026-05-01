@@ -133,7 +133,7 @@ Scene 4 · 103 chars   Scene 8 · 105 chars
 ## Generation command
 
 ```bash
-cd /Users/dannymcmillan/Claude-Code-Projects-Restored/claude-remotion-flow
+# from repo root
 node --experimental-strip-types scripts/voice/generate-vo.ts \
   scripts/voice/stack-explainer.config.json
 ```

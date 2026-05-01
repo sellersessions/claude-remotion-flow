@@ -12,7 +12,9 @@
 
 set -euo pipefail
 
-SRC_DIR="/Users/dannymcmillan/Claude-Code-Projects-Restored/claude-remotion-flow/public/assets/loom-cuts/claude-code-tools-windows"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SRC_DIR="$REPO_ROOT/public/assets/loom-cuts/claude-code-tools-windows"
 OUT_DIR="${SRC_DIR}_mastered"
 
 mkdir -p "$OUT_DIR"
