@@ -1,7 +1,7 @@
 # SFX + Music Library — sign-off sheet
 
-> Generated 2026-05-01 10:24:48 UTC from MANIFEST.json.
-> **378 files · 20 shortlisted** across 6 categories.
+> Generated 2026-05-01 10:56:03 UTC from MANIFEST.json.
+> **377 files · 20 shortlisted** across 6 categories.
 > Re-run `node scripts/sfx/render-library-md.mjs` after curation to refresh.
 
 ---
@@ -319,97 +319,96 @@
 | 57 | Old Mine Ambience | JoelFazhari | 10:03 | — | Film & special effects, Mine, Ambience,… |  |  |
 | 58 | Busy Street Ambience | aatreya_v | 28:45 | — | City, Ambience, Nature, Sound |  |  |
 
-## music (89 files · 2 shortlisted)
+## music (88 files · 2 shortlisted)
 
-### tiktok-backing (85)
+### tiktok-backing (84)
 
 | # | Title | Author | Duration | Mood | Tags | ⭐ | Notes |
 |---|-------|--------|----------|------|------|---|-------|
 | 1 | Lose Yourself 8 bar loop | — | 0:22 | — | — | ⭐ |  |
 | 2 | cornfield chase (theme from interstella… | — | 2:05 | — | — | ⭐ |  |
-| 3 | Lose Yourself 8 bar loop | — | 0:22 | — | — |  |  |
-| 4 | The Long Way Home logic edit | — | 0:53 | — | — |  |  |
-| 5 | Spooky Quiet Scary Atmosphere piano cov… | — | 1:07 | — | — |  |  |
-| 6 | Running Up That Hill (A Deal With God) … | — | 1:22 | — | — |  |  |
-| 7 | Mockingbird [TubeRipper.com] | — | 1:33 | — | — |  |  |
-| 8 | Skittlegirl Sound - Theme of Mysterious… | — | 1:34 | — | — |  |  |
-| 9 | Beat Automotivo Tan Tan Tan Viral - WZ … | — | 1:50 | — | — |  |  |
-| 10 | Wildest Dreams (Piano Version)  | — | 1:54 | — | — |  |  |
-| 11 | MurderCaust [TubeRipper.com] | — | 2:05 | — | — |  |  |
-| 12 | Hans Zimmer - Cornfield Chase (Interste… | — | 2:06 | — | — |  |  |
-| 13 | Love Me (ecstazzz Remix) [TubeRipper.co… | — | 2:07 | — | — |  |  |
-| 14 | Intro] | — | 2:08 | — | — |  |  |
-| 15 | Gravity [TubeRipper.com] | — | 2:08 | — | — |  |  |
-| 16 | [Emotional Piano Music] DS Productions … | — | 2:08 | — | — |  |  |
-| 17 | KUTE TECHNO KILLA  | — | 2:10 | — | — |  |  |
-| 18 | Deathmatch [TubeRipper.com] | — | 2:10 | — | — |  |  |
-| 19 | Aesthetic [TubeRipper.com] | — | 2:14 | — | — |  |  |
-| 20 | DAY$TAR- SMELLS LIKE DRILL SPIRIT (Musi… | — | 2:15 | — | — |  |  |
-| 21 | In Essence [TubeRipper.com] | — | 2:23 | — | — |  |  |
-| 22 | in the air reels version | — | 2:27 | — | — |  |  |
-| 23 | OneRepublic - I Aint Worried (Instrumen… | — | 2:31 | — | — |  |  |
-| 24 | øneheart x reidenshi - snowfall (slowed… | — | 2:31 | — | — |  |  |
-| 25 | Melancholy [TubeRipper.com] | — | 2:35 | — | — |  |  |
-| 26 | golden hour (piano Version)  | — | 2:40 | — | — |  |  |
-| 27 | Night Lovell - Polozhenie [TubeRipper.c… | — | 2:41 | — | — |  |  |
-| 28 | Call Me (Slowed) [TubeRipper.com] | — | 2:41 | — | — |  |  |
-| 29 | Night Lovell - Polozhenie [TubeRipper.c… | — | 2:41 | — | — |  |  |
-| 30 | Mo Beats - Righteous (pepe lore song)  | — | 2:44 | — | — |  |  |
-| 31 | I need your loving like the sunshine [T… | — | 2:45 | — | — |  |  |
-| 32 | Stargazing (Slowed + Reverb) - Marcelo … | — | 2:45 | — | — |  |  |
-| 33 | Kreepa - Oh No (Lyrics) [TubeRipper.com] | — | 2:47 | — | — |  |  |
-| 34 | Gustavo Bravetti - Babel (Visualizer)  | — | 2:52 | — | — |  |  |
-| 35 | Pxlish Beatz -Prey - SPIT IN MY FACE! (… | — | 2:52 | — | — |  |  |
-| 36 | Digga D - Energy (Official Video) [Tube… | — | 2:54 | — | — |  |  |
-| 37 | Solas x Interstellar [TubeRipper.com] | — | 2:54 | — | — |  |  |
-| 38 | Kina - get you the moon (ft. Snow) | — | 2:59 | — | — |  |  |
-| 39 | SHADOW (Slowed + Reverb)  | — | 3:05 | — | — |  |  |
-| 40 | Anywhere - Free No Copyright Music  | — | 3:06 | — | — |  |  |
-| 41 | Epic Inspirational and Cinematic Motiva… | — | 3:11 | — | — |  |  |
-| 42 | Palm City - TimeLesz [TubeRipper.com] | — | 3:13 | — | — |  |  |
-| 43 | Really Slow Motion - Deadwood (Epic Dar… | — | 3:14 | — | — |  |  |
-| 44 | Vitrolic-Jailbreak (Instrumental remix … | — | 3:14 | — | — |  |  |
-| 45 | Alessia Cara - Here (Official Video) [T… | — | 3:30 | — | — |  |  |
-| 46 | Else - Paris  | — | 3:30 | — | — |  |  |
-| 47 | IVOXYGEN - YOUNG KID (Official Music Vi… | — | 3:30 | — | — |  |  |
-| 48 | Astraleazar - Jailbreak(Instrumental) [… | — | 3:34 | — | — |  |  |
-| 49 | Kina - Get You The Moon (Lyrics) Hippie… | — | 3:40 | — | — |  |  |
-| 50 | River Flows in You [TubeRipper.com] | — | 3:40 | — | — |  |  |
-| 51 | M83 - Solitude (Felsmann + Tiley Reinte… | — | 3:42 | — | — |  |  |
-| 52 | Say It Right - Nelly Furtado | — | 3:45 | — | — |  |  |
-| 53 | Common Sense [TubeRipper.com] | — | 3:46 | — | — |  |  |
-| 54 | Synthwave goose - Blade Runner 2049  | — | 3:47 | — | — |  |  |
-| 55 | Gustavo Santaolalla - Babel (Otnicka Re… | — | 3:52 | — | — |  |  |
-| 56 | Canelo [TubeRipper.com] | — | 3:57 | — | — |  |  |
-| 57 | Tony Anderson - Butterflies (Piano Sona… | — | 4:00 | — | — |  |  |
-| 58 | KTerror - My All (Official Lyric Video)… | — | 4:05 | — | — |  |  |
-| 59 | Get You The Moon - Kina Marty Ray Proje… | — | 4:15 | — | — |  |  |
-| 60 | Kina - get you to the moon (feat. Snow)… | — | 4:16 | — | — |  |  |
-| 61 | YVDB 89 - Lazy Sunday (So Fancy) [Exten… | — | 4:17 | — | — |  |  |
-| 62 | Spentukto - New Magic Wand X Funtime Fo… | — | 4:18 | — | — |  |  |
-| 63 | The Commodores - Easy (1977) [TubeRippe… | — | 4:20 | — | — |  |  |
-| 64 | solas (slowed + reverb)  | — | 4:28 | — | — |  |  |
-| 65 | Biggie Small One More Chance | — | 4:29 | — | — |  |  |
-| 66 | The Weeknd - Starboy ft. Daft Punk ( | — | 4:33 | — | — |  |  |
-| 67 | Fell Apart Lucky Ones [TubeRipper.com] | — | 5:05 | — | — |  |  |
-| 68 | Apocalyptica - Nothing Else Matters (Pl… | — | 5:05 | — | — |  |  |
-| 69 | Meri Aashiqui Song Rochak Kohli Feat. J… | — | 5:07 | — | — |  |  |
-| 70 | 28 Days Later slowed [TubeRipper.com] | — | 5:09 | — | — |  |  |
-| 71 | Lose Yourself (From 8 Mile Soundtrack) … | — | 5:21 | — | — |  |  |
-| 72 | Massive Attack - Unfinished Sympathy [T… | — | 5:21 | — | — |  |  |
-| 73 | Epic Motivational Music - Our Saga [Tub… | — | 5:21 | — | — |  |  |
-| 74 | Eminem - Lose Yourself [HD] [TubeRipper… | — | 5:23 | — | — |  |  |
-| 75 | Phil Collins - In the Air Tonight [Tube… | — | 5:37 | — | — |  |  |
-| 76 | Eminem - Stan (Short Version) ft. Dido … | — | 6:04 | — | — |  |  |
-| 77 | Giggs - FreeStyle (Hardest Talking) (In… | — | 6:04 | — | — |  |  |
-| 78 | Petit Biscuit - Night Trouble (Official… | — | 6:31 | — | — |  |  |
-| 79 | Logic - 1-800-273-8255 ft. Alessia Cara… | — | 6:60 | — | — |  |  |
-| 80 | Love Hate [TubeRipper.com] | — | 7:07 | — | — |  |  |
-| 81 | the cinematic orchestra - to build a ho… | — | 7:13 | — | — |  |  |
-| 82 | RY X - Body Sun (Live from the Royal Al… | — | 7:27 | — | — |  |  |
-| 83 | Interstellar  | — | 7:45 | — | — |  |  |
-| 84 | Kina - get you the moon (Lyrics) ft. Sn… | — | 8:20 | — | — |  |  |
-| 85 | Fred again.. x Skepta x PlaqueBoyMax - … | — | 8:23 | — | — |  |  |
+| 3 | The Long Way Home logic edit | — | 0:53 | — | — |  |  |
+| 4 | Spooky Quiet Scary Atmosphere piano cov… | — | 1:07 | — | — |  |  |
+| 5 | Running Up That Hill (A Deal With God) … | — | 1:22 | — | — |  |  |
+| 6 | Mockingbird [TubeRipper.com] | — | 1:33 | — | — |  |  |
+| 7 | Skittlegirl Sound - Theme of Mysterious… | — | 1:34 | — | — |  |  |
+| 8 | Beat Automotivo Tan Tan Tan Viral - WZ … | — | 1:50 | — | — |  |  |
+| 9 | Wildest Dreams (Piano Version)  | — | 1:54 | — | — |  |  |
+| 10 | MurderCaust [TubeRipper.com] | — | 2:05 | — | — |  |  |
+| 11 | Hans Zimmer - Cornfield Chase (Interste… | — | 2:06 | — | — |  |  |
+| 12 | Love Me (ecstazzz Remix) [TubeRipper.co… | — | 2:07 | — | — |  |  |
+| 13 | Intro] | — | 2:08 | — | — |  |  |
+| 14 | Gravity [TubeRipper.com] | — | 2:08 | — | — |  |  |
+| 15 | [Emotional Piano Music] DS Productions … | — | 2:08 | — | — |  |  |
+| 16 | KUTE TECHNO KILLA  | — | 2:10 | — | — |  |  |
+| 17 | Deathmatch [TubeRipper.com] | — | 2:10 | — | — |  |  |
+| 18 | Aesthetic [TubeRipper.com] | — | 2:14 | — | — |  |  |
+| 19 | DAY$TAR- SMELLS LIKE DRILL SPIRIT (Musi… | — | 2:15 | — | — |  |  |
+| 20 | In Essence [TubeRipper.com] | — | 2:23 | — | — |  |  |
+| 21 | in the air reels version | — | 2:27 | — | — |  |  |
+| 22 | OneRepublic - I Aint Worried (Instrumen… | — | 2:31 | — | — |  |  |
+| 23 | øneheart x reidenshi - snowfall (slowed… | — | 2:31 | — | — |  |  |
+| 24 | Melancholy [TubeRipper.com] | — | 2:35 | — | — |  |  |
+| 25 | golden hour (piano Version)  | — | 2:40 | — | — |  |  |
+| 26 | Night Lovell - Polozhenie [TubeRipper.c… | — | 2:41 | — | — |  |  |
+| 27 | Call Me (Slowed) [TubeRipper.com] | — | 2:41 | — | — |  |  |
+| 28 | Night Lovell - Polozhenie [TubeRipper.c… | — | 2:41 | — | — |  |  |
+| 29 | Mo Beats - Righteous (pepe lore song)  | — | 2:44 | — | — |  |  |
+| 30 | I need your loving like the sunshine [T… | — | 2:45 | — | — |  |  |
+| 31 | Stargazing (Slowed + Reverb) - Marcelo … | — | 2:45 | — | — |  |  |
+| 32 | Kreepa - Oh No (Lyrics) [TubeRipper.com] | — | 2:47 | — | — |  |  |
+| 33 | Gustavo Bravetti - Babel (Visualizer)  | — | 2:52 | — | — |  |  |
+| 34 | Pxlish Beatz -Prey - SPIT IN MY FACE! (… | — | 2:52 | — | — |  |  |
+| 35 | Digga D - Energy (Official Video) [Tube… | — | 2:54 | — | — |  |  |
+| 36 | Solas x Interstellar [TubeRipper.com] | — | 2:54 | — | — |  |  |
+| 37 | Kina - get you the moon (ft. Snow) | — | 2:59 | — | — |  |  |
+| 38 | SHADOW (Slowed + Reverb)  | — | 3:05 | — | — |  |  |
+| 39 | Anywhere - Free No Copyright Music  | — | 3:06 | — | — |  |  |
+| 40 | Epic Inspirational and Cinematic Motiva… | — | 3:11 | — | — |  |  |
+| 41 | Palm City - TimeLesz [TubeRipper.com] | — | 3:13 | — | — |  |  |
+| 42 | Really Slow Motion - Deadwood (Epic Dar… | — | 3:14 | — | — |  |  |
+| 43 | Vitrolic-Jailbreak (Instrumental remix … | — | 3:14 | — | — |  |  |
+| 44 | Alessia Cara - Here (Official Video) [T… | — | 3:30 | — | — |  |  |
+| 45 | Else - Paris  | — | 3:30 | — | — |  |  |
+| 46 | IVOXYGEN - YOUNG KID (Official Music Vi… | — | 3:30 | — | — |  |  |
+| 47 | Astraleazar - Jailbreak(Instrumental) [… | — | 3:34 | — | — |  |  |
+| 48 | Kina - Get You The Moon (Lyrics) Hippie… | — | 3:40 | — | — |  |  |
+| 49 | River Flows in You [TubeRipper.com] | — | 3:40 | — | — |  |  |
+| 50 | M83 - Solitude (Felsmann + Tiley Reinte… | — | 3:42 | — | — |  |  |
+| 51 | Say It Right - Nelly Furtado | — | 3:45 | — | — |  |  |
+| 52 | Common Sense [TubeRipper.com] | — | 3:46 | — | — |  |  |
+| 53 | Synthwave goose - Blade Runner 2049  | — | 3:47 | — | — |  |  |
+| 54 | Gustavo Santaolalla - Babel (Otnicka Re… | — | 3:52 | — | — |  |  |
+| 55 | Canelo [TubeRipper.com] | — | 3:57 | — | — |  |  |
+| 56 | Tony Anderson - Butterflies (Piano Sona… | — | 4:00 | — | — |  |  |
+| 57 | KTerror - My All (Official Lyric Video)… | — | 4:05 | — | — |  |  |
+| 58 | Get You The Moon - Kina Marty Ray Proje… | — | 4:15 | — | — |  |  |
+| 59 | Kina - get you to the moon (feat. Snow)… | — | 4:16 | — | — |  |  |
+| 60 | YVDB 89 - Lazy Sunday (So Fancy) [Exten… | — | 4:17 | — | — |  |  |
+| 61 | Spentukto - New Magic Wand X Funtime Fo… | — | 4:18 | — | — |  |  |
+| 62 | The Commodores - Easy (1977) [TubeRippe… | — | 4:20 | — | — |  |  |
+| 63 | solas (slowed + reverb)  | — | 4:28 | — | — |  |  |
+| 64 | Biggie Small One More Chance | — | 4:29 | — | — |  |  |
+| 65 | The Weeknd - Starboy ft. Daft Punk ( | — | 4:33 | — | — |  |  |
+| 66 | Fell Apart Lucky Ones [TubeRipper.com] | — | 5:05 | — | — |  |  |
+| 67 | Apocalyptica - Nothing Else Matters (Pl… | — | 5:05 | — | — |  |  |
+| 68 | Meri Aashiqui Song Rochak Kohli Feat. J… | — | 5:07 | — | — |  |  |
+| 69 | 28 Days Later slowed [TubeRipper.com] | — | 5:09 | — | — |  |  |
+| 70 | Lose Yourself (From 8 Mile Soundtrack) … | — | 5:21 | — | — |  |  |
+| 71 | Massive Attack - Unfinished Sympathy [T… | — | 5:21 | — | — |  |  |
+| 72 | Epic Motivational Music - Our Saga [Tub… | — | 5:21 | — | — |  |  |
+| 73 | Eminem - Lose Yourself [HD] [TubeRipper… | — | 5:23 | — | — |  |  |
+| 74 | Phil Collins - In the Air Tonight [Tube… | — | 5:37 | — | — |  |  |
+| 75 | Eminem - Stan (Short Version) ft. Dido … | — | 6:04 | — | — |  |  |
+| 76 | Giggs - FreeStyle (Hardest Talking) (In… | — | 6:04 | — | — |  |  |
+| 77 | Petit Biscuit - Night Trouble (Official… | — | 6:31 | — | — |  |  |
+| 78 | Logic - 1-800-273-8255 ft. Alessia Cara… | — | 6:60 | — | — |  |  |
+| 79 | Love Hate [TubeRipper.com] | — | 7:07 | — | — |  |  |
+| 80 | the cinematic orchestra - to build a ho… | — | 7:13 | — | — |  |  |
+| 81 | RY X - Body Sun (Live from the Royal Al… | — | 7:27 | — | — |  |  |
+| 82 | Interstellar  | — | 7:45 | — | — |  |  |
+| 83 | Kina - get you the moon (Lyrics) ft. Sn… | — | 8:20 | — | — |  |  |
+| 84 | Fred again.. x Skepta x PlaqueBoyMax - … | — | 8:23 | — | — |  |  |
 
 ### ssl-live-beds (4)
 
