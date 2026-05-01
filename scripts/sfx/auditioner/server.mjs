@@ -21,10 +21,11 @@
  */
 import { createServer } from 'node:http';
 import { createReadStream } from 'node:fs';
-import { readFile, writeFile, stat } from 'node:fs/promises';
+import { readFile, writeFile, stat, mkdir } from 'node:fs/promises';
 import { extname, join, normalize, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
+import { randomBytes } from 'node:crypto';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = resolve(__dirname, '..', '..', '..');
@@ -129,11 +130,29 @@ function json(res, status, body) {
   res.end(payload);
 }
 
-async function readBody(req) {
+async function readBody(req, maxBytes = 60 * 1024 * 1024) {
   const chunks = [];
-  for await (const c of req) chunks.push(c);
+  let total = 0;
+  for await (const c of req) {
+    total += c.length;
+    if (total > maxBytes) throw new Error(`body too large (>${maxBytes} bytes)`);
+    chunks.push(c);
+  }
   const raw = Buffer.concat(chunks).toString('utf8');
   return raw ? JSON.parse(raw) : {};
+}
+
+// Filename safety: strip characters that break shells / FS / URL routing.
+// Keep ASCII letters, digits, space, dash, underscore, dot. Collapse runs.
+function sanitiseFilename(s) {
+  return (s || 'clip').replace(/[^a-zA-Z0-9 _.-]+/g, '-').replace(/-+/g, '-').replace(/^[-.]+|[-.]+$/g, '').slice(0, 80) || 'clip';
+}
+
+function formatDuration(seconds) {
+  if (!isFinite(seconds) || seconds < 0) return '0:00';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
 }
 
 const server = createServer(async (req, res) => {
@@ -191,6 +210,79 @@ const server = createServer(async (req, res) => {
         regenerateLibraryMd().catch(e => console.error('render-library-md failed:', e.message));
       }
       return json(res, result.ok ? 200 : 404, result);
+    }
+
+    // Step 6 save-back: cutter POSTs a rendered WAV + metadata; server writes
+    // the file under public/assets/music/cuts/, appends a manifest entry, and
+    // regenerates LIBRARY.md. New clips auto-shortlist so they appear in the
+    // shortlist dock immediately for round-trip feedback.
+    //
+    // Body: { wav_base64, source_id?, title?, in_s, out_s, bpm? }
+    // Response: { ok, item } on success; { ok:false, reason } on failure.
+    if (req.method === 'POST' && pathname === '/api/save-clip') {
+      const body = await readBody(req);
+      const { wav_base64, source_id, title, in_s, out_s, bpm } = body;
+      if (!wav_base64 || typeof wav_base64 !== 'string') {
+        return json(res, 400, { ok: false, reason: 'missing wav_base64' });
+      }
+      if (typeof in_s !== 'number' || typeof out_s !== 'number' || out_s <= in_s) {
+        return json(res, 400, { ok: false, reason: 'invalid in_s/out_s' });
+      }
+      const wavBuf = Buffer.from(wav_base64, 'base64');
+      if (wavBuf.length < 44) {
+        return json(res, 400, { ok: false, reason: 'wav too small (header < 44 bytes)' });
+      }
+
+      const result = await withManifestLock(async () => {
+        const data = await readManifest();
+        const parent = source_id ? (data.items || []).find(i => i.id === source_id) : null;
+
+        // Filename: <sanitised-base>--<inSec>-<outSec>--<unix-ms>.wav
+        const baseTitle = title || (parent ? parent.title : 'clip');
+        const inTag = in_s.toFixed(2).replace('.', 'p');
+        const outTag = out_s.toFixed(2).replace('.', 'p');
+        const stamp = Date.now();
+        const fname = `${sanitiseFilename(baseTitle)}--${inTag}-${outTag}--${stamp}.wav`;
+        const cutsDir = join(ASSETS_ROOT, 'music', 'cuts');
+        await mkdir(cutsDir, { recursive: true });
+        const filePath = join(cutsDir, fname);
+        await writeFile(filePath, wavBuf);
+
+        const id = `cut-${randomBytes(5).toString('hex')}`;
+        const item = {
+          id,
+          source: 'loop-cutter',
+          query: null,
+          category: 'music',
+          page: null,
+          cdn_url: null,
+          detail_url: null,
+          title: title || (parent ? `${parent.title} · loop ${in_s.toFixed(2)}-${out_s.toFixed(2)}` : `clip ${in_s.toFixed(2)}-${out_s.toFixed(2)}`),
+          author: null,
+          author_url: null,
+          duration: formatDuration(out_s - in_s),
+          tags: [],
+          license: null,
+          local_path: `public/assets/music/cuts/${fname}`,
+          subcategory: 'cuts',
+          shortlisted: true,
+          shortlisted_at: new Date().toISOString(),
+          source_id: source_id || null,
+          in_s,
+          out_s,
+          bpm: typeof bpm === 'number' && isFinite(bpm) && bpm > 0 ? bpm : null,
+          created_at: new Date(stamp).toISOString(),
+        };
+        data.items = data.items || [];
+        data.items.push(item);
+        await writeManifest(data);
+        return { ok: true, item };
+      });
+
+      if (result.ok) {
+        regenerateLibraryMd().catch(e => console.error('render-library-md failed:', e.message));
+      }
+      return json(res, result.ok ? 200 : 500, result);
     }
 
     res.writeHead(404); res.end('not found');

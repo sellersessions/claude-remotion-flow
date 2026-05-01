@@ -799,6 +799,7 @@ kbd {
           <label class="hint" for="repeatCount" data-tip="Repeat count — passed to loop_bed.py --repeat">Repeat <span style="color:var(--color-text-muted);">×</span></label>
           <input class="marker-time" type="number" id="repeatCount" min="1" max="128" step="1" value="4" style="max-width:80px;">
         </div>
+        <button class="btn btn-primary btn-sm" id="btnSaveToLibrary" data-tip="Save IN→OUT region back to the library (auditioner manifest, auto-shortlisted)"><i data-lucide="save"></i> Save to library</button>
         <button class="btn btn-ghost btn-sm" id="btnExportLoop" data-tip="Optional: download the IN→OUT region as a sanity-check WAV"><i data-lucide="download"></i> Save loop (sanity)</button>
         <button class="btn btn-ghost btn-sm" id="btnLoadNew" data-tip="Load a different audio file"><i data-lucide="folder-open"></i> Load new file</button>
       </div>
@@ -1663,6 +1664,61 @@ rafLoop();
 // ── Export ────────────────────────────────────────────────────────────────
 document.getElementById('btnExportLoop').addEventListener('click', () => exportRegion(inPoint, outPoint !== null ? outPoint : duration, 'loop'));
 
+// Step 6 save-back: render IN→OUT to WAV, base64-encode, POST to /api/save-clip.
+// Server writes file under public/assets/music/cuts/, appends manifest entry,
+// regenerates LIBRARY.md, returns the new item. Auto-shortlisted so the new
+// clip appears in the dock immediately.
+document.getElementById('btnSaveToLibrary').addEventListener('click', async () => {
+  if (!audioBuffer) { setStatus('error', 'Load a file first'); return; }
+  const start = inPoint;
+  const end = outPoint !== null ? outPoint : duration;
+  if (end <= start) { setStatus('error', 'Set IN/OUT before saving'); return; }
+  setStatus('loading', 'Rendering region…');
+  try {
+    const sampleRate = audioBuffer.sampleRate;
+    const numChannels = audioBuffer.numberOfChannels;
+    const numSamples = Math.floor((end - start) * sampleRate);
+    const offlineCtx = new OfflineAudioContext(numChannels, numSamples, sampleRate);
+    const src = offlineCtx.createBufferSource();
+    src.buffer = audioBuffer;
+    src.connect(offlineCtx.destination);
+    src.start(0, start, end - start);
+    const rendered = await offlineCtx.startRendering();
+    const wavBuf = audioBufferToWav(rendered);
+
+    // Base64 in chunks to avoid call-stack blow-up on large clips.
+    const bytes = new Uint8Array(wavBuf);
+    let bin = '';
+    const chunk = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunk) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+    const wav_base64 = btoa(bin);
+
+    setStatus('loading', 'Saving to library…');
+    const sourceId = (typeof window.getActiveSourceId === 'function') ? window.getActiveSourceId() : null;
+    const baseName = (fileNameEl.textContent || '').replace(/\.[^/.]+$/, '');
+    const bpmVal = bpmInput && bpmInput.value ? parseFloat(bpmInput.value) : null;
+    const title = baseName ? `${baseName} · ${(end - start).toFixed(2)}s loop` : null;
+    const res = await fetch('/api/save-clip', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        wav_base64,
+        source_id: sourceId,
+        title,
+        in_s: start,
+        out_s: end,
+        bpm: bpmVal,
+      }),
+    });
+    const result = await res.json();
+    if (!result.ok) throw new Error(result.reason || 'save failed');
+    setStatus('ready', `Saved to library: ${result.item.title}`);
+    if (typeof window.shortlistRefresh === 'function') window.shortlistRefresh();
+  } catch (e) {
+    setStatus('error', 'Save failed: ' + (e.message || e));
+  }
+});
+
 document.getElementById('btnCopyClaudeCmd').addEventListener('click', () => {
   if (!audioBuffer) { setStatus('error', 'Load a file first'); return; }
   const inS = inPoint.toFixed(4);
@@ -2030,6 +2086,11 @@ lucide.createIcons();
     const item = (manifest.items || []).find(i => (i.local_path || '').endsWith(rel));
     if (item) activeId = item.id;
   }
+
+  // Step 6 hooks: the save-back handler needs to refresh the dock and read
+  // the parent track id so it can attribute the new clip.
+  window.shortlistRefresh = refresh;
+  window.getActiveSourceId = () => activeId;
 })();
 
 // Library handoff: if URL has ?src=<server-path>, auto-load it.
