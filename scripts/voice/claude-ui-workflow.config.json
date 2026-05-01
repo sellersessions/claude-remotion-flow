@@ -1,10 +1,10 @@
 {
-  "_comment": "Claude UI Workflow explainer — SSL 2026 conference (9 May). 7 scenes, ~166 words. Single-stem chapter render: scenes joined with break tags, one ElevenLabs call. Visual concerns (titles, motion, on-screen text) live in src/ClaudeUiWorkflowExplainer.tsx and treatments/claude-ui-workflow-vo.md — this file is voice-generation only.",
+  "_comment": "Claude UI Workflow explainer — SSL 2026 conference (9 May). Per-LINE generation: each sentence is its own TTS call, chained via request-id. Files: {scene}__{line}.mp3 → stitched per-scene → final listen-through. Finder colour-tag review (blue=keep, red=regen, green=mid) drives selective regen. Em-dashes used as TTS breath markers ONLY (never read by humans, never copied to mailers/READMEs/UI).",
   "voice_id": "jQOgcOzmmipekvxJN09W",
   "model_id": "eleven_multilingual_v2",
   "output_dir": "public/assets/voice/generated/claude-ui-workflow",
   "default_voice_settings": {
-    "stability": 0.31,
+    "stability": 0.45,
     "similarity_boost": 1.0,
     "style": 0.0,
     "use_speaker_boost": true,
@@ -13,31 +13,63 @@
   "scenes": [
     {
       "id": "scene-1-hook",
-      "text": "As an Amazon seller, there may be a time you're going to need a landing page, or redesign your Shopify site. Right now, most tools are producing AI slop. But you can control the variables."
+      "lines": [
+        { "id": "L1", "text": "As an Amazon seller — there may be a time you need a landing page, or redesign your Shopify site." },
+        { "id": "L2", "text": "Right now — most tools are producing AI slop." },
+        { "id": "L3", "text": "But you can control the variables." }
+      ]
     },
     {
       "id": "scene-2-turn",
-      "text": "What if you could have agency-quality design, without having to wait three weeks, and without having to pay five to ten grand."
+      "lines": [
+        { "id": "L1", "text": "What if you could have agency-quality design — without waiting three weeks — and without paying five to ten grand." }
+      ]
     },
     {
       "id": "scene-3-intake",
-      "text": "To get started, you just drop in your chosen URL. It will then capture your design system: fonts, brand colours, voice. Locking it all down whilst you make a cup of tea."
+      "lines": [
+        { "id": "L1", "text": "To get started — drop in your chosen URL." },
+        { "id": "L2", "text": "It captures your design system — fonts, brand colours, voice." },
+        { "id": "L3", "text": "Locked down — whilst you make a cup of tea." }
+      ]
     },
     {
-      "id": "scene-4-system",
-      "text": "The next stage, whilst the kettle is boiling, it will run through fifteen design databases. One hundred and sixty-five rules, from anti-AI-slop gates, UI and UX frameworks, and conversion methodologies. Claude automates seven of the ten stages. Then you take the prompt, hand it to Google Stitch, output high-quality designs. Then Claude picks it up, and refactors all the drifts for a controlled output."
+      "id": "scene-4a-rules",
+      "lines": [
+        { "id": "L1", "text": "Next stage — whilst the kettle is boiling — it runs through fifteen design databases." },
+        { "id": "L2", "text": "One hundred and sixty-five rules — anti-AI-slop gates, UI and UX frameworks, conversion methodologies." },
+        { "id": "L3", "text": "Claude automates seven of the ten stages." }
+      ]
+    },
+    {
+      "id": "scene-4b-stitch",
+      "lines": [
+        { "id": "L1", "text": "Then you take the prompt — hand it to Google Stitch — and out come high-quality designs." },
+        { "id": "L2", "text": "Claude picks it up — and refactors all the drifts for a controlled output." }
+      ]
     },
     {
       "id": "scene-5-proof",
-      "text": "Re Tech UK, Databrill, and The Push Pull Agency cleared the gates at high rates."
+      "lines": [
+        { "id": "L1", "text": "Re Tech UK — Databrill — and The Push Pull Agency." },
+        { "id": "L2", "text": "All cleared the gates at high rates." }
+      ]
     },
     {
       "id": "scene-6-time",
-      "text": "Depending on how much time you spend tweaking in Stitch, the process end-to-end, outside of the revisions, takes around ten minutes. In Stitch you can spend hours or minutes. Design is subjective. Best to get it right for your business."
+      "lines": [
+        { "id": "L1", "text": "Depending on how much time you spend tweaking in Stitch — the process end-to-end, outside of revisions, takes around ten minutes." },
+        { "id": "L2", "text": "In Stitch you can spend hours — or minutes." },
+        { "id": "L3", "text": "Design is subjective — best to get it right for your business." }
+      ]
     },
     {
       "id": "scene-7-cta",
-      "text": "Pull the repo, and put Claude to work. People say pretty doesn't convert. Then tell that to the world's leading brands who understand good design drives emotion and trust."
+      "lines": [
+        { "id": "L1", "text": "Pull the repo — and put Claude to work." },
+        { "id": "L2", "text": "People say pretty doesn't convert." },
+        { "id": "L3", "text": "Then tell that to the world's leading brands — who understand good design drives emotion and trust." }
+      ]
     }
   ]
 }

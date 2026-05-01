@@ -37,9 +37,18 @@ interface VoiceSettings {
   use_speaker_boost: boolean;
 }
 
-interface Scene {
+interface Line {
   id: string;
   text: string;
+  voice_settings?: Partial<VoiceSettings>;
+}
+
+interface Scene {
+  id: string;
+  /** Single-block scene text (legacy / short scenes). */
+  text?: string;
+  /** Per-line breakdown — preferred for multi-sentence scenes. Each line = own TTS call, chained. */
+  lines?: Line[];
   /** Shallow-merged on top of default_voice_settings */
   voice_settings?: Partial<VoiceSettings>;
 }
@@ -86,9 +95,56 @@ function assertConfig(cfg: unknown): asserts cfg is VoConfig {
     const scene = s as Record<string, unknown>;
     if (!scene.id || typeof scene.id !== "string")
       throw new Error(`scenes[${i}] missing "id"`);
-    if (!scene.text || typeof scene.text !== "string")
-      throw new Error(`scenes[${i}] missing "text"`);
+    const hasText = typeof scene.text === "string" && scene.text.length > 0;
+    const hasLines = Array.isArray(scene.lines) && scene.lines.length > 0;
+    if (!hasText && !hasLines)
+      throw new Error(`scenes[${i}] (${scene.id}) must have either "text" or "lines"`);
+    if (hasLines) {
+      for (const [j, l] of (scene.lines as unknown[]).entries()) {
+        if (!l || typeof l !== "object") throw new Error(`scenes[${i}].lines[${j}] must be an object`);
+        const line = l as Record<string, unknown>;
+        if (!line.id || typeof line.id !== "string")
+          throw new Error(`scenes[${i}].lines[${j}] missing "id"`);
+        if (!line.text || typeof line.text !== "string")
+          throw new Error(`scenes[${i}].lines[${j}] missing "text"`);
+      }
+    }
   }
+}
+
+/** Flatten a config's scenes into ordered (sceneId, lineId|null, text) units. */
+interface Unit {
+  sceneId: string;
+  lineId: string | null;
+  text: string;
+  fileSlug: string;
+  voice_settings?: Partial<VoiceSettings>;
+}
+
+function expandUnits(cfg: VoConfig): Unit[] {
+  const out: Unit[] = [];
+  for (const scene of cfg.scenes) {
+    if (scene.lines && scene.lines.length > 0) {
+      for (const line of scene.lines) {
+        out.push({
+          sceneId: scene.id,
+          lineId: line.id,
+          text: line.text,
+          fileSlug: `${scene.id}__${line.id}`,
+          voice_settings: { ...scene.voice_settings, ...line.voice_settings },
+        });
+      }
+    } else if (scene.text) {
+      out.push({
+        sceneId: scene.id,
+        lineId: null,
+        text: scene.text,
+        fileSlug: scene.id,
+        voice_settings: scene.voice_settings,
+      });
+    }
+  }
+  return out;
 }
 
 function mergeVoiceSettings(
@@ -132,18 +188,29 @@ function joinChapterText(scenes: Scene[]): string {
 // Core generators
 // ---------------------------------------------------------------------------
 
-async function generateScene(
-  scene: Scene,
+async function generateUnit(
+  unit: Unit,
   cfg: VoConfig,
   apiKey: string,
   outputDir: string,
-): Promise<void> {
+  prev: { requestId: string | null; text: string | null },
+  nextText: string | null,
+): Promise<{ requestId: string | null }> {
   const voiceSettings = mergeVoiceSettings(
     cfg.default_voice_settings,
-    scene.voice_settings,
+    unit.voice_settings,
   );
 
-  const outPath = path.join(outputDir, `${scene.id}.mp3`);
+  const outPath = path.join(outputDir, `${unit.fileSlug}.mp3`);
+
+  const body: Record<string, unknown> = {
+    text: unit.text,
+    model_id: cfg.model_id,
+    voice_settings: voiceSettings,
+  };
+  if (prev.text) body.previous_text = prev.text;
+  if (nextText) body.next_text = nextText;
+  if (prev.requestId) body.previous_request_ids = [prev.requestId];
 
   const response = await fetch(
     `https://api.elevenlabs.io/v1/text-to-speech/${cfg.voice_id}`,
@@ -154,28 +221,30 @@ async function generateScene(
         "Content-Type": "application/json",
         Accept: "audio/mpeg",
       },
-      body: JSON.stringify({
-        text: scene.text,
-        model_id: cfg.model_id,
-        voice_settings: voiceSettings,
-      }),
+      body: JSON.stringify(body),
     },
   );
 
   if (!response.ok) {
     const errBody = await response.text().catch(() => "(unreadable)");
     console.error(
-      `[${scene.id}] ERROR ${response.status} ${response.statusText}: ${errBody}`,
+      `[${unit.fileSlug}] ERROR ${response.status} ${response.statusText}: ${errBody}`,
     );
-    return;
+    return { requestId: null };
   }
+
+  const requestId =
+    response.headers.get("request-id") ??
+    response.headers.get("x-request-id");
 
   const audioBuffer = Buffer.from(await response.arrayBuffer());
   await writeFile(outPath, audioBuffer);
 
+  const chainTag = prev.requestId ? " ↳chained" : "";
   console.log(
-    `[${scene.id}] ${audioBuffer.byteLength.toLocaleString()} bytes → ${outPath} (${fmtSettings(voiceSettings)})`,
+    `[${unit.fileSlug}] ${audioBuffer.byteLength.toLocaleString()} bytes → ${outPath} (${fmtSettings(voiceSettings)})${chainTag}`,
   );
+  return { requestId };
 }
 
 async function generateChapter(
@@ -184,7 +253,8 @@ async function generateChapter(
   outputDir: string,
 ): Promise<void> {
   const voiceSettings = cfg.default_voice_settings;
-  const text = joinChapterText(cfg.scenes);
+  const units = expandUnits(cfg);
+  const text = joinChapterText(units.map((u) => ({ id: u.fileSlug, text: u.text })));
 
   const rawDir = path.join(outputDir, "_raw");
   await mkdir(rawDir, { recursive: true });
@@ -289,29 +359,32 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const totalChars = cfg.scenes.reduce((sum, s) => sum + s.text.length, 0);
+  const units = expandUnits(cfg);
+  const totalChars = units.reduce((sum, u) => sum + u.text.length, 0);
   console.log(
     `TOTAL CHARACTERS: ${totalChars.toLocaleString()} (≈ ${totalChars.toLocaleString()} credits)`,
   );
-  console.log(`Mode: ${mode} | Scenes: ${cfg.scenes.length} | Voice: ${cfg.voice_id} | Model: ${cfg.model_id}`);
+  console.log(
+    `Mode: ${mode} | Scenes: ${cfg.scenes.length} | Units: ${units.length} | Voice: ${cfg.voice_id} | Model: ${cfg.model_id}`,
+  );
   console.log(`Output dir: ${cfg.output_dir}`);
   console.log("");
 
   if (dryRun) {
     console.log("--- DRY RUN — no API calls will be made ---");
     if (mode === "chapter") {
-      const joined = joinChapterText(cfg.scenes);
+      const joined = joinChapterText(units.map((u) => ({ id: u.fileSlug, text: u.text })));
       console.log(
         `[chapter] joined-text length ${joined.length} chars (one TTS call)`,
       );
       console.log(`  preview: "${joined.slice(0, 200)}${joined.length > 200 ? "…" : ""}"`);
     } else {
-      for (const scene of cfg.scenes) {
-        const vs = mergeVoiceSettings(cfg.default_voice_settings, scene.voice_settings);
+      for (const unit of units) {
+        const vs = mergeVoiceSettings(cfg.default_voice_settings, unit.voice_settings);
         console.log(
-          `[${scene.id}] ${scene.text.length} chars | ${fmtSettings(vs)}`,
+          `[${unit.fileSlug}] ${unit.text.length} chars | ${fmtSettings(vs)}`,
         );
-        console.log(`  text: "${scene.text.slice(0, 80)}${scene.text.length > 80 ? "…" : ""}"`);
+        console.log(`  text: "${unit.text.slice(0, 80)}${unit.text.length > 80 ? "…" : ""}"`);
       }
     }
     console.log("\nDry run complete. Pass config without --dry-run to generate.");
@@ -334,8 +407,31 @@ async function main(): Promise<void> {
   if (mode === "chapter") {
     await generateChapter(cfg, apiKey, outputDir);
   } else {
-    for (const scene of cfg.scenes) {
-      await generateScene(scene, cfg, apiKey, outputDir);
+    const units = expandUnits(cfg);
+    const onlyArg = args.indexOf("--only");
+    const only = onlyArg >= 0 ? args[onlyArg + 1]?.split(",").filter(Boolean) ?? [] : null;
+
+    if (only) {
+      console.log(`[--only] regenerating ${only.length} unit(s): ${only.join(", ")}`);
+    }
+
+    let prev: { requestId: string | null; text: string | null } = {
+      requestId: null,
+      text: null,
+    };
+    for (let i = 0; i < units.length; i++) {
+      const unit = units[i]!;
+      const nextText = units[i + 1]?.text ?? null;
+
+      // Skip if --only is set and this unit isn't in the list. But still walk
+      // the chain forward so chain context is right when we DO regen one.
+      if (only && !only.includes(unit.fileSlug)) {
+        prev = { requestId: null, text: unit.text };
+        continue;
+      }
+
+      const result = await generateUnit(unit, cfg, apiKey, outputDir, prev, nextText);
+      prev = { requestId: result.requestId, text: unit.text };
     }
   }
 
