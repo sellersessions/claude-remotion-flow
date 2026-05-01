@@ -21,7 +21,7 @@
 
 **The stack tour.** Remotion, Claude, treatment files, ducking, beat sync. What's under the hood.
 
-<!-- TODO: paste TreatmentExplainer user-attachments URL here once uploaded -->
+<video src="https://github.com/user-attachments/assets/16caf2e1-dc67-4e3b-b3a3-d2dac57b62ce" controls muted></video>
 
 **Treatment-driven flow.** How a treatment doc becomes a rendered MP4, end to end.
 <!-- VIDEOS END -->
