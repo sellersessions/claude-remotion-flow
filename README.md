@@ -17,11 +17,11 @@
 <!-- VIDEOS START -->
 ### Walkthroughs
 
-<video src="https://github.com/sellersessions/claude-remotion-flow/releases/download/v0.1-readme-videos/StackExplainer.mp4" controls muted></video>
+<video src="https://github.com/user-attachments/assets/f98e6319-7b88-4cb7-bda1-dce3f3a24567" controls muted></video>
 
 **The stack tour.** Remotion, Claude, treatment files, ducking, beat sync. What's under the hood.
 
-<video src="https://github.com/sellersessions/claude-remotion-flow/releases/download/v0.1-readme-videos/TreatmentExplainer.mp4" controls muted></video>
+<!-- TODO: paste TreatmentExplainer user-attachments URL here once uploaded -->
 
 **Treatment-driven flow.** How a treatment doc becomes a rendered MP4, end to end.
 <!-- VIDEOS END -->
