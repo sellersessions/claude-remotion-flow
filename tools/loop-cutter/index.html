@@ -252,12 +252,20 @@ input[type=range] { cursor: pointer; }
 .ruler-wrap:hover { background: rgba(251,191,36,0.08); }
 #rulerCanvas { position:absolute; inset:0; width:100%; height:100%; }
 .waveform-wrap {
-  position: relative; height: 240px; cursor: crosshair; overflow: hidden;
+  position: relative; height: 480px; cursor: crosshair; overflow: hidden;
   background: var(--bg);
 }
 .waveform-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 #waveformCanvas { z-index: 1; }
 #overlayCanvas { z-index: 2; }
+
+/* Overview lane — Traktor-style full-track view with zoom-region rectangle */
+.overview-wrap {
+  position: relative; height: 36px; cursor: ew-resize; overflow: hidden;
+  background: var(--bg); border-top: 1px solid var(--line-soft);
+}
+.overview-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.overview-wrap:hover { background: rgba(117, 62, 247, 0.04); }
 
 /* ── Zoom ─────────────────────────────── */
 .zoom-bar {
@@ -720,6 +728,9 @@ kbd {
       <canvas id="waveformCanvas"></canvas>
       <canvas id="overlayCanvas"></canvas>
     </div>
+    <div class="overview-wrap" id="overviewWrap" data-tip="Click to scroll the zoomed view to this position">
+      <canvas id="overviewCanvas"></canvas>
+    </div>
     <div class="zoom-bar">
       <label for="zoomSlider">Zoom</label>
       <input type="range" id="zoomSlider" min="1" max="20" step="0.5" value="1">
@@ -866,9 +877,12 @@ const wfWrap = document.getElementById('waveformWrap');
 const wfCanvas = document.getElementById('waveformCanvas');
 const overlayCanvas = document.getElementById('overlayCanvas');
 const rulerCanvas = document.getElementById('rulerCanvas');
+const overviewWrap = document.getElementById('overviewWrap');
+const overviewCanvas = document.getElementById('overviewCanvas');
 const wfCtx = wfCanvas.getContext('2d');
 const ovCtx = overlayCanvas.getContext('2d');
 const rulerCtx = rulerCanvas.getContext('2d');
+const ovwCtx = overviewCanvas.getContext('2d');
 const fileNameEl = document.getElementById('fileName');
 const durationBadge = document.getElementById('durationBadge');
 const playheadEl = document.getElementById('playheadTime');
@@ -1002,6 +1016,8 @@ function resizeCanvases() {
   wfCanvas.width = overlayCanvas.width = rulerCanvas.width = w;
   wfCanvas.height = overlayCanvas.height = h;
   rulerCanvas.height = document.querySelector('.ruler-wrap').clientHeight;
+  overviewCanvas.width = overviewWrap.clientWidth;
+  overviewCanvas.height = overviewWrap.clientHeight;
 }
 
 function drawWaveform() {
@@ -1044,6 +1060,47 @@ function drawWaveform() {
   wfCtx.strokeStyle = cs.getPropertyValue('--line').trim();
   wfCtx.lineWidth = 0.5;
   wfCtx.beginPath(); wfCtx.moveTo(0, mid); wfCtx.lineTo(W, mid); wfCtx.stroke();
+
+  drawOverview();
+}
+
+// Overview lane: full-track waveform downsampled to canvas width, with a
+// translucent rectangle highlighting the current zoom region. Click to scroll.
+function drawOverview() {
+  if (!audioBuffer || !peakData.length) return;
+  const cs = getComputedStyle(root);
+  const W = overviewCanvas.width, H = overviewCanvas.height;
+  ovwCtx.clearRect(0, 0, W, H);
+  ovwCtx.fillStyle = cs.getPropertyValue('--bg').trim();
+  ovwCtx.fillRect(0, 0, W, H);
+
+  const mid = H / 2;
+  const stride = peakData.length / W;
+  ovwCtx.fillStyle = cs.getPropertyValue('--waveform-fill').trim();
+  for (let i = 0; i < W; i++) {
+    let mn = 0, mx = 0;
+    const start = Math.floor(i * stride);
+    const end = Math.min(peakData.length, Math.floor((i + 1) * stride) + 1);
+    for (let j = start; j < end; j++) {
+      const [a, b] = peakData[j];
+      if (a < mn) mn = a; if (b > mx) mx = b;
+    }
+    const y1 = mid + mn * mid * 0.85;
+    const y2 = mid + mx * mid * 0.85;
+    ovwCtx.fillRect(i, Math.min(y1, y2), 1, Math.max(1, Math.abs(y2 - y1)));
+  }
+
+  if (zoom > 1.001) {
+    const visStart = scrollOffset;
+    const visEnd = Math.min(duration, scrollOffset + duration / zoom);
+    const x0 = (visStart / duration) * W;
+    const x1 = (visEnd / duration) * W;
+    ovwCtx.fillStyle = cs.getPropertyValue('--copy-dim').trim();
+    ovwCtx.fillRect(x0, 0, Math.max(2, x1 - x0), H);
+    ovwCtx.strokeStyle = cs.getPropertyValue('--copy').trim();
+    ovwCtx.lineWidth = 1;
+    ovwCtx.strokeRect(x0 + 0.5, 0.5, Math.max(2, x1 - x0) - 1, H - 1);
+  }
 }
 
 
@@ -1562,6 +1619,18 @@ function clampScroll() {
   const visDur = duration / zoom;
   scrollOffset = Math.max(0, Math.min(scrollOffset, duration - visDur));
 }
+
+// Overview click: re-centre the zoomed view on the clicked position.
+overviewWrap.addEventListener('click', e => {
+  if (!audioBuffer) return;
+  const rect = overviewWrap.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const visDur = duration / zoom;
+  scrollOffset = (x / rect.width) * duration - visDur / 2;
+  clampScroll();
+  drawWaveform();
+  drawOverlay();
+});
 
 // ── Waveform Click / Drag ─────────────────────────────────────────────────
 let draggingMarker = null; // 'in' | 'out' | null
