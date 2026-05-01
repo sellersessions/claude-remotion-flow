@@ -197,12 +197,27 @@ input[type=range] { cursor: pointer; }
 .drop-zone.hidden { display: none; }
 
 /* ── Waveform Container ─────────────────── */
-.waveform-section { overflow: hidden; }
+.waveform-section { overflow: hidden; --cat-color: var(--ss-purple-light); }
 .waveform-section > * { position: relative; z-index: 2; }
+
+/* Categorical stripe palette — same hues as the auditioner so source library reads at a glance */
+.waveform-section[data-category="transitions"]    { --cat-color: #22D3EE; }
+.waveform-section[data-category="stingers"]       { --cat-color: #F59E0B; }
+.waveform-section[data-category="risers"]         { --cat-color: #EC4899; }
+.waveform-section[data-category="impacts"]        { --cat-color: #EF4444; }
+.waveform-section[data-category="ambience"]       { --cat-color: #94A3B8; }
+.waveform-section[data-category="music"]          { --cat-color: var(--ss-gold); }
+.waveform-section[data-category="tiktok-backing"] { --cat-color: var(--ss-gold); }
+
 .waveform-header {
+  position: relative;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px; border-bottom: 1px solid var(--line-soft);
+  padding: 12px 16px 12px 20px; border-bottom: 1px solid var(--line-soft);
   gap: 12px; flex-wrap: wrap;
+}
+.waveform-header::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px; background: var(--cat-color);
 }
 .file-name { font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 12px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 320px; font-weight: 500; }
 .duration-badge {
@@ -885,21 +900,47 @@ async function loadFile(file) {
   return loadFromArrayBuffer(await file.arrayBuffer(), file.name);
 }
 
+// Manifest cache for category lookups. Same /api/manifest the shortlist uses; only the
+// auditioner server serves it, so cutter-standalone falls back to the no-category path.
+let _manifestCache = null;
+async function getManifest() {
+  if (_manifestCache !== null) return _manifestCache || null;
+  try {
+    const res = await fetch('/api/manifest', { cache: 'no-store' });
+    if (!res.ok) { _manifestCache = false; return null; }
+    _manifestCache = await res.json();
+    return _manifestCache;
+  } catch { _manifestCache = false; return null; }
+}
+async function categoryFromUrl(url) {
+  const m = await getManifest();
+  if (!m || !url) return '';
+  const rel = decodeURIComponent(url.replace(/^\/audio\//, ''));
+  const item = (m.items || []).find(i => (i.local_path || '').endsWith(rel));
+  return item ? (item.category || '') : '';
+}
+function setCategory(cat) {
+  if (cat) waveformSection.setAttribute('data-category', cat);
+  else waveformSection.removeAttribute('data-category');
+}
+
 // Library handoff: cutter accepts ?src=<server-path> (e.g. /audio/music/.../track.mp3).
 // Fetches via the auditioner server's byte-range route, then runs the same decode path.
-async function loadFromUrl(url, displayName) {
+async function loadFromUrl(url, displayName, category) {
   setStatus('loading', 'Fetching ' + (displayName || url) + '…');
   const res = await fetch(url);
   if (!res.ok) { setStatus('error', 'Fetch failed: ' + res.status + ' ' + url); return; }
   const arrayBuffer = await res.arrayBuffer();
   const name = displayName || decodeURIComponent(url.split('/').pop() || 'track');
-  return loadFromArrayBuffer(arrayBuffer, name);
+  const cat = category || await categoryFromUrl(url);
+  return loadFromArrayBuffer(arrayBuffer, name, cat);
 }
 
-async function loadFromArrayBuffer(arrayBuffer, name) {
+async function loadFromArrayBuffer(arrayBuffer, name, category) {
   stopAudio();
   setStatus('loading', 'Decoding audio…');
   fileNameEl.textContent = name;
+  setCategory(category || '');
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   try {
     audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
@@ -2037,7 +2078,7 @@ lucide.createIcons();
         if (!rel) return;
         const url = '/audio/' + rel.split('/').map(encodeURIComponent).join('/');
         if (item.bpm && bpmInput) bpmInput.value = parseFloat(item.bpm).toFixed(2);
-        loadFromUrl(url, item.title);
+        loadFromUrl(url, item.title, item.category);
         activeId = item.id;
         list.querySelectorAll('li').forEach(el => el.classList.toggle('active', el.dataset.id === activeId));
         dock.classList.remove('open');
