@@ -286,21 +286,21 @@ input[type=range] { cursor: pointer; }
   letter-spacing: -0.01em;
 }
 .btn-primary {
-  background: linear-gradient(135deg, var(--ss-purple-light) 0%, var(--ss-purple) 100%);
-  color: #fff;
-  box-shadow: 0 0 0 1px rgba(117,62,247,0.4), 0 6px 16px rgba(70,20,153,0.32);
+  background: var(--accent);
+  color: var(--ss-deep);
+  border-color: var(--accent);
 }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(155,109,255,0.5), 0 8px 20px rgba(117,62,247,0.45); }
-.btn-primary:active { transform: translateY(0); box-shadow: 0 0 0 1px rgba(117,62,247,0.4), 0 2px 6px rgba(70,20,153,0.4); }
-.btn-ghost { border-color: var(--line); color: var(--ink-muted); background: rgba(26,26,46,0.4); }
-.btn-ghost:hover { border-color: var(--copy); color: var(--ink); background: var(--copy-dim); }
+.btn-primary:hover { background: #fcc94a; border-color: #fcc94a; }
+.btn-primary:active { background: #e8a90c; border-color: #e8a90c; }
+.btn-ghost { border-color: var(--line); color: var(--ink-muted); background: transparent; }
+.btn-ghost:hover { border-color: var(--ink-muted); color: var(--ink); background: rgba(255,255,255,0.04); }
 .btn-sm { padding: 6px 11px; font-size: 12px; }
-.btn-icon { padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--line); color: var(--ink-muted); background: rgba(26,26,46,0.4); }
-.btn-icon:hover { border-color: var(--copy); color: var(--copy); background: var(--copy-dim); }
+.btn-icon { padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--line); color: var(--ink-muted); background: transparent; }
+.btn-icon:hover { border-color: var(--ink-muted); color: var(--ink); background: rgba(255,255,255,0.04); }
 .btn-icon.active {
-  border-color: var(--copy); color: #fff;
-  background: linear-gradient(135deg, var(--ss-purple-light) 0%, var(--ss-purple) 100%);
-  box-shadow: 0 0 14px rgba(117,62,247,0.45);
+  background: var(--accent);
+  color: var(--ss-deep);
+  border-color: var(--accent);
 }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
@@ -439,9 +439,8 @@ kbd {
 }
 .seg button:hover { color: var(--ink); background: rgba(117,62,247,0.10); }
 .seg button.active {
-  color: #fff;
-  background: linear-gradient(135deg, var(--ss-purple-light) 0%, var(--ss-purple) 100%);
-  box-shadow: 0 0 10px rgba(117,62,247,0.40);
+  color: var(--ss-deep);
+  background: var(--accent);
 }
 
 /* ── Loop length chips ─────────────────── */
@@ -468,10 +467,9 @@ kbd {
   background: rgba(117,62,247,0.15); transform: translateY(-1px);
 }
 .loop-chips .chip.active {
-  color: #fff;
-  background: linear-gradient(135deg, var(--ss-purple-light) 0%, var(--ss-purple) 100%);
-  border-color: rgba(155,109,255,0.6);
-  box-shadow: 0 0 14px rgba(117,62,247,0.45);
+  color: var(--ss-deep);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ── Anchor cluster (Lock first beat) ─── */
