@@ -122,7 +122,7 @@ input[type=range] { cursor: pointer; }
 }
 .topbar-actions { display: flex; align-items: center; gap: 10px; }
 
-.main { display: flex; flex-direction: column; flex: 1; padding: 18px; gap: 14px; max-width: 1280px; width: 100%; margin: 0 auto; }
+.main { display: flex; flex-direction: column; flex: 1; padding: 18px; gap: 14px; max-width: 1280px; width: 100%; margin: 0 auto; position: relative; }
 
 /* ── Glow card primitive ─────────────────── */
 .gcard {
@@ -148,8 +148,8 @@ input[type=range] { cursor: pointer; }
 }
 
 /* ── Drop Zone ─────────────────────────── */
-/* Library shortlist dock — sticky top-left, slide-out panel. */
-.shortlist-dock { position: sticky; top: 14px; align-self: flex-start; z-index: 5; }
+/* Library shortlist dock — floating top-left, slide-out panel. Out of flex flow so it doesn't push transport below the fold. */
+.shortlist-dock { position: absolute; top: 14px; left: 14px; z-index: 5; }
 .shortlist-dock.hidden { display: none; }
 .shortlist-toggle {
   background: var(--color-surface-2); border: 1px solid var(--color-border); color: var(--color-text);
