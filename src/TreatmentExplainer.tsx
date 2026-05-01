@@ -36,6 +36,7 @@ import {
   type ExplainerProps,
   ChapterCard,
   FadeToBlack,
+  PosterFrame,
   FadeUp,
   SceneBG,
   SceneExit,
@@ -783,6 +784,14 @@ export const TreatmentExplainer: React.FC<TreatmentExplainerProps> = ({
 
   return (
     <>
+      {/* Static poster behind everything. Frame 0 reads as a branded title
+          card so inline players (GitHub, web embeds) load on something
+          meaningful, not black. Scenes overlay this from PRE_ROLL_FRAMES. */}
+      <PosterFrame
+        eyebrow="A 3-layer framework"
+        title="How to Brief a Video"
+      />
+
       {/* Music bed — flat volume, no ducking. endAt trims at totalFrames. */}
       <Audio
         src={staticFile(MUSIC_BED)}

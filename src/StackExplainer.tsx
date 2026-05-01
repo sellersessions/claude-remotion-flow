@@ -39,6 +39,7 @@ import {
   ChapterCard,
   FadeToBlack,
   FadeUp,
+  PosterFrame,
   SceneBG,
   SceneExit,
   TRANS,
@@ -1600,6 +1601,18 @@ export const StackExplainer: React.FC<ExplainerProps> = ({
 
   return (
     <>
+      {/* Static poster behind everything. Frame 0 reads as a branded title
+          card so inline players (GitHub, web embeds) load on something
+          meaningful, not black. Scenes overlay this from PRE_ROLL_FRAMES. */}
+      <PosterFrame
+        eyebrow="From stock Remotion"
+        title={
+          <>
+            to a <span style={{ color: ACCENT_2 }}>Production Engine</span>
+          </>
+        }
+      />
+
       {/* Music bed — flat volume, no ducking */}
       <Audio src={staticFile(MUSIC_BED)} volume={BED_VOLUME} endAt={totalFrames} />
 

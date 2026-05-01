@@ -91,6 +91,54 @@ export const SceneExit: React.FC<{
   );
 };
 
+// Static branded poster shown behind the entire timeline. Frame 0 of every
+// rendered MP4 must be this — not a fade-from-black — so inline players
+// (GitHub user-attachments, web embeds) load on the title card. Scenes drawn
+// on top fully cover it once they begin; FadeToBlack hides it at the end.
+export const PosterFrame: React.FC<{
+  eyebrow: string;
+  title: React.ReactNode;
+}> = ({ eyebrow, title }) => {
+  return (
+    <AbsoluteFill style={{ fontFamily: FONT }}>
+      <SceneBG />
+      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              fontFamily: MONO,
+              fontSize: 22,
+              letterSpacing: "0.32em",
+              textTransform: "uppercase",
+              color: ACCENT_2,
+            }}
+          >
+            {eyebrow}
+          </div>
+          <div
+            style={{
+              width: 520,
+              height: 2,
+              background: `linear-gradient(90deg, transparent, ${ACCENT_2}, transparent)`,
+              margin: "28px auto",
+            }}
+          />
+          <div
+            style={{
+              fontSize: 92,
+              fontWeight: 800,
+              color: TEXT,
+              letterSpacing: "-0.03em",
+            }}
+          >
+            {title}
+          </div>
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
 // Last-N-frames black curtain. Wrapped separately so it can subscribe to
 // useCurrentFrame without forcing the parent to.
 export const FadeToBlack: React.FC<{ visualEnd: number }> = ({ visualEnd }) => {

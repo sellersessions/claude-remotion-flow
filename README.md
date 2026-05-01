@@ -17,11 +17,11 @@
 <!-- VIDEOS START -->
 ### Walkthroughs
 
-<video src="https://github.com/user-attachments/assets/f98e6319-7b88-4cb7-bda1-dce3f3a24567" controls muted></video>
+<video src="https://github.com/user-attachments/assets/3da20bdd-eaea-4e96-9a10-a15f2e6de9e7" controls muted></video>
 
 **The stack tour.** Remotion, Claude, treatment files, ducking, beat sync. What's under the hood.
 
-<video src="https://github.com/user-attachments/assets/16caf2e1-dc67-4e3b-b3a3-d2dac57b62ce" controls muted></video>
+<video src="https://github.com/user-attachments/assets/758c1b79-dd45-4228-972d-5e9c89586ad7" controls muted></video>
 
 **Treatment-driven flow.** How a treatment doc becomes a rendered MP4, end to end.
 <!-- VIDEOS END -->
