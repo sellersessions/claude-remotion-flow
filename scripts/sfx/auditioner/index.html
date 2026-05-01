@@ -293,10 +293,10 @@ function renderContent() {
   const all = state.byCat.get(state.activeCat) || [];
   const filtered = all.filter(matchesFilter);
   if (filtered.length === 0) { content.innerHTML = '<div class="empty">no matches — loosen filters</div>'; return; }
-  const sorted = [...filtered].sort((a, b) => {
-    if (!!a.shortlisted !== !!b.shortlisted) return a.shortlisted ? -1 : 1;
-    return durationSeconds(a.duration) - durationSeconds(b.duration);
-  });
+  // F8: list order stays put. Stars are bookmarks, not sort keys -- avoids
+  // mid-flow surprise when starring re-orders adjacent items. Use the
+  // SHOW shortlisted/unshortlisted chips to filter when needed.
+  const sorted = [...filtered].sort((a, b) => durationSeconds(a.duration) - durationSeconds(b.duration));
 
   // Music: group by subcategory
   if (state.activeCat === 'music') {
