@@ -13,31 +13,31 @@
   "scenes": [
     {
       "id": "scene-1-hook",
-      "text": "You're an Amazon seller. You need a landing page. The AI tools you've tried — they give you something that looks like AI made it."
+      "text": "As an Amazon seller, there may be a time you're going to need a landing page, or redesign your Shopify site. Right now, most tools are producing AI slop. But you can control the variables."
     },
     {
       "id": "scene-2-turn",
-      "text": "What if you could have agency-quality design — without the agency? Without three weeks. Without twenty grand."
+      "text": "What if you could have agency-quality design, without having to wait three weeks, and without having to pay five to ten grand."
     },
     {
       "id": "scene-3-intake",
-      "text": "Drop in a URL. The system extracts the brand DNA. Colours. Fonts. Voice. Hierarchy. All of it — locked as your source of truth."
+      "text": "To get started, you just drop in your chosen URL. It will then capture your design system: fonts, brand colours, voice. Locking it all down whilst you make a cup of tea."
     },
     {
       "id": "scene-4-system",
-      "text": "From there, fifteen design databases — a hundred and sixty-five rules — write the brief themselves. Stitch paints the page. The audit catches every drift before you see it."
+      "text": "The next stage, whilst the kettle is boiling, it will run through fifteen design databases. One hundred and sixty-five rules, from anti-AI-slop gates, UI and UX frameworks, and conversion methodologies. Claude automates seven of the ten stages. Then you take the prompt, hand it to Google Stitch, output high-quality designs. Then Claude picks it up, and refactors all the drifts for a controlled output."
     },
     {
       "id": "scene-5-proof",
-      "text": "Three real brands ran the full pipeline. Re Tech UK — twenty-seven out of thirty. Databrill — twenty-seven. Push-Pull Agency — twenty-eight. All shipped first-pass."
+      "text": "Re Tech UK, Databrill, and The Push Pull Agency cleared the gates at high rates."
     },
     {
       "id": "scene-6-time",
-      "text": "Push-Pull took about fifty minutes of operator time. Most of that — making taste calls in Stitch. The system did the rest."
+      "text": "Depending on how much time you spend tweaking in Stitch, the process end-to-end, outside of the revisions, takes around ten minutes. In Stitch you can spend hours or minutes. Design is subjective. Best to get it right for your business."
     },
     {
       "id": "scene-7-cta",
-      "text": "It's free. It's yours. Pull the repo. Run it on your brand. Get to work."
+      "text": "Pull the repo, and put Claude to work. People say pretty doesn't convert. Then tell that to the world's leading brands who understand good design drives emotion and trust."
     }
   ]
 }
