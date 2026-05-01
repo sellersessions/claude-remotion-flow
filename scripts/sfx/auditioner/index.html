@@ -82,7 +82,14 @@
   .tray button.primary { background: var(--accent); border-color: var(--accent); color: var(--chip-on-ink); font-weight: 500; }
   .content { padding: 14px 20px 60px; }
   .sub-heading { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 16px 0 6px; padding: 0 10px; }
-  .row { display: grid; grid-template-columns: 4px 26px 22px 1fr 260px 48px 48px 34px 34px; gap: 10px; align-items: center; padding: 8px 10px 8px 0; min-height: 56px; border-bottom: 1px solid var(--line); position: relative; }
+  .row { display: grid; grid-template-columns: 4px 26px 22px 1fr 32px 48px 48px 34px 34px; gap: 10px; align-items: center; padding: 8px 10px 8px 0; min-height: 56px; border-bottom: 1px solid var(--line); position: relative; cursor: default; }
+  .row.playing { background: rgba(117, 62, 247, 0.06); }
+  .row.playing .stripe { opacity: 1; box-shadow: 0 0 12px currentColor; }
+  /* Play toggle in the row — drives the global preview bar. Single source of
+     audition; per-row audio elements are gone. */
+  button.play-toggle { background: transparent; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-muted); width: 30px; height: 30px; cursor: pointer; font-size: 13px; line-height: 1; padding: 0; display: flex; align-items: center; justify-content: center; }
+  button.play-toggle:hover { background: var(--panel-2); color: var(--ink); border-color: var(--ss-purple-light); }
+  .row.playing button.play-toggle { background: var(--ss-purple-light); color: white; border-color: var(--ss-purple-light); }
   /* Categorical stripe: 4px inline column tinted per data-category. Default is fallback purple. */
   .row .stripe { width: 4px; align-self: stretch; background: var(--cat-fallback); border-radius: 0 2px 2px 0; opacity: 0.8; }
   .row[data-category="transitions"] .stripe { background: var(--cat-transitions); }
@@ -151,12 +158,30 @@
   .modal textarea { width: 100%; min-height: 160px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); padding: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
   .modal .close-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
   @media (max-width: 900px) {
-    .row { grid-template-columns: 4px 20px 1fr 34px 34px; gap: 8px; }
+    .row { grid-template-columns: 4px 20px 1fr 32px 34px 34px; gap: 8px; min-height: 48px; }
     .idx { display: none; }
     .meta-cell { grid-column: span 1; }
-    audio { grid-column: 1 / -1; }
-    .duration { display: none; }
+    .duration, .bpm { display: none; }
   }
+  /* Global preview bar — sticky at the viewport bottom, shows the loaded track
+     and the native audio scrubber. Replaces 89× per-row audio walls (F9 spec).
+     Hidden until a row is played. */
+  .preview-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    background: var(--panel); border-top: 1px solid var(--line);
+    padding: 10px 0; box-shadow: 0 -8px 24px rgba(0,0,0,0.3);
+    transform: translateY(100%); transition: transform 200ms ease; }
+  .preview-bar.on { transform: translateY(0); }
+  .preview-bar .bar-inner { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 16px; align-items: center; }
+  .preview-bar .pb-meta { min-width: 0; display: flex; flex-direction: column; }
+  .preview-bar .pb-title { font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .preview-bar .pb-sub { font-size: 11px; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .preview-bar audio { width: 100%; height: 32px; color-scheme: light; }
+  .preview-bar .pb-actions { display: flex; gap: 8px; }
+  .preview-bar .pb-actions button { background: transparent; border: 1px solid var(--line); border-radius: var(--radius); color: var(--ink); padding: 6px 12px; font-size: 12px; cursor: pointer; font-family: var(--font); }
+  .preview-bar .pb-actions button:hover { background: var(--panel-2); border-color: var(--ss-purple-light); }
+  .preview-bar .pb-actions .pb-cutter { background: var(--accent); color: var(--chip-on-ink); border-color: var(--accent); font-weight: 500; }
+  .preview-bar .pb-actions .pb-cutter:hover { background: var(--accent); border-color: var(--accent); filter: brightness(1.1); }
+  .content { padding-bottom: 100px; }
 </style>
 </head>
 <body>
@@ -198,6 +223,19 @@
 <main class="content" id="content">
   <div class="empty">loading manifest…</div>
 </main>
+<footer class="preview-bar" id="previewBar">
+  <div class="bar-inner">
+    <div class="pb-meta">
+      <div class="pb-title" id="pbTitle">—</div>
+      <div class="pb-sub" id="pbSub">no track loaded</div>
+    </div>
+    <audio id="pbAudio" controls preload="none"></audio>
+    <div class="pb-actions">
+      <button id="pbCutter" class="pb-cutter" title="Open this track in Loop Cutter">✂︎ Cutter</button>
+      <button id="pbCopy" title="Copy path to current track">📋 Copy</button>
+    </div>
+  </div>
+</footer>
 <script>
 // ── State ──────────────────────────────────────────────────────
 const SELECTION_KEY = 'sfx-auditioner-selection-v1';
@@ -208,6 +246,7 @@ const state = {
   filter: { status: 'all', dur: 'all', search: '' },
   pending: new Map(),
   selection: new Set(loadSelection()),
+  nowPlayingId: null,
 };
 
 function loadSelection() {
@@ -320,13 +359,67 @@ function setIndicator(text, isError = false) {
   if (!isError && text === 'saved') setTimeout(() => { el.textContent = ''; el.className = 'save-indicator'; }, 1000);
 }
 
-// ── Audio: only one playing at a time ──────────────────────────
-let currentAudio = null;
-function wireAudio(audio) {
-  audio.addEventListener('play', () => {
-    if (currentAudio && currentAudio !== audio) currentAudio.pause();
-    currentAudio = audio;
+// ── Global preview bar — single audio for the whole list ───────
+// Replaces 89× per-row <audio> elements. The play toggle on each row
+// loads its src into this bar and starts playback. Track state is
+// kept in state.nowPlayingId so we can toggle play/pause on a re-click.
+const previewBar = {
+  el: () => document.getElementById('previewBar'),
+  audio: () => document.getElementById('pbAudio'),
+  title: () => document.getElementById('pbTitle'),
+  sub: () => document.getElementById('pbSub'),
+  cutter: () => document.getElementById('pbCutter'),
+  copy: () => document.getElementById('pbCopy'),
+};
+function loadPreview(item) {
+  const audio = previewBar.audio();
+  const url = audioUrl(item);
+  audio.src = url;
+  previewBar.title().textContent = item.title || '—';
+  previewBar.sub().textContent = `${item.author || '—'} · ${item.category || ''}` + (item.bpm ? ` · ${item.bpm} BPM` : '');
+  previewBar.el().classList.add('on');
+  state.nowPlayingId = item.id;
+  // Re-skin all play toggles so the active row pulses.
+  document.querySelectorAll('.row.playing').forEach(r => r.classList.remove('playing'));
+  document.querySelectorAll('.row .play-toggle').forEach(b => { b.textContent = '▶'; });
+  const activeRow = document.querySelector(`.row[data-id="${CSS.escape(item.id)}"]`);
+  if (activeRow) {
+    activeRow.classList.add('playing');
+    const tog = activeRow.querySelector('.play-toggle');
+    if (tog) tog.textContent = '⏸';
+  }
+}
+function wirePreviewBar() {
+  const audio = previewBar.audio();
+  audio.addEventListener('pause', () => {
+    if (!state.nowPlayingId) return;
+    const row = document.querySelector(`.row[data-id="${CSS.escape(state.nowPlayingId)}"]`);
+    if (row) {
+      const tog = row.querySelector('.play-toggle');
+      if (tog) tog.textContent = '▶';
+    }
   });
+  audio.addEventListener('play', () => {
+    if (!state.nowPlayingId) return;
+    const row = document.querySelector(`.row[data-id="${CSS.escape(state.nowPlayingId)}"]`);
+    if (row) {
+      const tog = row.querySelector('.play-toggle');
+      if (tog) tog.textContent = '⏸';
+    }
+  });
+  previewBar.cutter().onclick = () => {
+    const item = state.nowPlayingId ? findById(state.nowPlayingId) : null;
+    if (!item) return;
+    const url = audioUrl(item);
+    const params = new URLSearchParams({ src: url, title: item.title || '' });
+    if (item.bpm) params.set('bpm', item.bpm);
+    window.open('/cutter/?' + params.toString(), '_blank');
+  };
+  previewBar.copy().onclick = async () => {
+    const item = state.nowPlayingId ? findById(state.nowPlayingId) : null;
+    if (!item) return;
+    await copyToClipboard(barePath(item));
+  };
 }
 
 // ── Overflow menu: only one open at a time ─────────────────────
@@ -399,9 +492,10 @@ function renderContent() {
 
 function renderRow(item, idx) {
   const row = document.createElement('div');
-  row.className = 'row' + (item.shortlisted ? ' shortlisted' : '') + (state.selection.has(item.id) ? ' selected' : '');
+  row.className = 'row' + (item.shortlisted ? ' shortlisted' : '') + (state.selection.has(item.id) ? ' selected' : '') + (state.nowPlayingId === item.id ? ' playing' : '');
   // Categorical stripe — Traktor pattern. Drives the 4px left-edge tint via CSS.
   row.dataset.category = item.category || '';
+  row.dataset.id = item.id;
 
   const stripe = document.createElement('div');
   stripe.className = 'stripe';
@@ -431,12 +525,23 @@ function renderRow(item, idx) {
     <div class="sub">${esc(item.author || '—')} · ${esc((item.tags || []).slice(0, 3).join(', '))}</div>`;
   row.appendChild(meta);
 
-  const audio = document.createElement('audio');
-  audio.controls = true;
-  audio.preload = 'none';
-  audio.src = audioUrl(item);
-  wireAudio(audio);
-  row.appendChild(audio);
+  const playBtn = document.createElement('button');
+  playBtn.className = 'play-toggle';
+  playBtn.textContent = state.nowPlayingId === item.id ? '⏸' : '▶';
+  playBtn.title = 'Audition (drives the preview bar)';
+  playBtn.onclick = (e) => {
+    e.stopPropagation();
+    const audio = previewBar.audio();
+    if (state.nowPlayingId === item.id) {
+      // Same row — toggle play/pause without reloading.
+      if (audio.paused) audio.play(); else audio.pause();
+    } else {
+      // Different row (or first play) — load + play.
+      loadPreview(item);
+      audio.play().catch(err => console.warn('autoplay blocked:', err));
+    }
+  };
+  row.appendChild(playBtn);
 
   const dur = document.createElement('div');
   dur.className = 'duration';
@@ -603,6 +708,7 @@ document.getElementById('search').oninput = (e) => {
 
 // ── Boot ───────────────────────────────────────────────────────
 async function boot() {
+  wirePreviewBar();
   const res = await fetch('/api/manifest');
   const data = await res.json();
   state.manifest = data;
