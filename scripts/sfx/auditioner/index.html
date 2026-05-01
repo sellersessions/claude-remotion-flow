@@ -82,7 +82,7 @@
   .tray button.primary { background: var(--accent); border-color: var(--accent); color: var(--chip-on-ink); font-weight: 500; }
   .content { padding: 14px 20px 60px; }
   .sub-heading { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 16px 0 6px; padding: 0 10px; }
-  .row { display: grid; grid-template-columns: 4px 26px 22px 1fr 260px 48px 34px 34px; gap: 10px; align-items: center; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--line); position: relative; }
+  .row { display: grid; grid-template-columns: 4px 26px 22px 1fr 260px 48px 48px 34px 34px; gap: 10px; align-items: center; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--line); position: relative; }
   /* Categorical stripe: 4px inline column tinted per data-category. Default is fallback purple. */
   .row .stripe { width: 4px; align-self: stretch; background: var(--cat-fallback); border-radius: 0 2px 2px 0; opacity: 0.8; }
   .row[data-category="transitions"] .stripe { background: var(--cat-transitions); }
@@ -101,6 +101,11 @@
   /* Force native light controls so the player chrome reads white, not dark/purple. */
   audio { width: 100%; height: 32px; color-scheme: light; }
   .duration { font-variant-numeric: tabular-nums; color: var(--ink-muted); font-size: 12px; text-align: right; }
+  /* BPM column — Traktor pattern. Most rows are null (SFX has no tempo);
+     show em-dash dimmed so the column reads at a glance for music rows
+     without shouting on the others. */
+  .bpm { font-variant-numeric: tabular-nums; color: var(--ink-muted); font-size: 12px; text-align: right; font-weight: 500; }
+  .bpm.null { opacity: 0.4; font-weight: 400; }
   button.act { background: transparent; border: 1px solid var(--line); border-radius: var(--radius); color: var(--ink-muted); width: 32px; height: 28px; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; transition: opacity 120ms ease; }
   button.act:hover { background: var(--panel-2); color: var(--ink); }
   button.act.star.on { background: var(--star); border-color: var(--star); color: var(--chip-on-ink); }
@@ -434,6 +439,12 @@ function renderRow(item, idx) {
   dur.className = 'duration';
   dur.textContent = item.duration || '—';
   row.appendChild(dur);
+
+  const bpm = document.createElement('div');
+  bpm.className = 'bpm' + (item.bpm == null ? ' null' : '');
+  bpm.textContent = item.bpm == null ? '—' : item.bpm;
+  bpm.title = item.bpm == null ? 'no BPM detected' : `${item.bpm} BPM`;
+  row.appendChild(bpm);
 
   const starBtn = document.createElement('button');
   starBtn.className = 'act star' + (item.shortlisted ? ' on' : '');
