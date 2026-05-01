@@ -12,6 +12,7 @@
     /* Aligned to Loop Cutter (claude-remotion-flow brand). */
     --ss-purple: #461499;
     --ss-purple-light: #753EF7;
+    --ss-purple-glow: #9B6DFF;
     --ss-deep: #0C0322;
     --ss-deep-2: #130d2a;
     --ss-card: #1a1a2e;
@@ -45,7 +46,14 @@
   .tray { padding: 8px 0; display: block; font-size: 12px; }
   .tray .bar-inner { display: flex; gap: 10px; align-items: center; }
   header { position: sticky; top: 0; z-index: 10; background: var(--panel); border-bottom: 1px solid var(--line); padding: 14px 20px; }
-  header h1 { margin: 0 0 4px; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+  /* F3: brand-glow on the title — matches the cutter's gradient logo text so the two views read as one product. */
+  header h1 { margin: 0 0 4px; font-size: 18px; font-weight: 700; letter-spacing: -0.01em;
+    background: linear-gradient(135deg, #FAFAFC 0%, var(--ss-purple-glow) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 14px rgba(117, 62, 247, 0.32));
+  }
+  /* save-indicator is a child <span> — opt back out of the gradient so its status text stays legible. */
+  header h1 .save-indicator { background: none; -webkit-text-fill-color: var(--ink-muted); color: var(--ink-muted); filter: none; }
   header .meta { color: var(--ink-muted); font-size: 12px; }
   .tabs { display: flex; gap: 4px; margin: 10px 0 0; flex-wrap: wrap; }
   .tab { background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 12px; color: var(--ink-muted); cursor: pointer; font-size: 12px; font-weight: 500; }
