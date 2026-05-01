@@ -31,6 +31,7 @@ const PROJECT_ROOT = resolve(__dirname, '..', '..', '..');
 const MANIFEST_PATH = join(PROJECT_ROOT, 'public/assets/sfx/MANIFEST.json');
 const ASSETS_ROOT = join(PROJECT_ROOT, 'public/assets');
 const INDEX_HTML = join(__dirname, 'index.html');
+const CUTTER_HTML = join(PROJECT_ROOT, 'tools/loop-cutter/index.html');
 const PORT = Number(process.env.AUDITIONER_PORT || 4747);
 
 const MIME = {
@@ -142,6 +143,11 @@ const server = createServer(async (req, res) => {
 
     if (req.method === 'GET' && (pathname === '/' || pathname === '/index.html')) {
       return serveFile(res, INDEX_HTML, MIME['.html']);
+    }
+
+    // Loop Cutter mounted at /cutter/ — single-file HTML in tools/loop-cutter.
+    if (req.method === 'GET' && (pathname === '/cutter' || pathname === '/cutter/' || pathname === '/cutter/index.html')) {
+      return serveFile(res, CUTTER_HTML, MIME['.html']);
     }
 
     if ((req.method === 'GET' || req.method === 'HEAD') && pathname.startsWith('/audio/')) {

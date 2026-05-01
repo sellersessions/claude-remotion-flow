@@ -148,6 +148,53 @@ input[type=range] { cursor: pointer; }
 }
 
 /* ── Drop Zone ─────────────────────────── */
+/* Library shortlist dock — sticky top-left, slide-out panel. */
+.shortlist-dock { position: sticky; top: 14px; align-self: flex-start; z-index: 5; }
+.shortlist-dock.hidden { display: none; }
+.shortlist-toggle {
+  background: var(--color-surface-2); border: 1px solid var(--color-border); color: var(--color-text);
+  border-radius: var(--radius-md); padding: 7px 12px; font: 600 12px var(--font-body);
+  letter-spacing: 0.01em; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.15s ease;
+}
+.shortlist-toggle:hover { border-color: var(--ss-gold); color: var(--ss-gold); }
+.shortlist-toggle .star { color: var(--ss-gold); font-size: 14px; }
+.shortlist-toggle .count {
+  background: var(--ss-deep); border: 1px solid var(--color-border); color: var(--color-text-muted);
+  padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 500;
+}
+.shortlist-toggle[aria-expanded="true"] { border-color: var(--ss-gold); color: var(--ss-gold); }
+.shortlist-toggle[aria-expanded="true"] .count { color: var(--ss-gold); border-color: var(--ss-gold); }
+.shortlist-panel {
+  display: none; position: absolute; top: calc(100% + 6px); left: 0; width: 360px;
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-md); padding: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+  max-height: 60vh; overflow-y: auto;
+}
+.shortlist-dock.open .shortlist-panel { display: block; }
+.shortlist-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--color-divider);
+  font-size: 12px; letter-spacing: 0.01em;
+}
+.shortlist-meta { color: var(--color-text-faint); font-size: 11px; }
+.shortlist-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.shortlist-list li {
+  padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer;
+  border: 1px solid transparent; transition: all 0.12s ease;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.shortlist-list li:hover { background: var(--color-surface-2); border-color: var(--color-border); }
+.shortlist-list li.active { background: var(--color-primary-dim); border-color: var(--color-primary); }
+.shortlist-list .title { font-size: 12px; font-weight: 600; color: var(--color-text); line-height: 1.3; }
+.shortlist-list .meta { font-size: 11px; color: var(--color-text-muted); display: flex; gap: 8px; }
+.shortlist-list .meta .cat { color: var(--ss-gold); }
+.shortlist-empty { color: var(--color-text-muted); font-size: 12px; padding: 8px 4px; text-align: center; }
+.shortlist-empty a { color: var(--color-primary); text-decoration: none; margin-left: 4px; }
+.shortlist-empty a:hover { text-decoration: underline; }
+.shortlist-list:empty + .shortlist-empty { display: block; }
+.shortlist-list:not(:empty) ~ .shortlist-empty { display: none; }
+
 .drop-zone {
   border: 2px dashed var(--color-border); border-radius: var(--radius-xl);
   padding: 56px 24px; text-align: center; cursor: pointer;
@@ -593,6 +640,24 @@ kbd {
 
 <main class="main">
 
+  <!-- Shortlist (library handoff) — hidden until the auditioner manifest loads. -->
+  <div id="shortlistDock" class="shortlist-dock hidden" aria-label="Library shortlist">
+    <button id="shortlistToggle" class="shortlist-toggle" aria-expanded="false" aria-controls="shortlistPanel">
+      <span class="star">★</span> Shortlist <span class="count" id="shortlistCount">0</span>
+    </button>
+    <div id="shortlistPanel" class="shortlist-panel" role="region">
+      <div class="shortlist-header">
+        <strong>Library shortlist</strong>
+        <span class="shortlist-meta" id="shortlistMeta">—</span>
+      </div>
+      <ul id="shortlistList" class="shortlist-list"></ul>
+      <div class="shortlist-empty" id="shortlistEmpty">
+        Star tracks in the auditioner to see them here.
+        <a href="/" target="_blank" rel="noopener">Open auditioner →</a>
+      </div>
+    </div>
+  </div>
+
   <!-- Drop Zone -->
   <div class="drop-zone" id="dropZone" tabindex="0" role="button" aria-label="Load audio file">
     <div class="drop-icon"><i data-lucide="music-2" style="width:40px;height:40px;"></i></div>
@@ -830,11 +895,25 @@ dropZone.addEventListener('drop', e => {
 fileInput.addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
 
 async function loadFile(file) {
+  return loadFromArrayBuffer(await file.arrayBuffer(), file.name);
+}
+
+// Library handoff: cutter accepts ?src=<server-path> (e.g. /audio/music/.../track.mp3).
+// Fetches via the auditioner server's byte-range route, then runs the same decode path.
+async function loadFromUrl(url, displayName) {
+  setStatus('loading', 'Fetching ' + (displayName || url) + '…');
+  const res = await fetch(url);
+  if (!res.ok) { setStatus('error', 'Fetch failed: ' + res.status + ' ' + url); return; }
+  const arrayBuffer = await res.arrayBuffer();
+  const name = displayName || decodeURIComponent(url.split('/').pop() || 'track');
+  return loadFromArrayBuffer(arrayBuffer, name);
+}
+
+async function loadFromArrayBuffer(arrayBuffer, name) {
   stopAudio();
   setStatus('loading', 'Decoding audio…');
-  fileNameEl.textContent = file.name;
+  fileNameEl.textContent = name;
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const arrayBuffer = await file.arrayBuffer();
   try {
     audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
   } catch(e) {
@@ -866,7 +945,7 @@ async function loadFile(file) {
   drawWaveform();
   updateMarkerUI();
   applyBeatHintPill();
-  setStatus('ready', 'Loaded: ' + file.name);
+  setStatus('ready', 'Loaded: ' + name);
 }
 
 // ── Waveform Data ─────────────────────────────────────────────────────────
@@ -1856,6 +1935,118 @@ applyAnchorLockUI();
 applyBpmDerivedUI();
 
 lucide.createIcons();
+
+// Library shortlist sync — fetch the auditioner manifest, render starred items
+// in the dock. Click loads via the existing handoff path. Silent if no server.
+(async function initShortlist() {
+  const dock = document.getElementById('shortlistDock');
+  const toggle = document.getElementById('shortlistToggle');
+  const panel = document.getElementById('shortlistPanel');
+  const list = document.getElementById('shortlistList');
+  const countEl = document.getElementById('shortlistCount');
+  const metaEl = document.getElementById('shortlistMeta');
+  if (!dock || !toggle || !list) return;
+
+  let manifest = null;
+  let activeId = null;
+
+  async function refresh() {
+    try {
+      const res = await fetch('/api/manifest', { cache: 'no-store' });
+      if (!res.ok) throw new Error('manifest ' + res.status);
+      manifest = await res.json();
+    } catch (e) {
+      // No auditioner server (e.g. cutter served standalone) — keep dock hidden.
+      dock.classList.add('hidden');
+      return;
+    }
+    dock.classList.remove('hidden');
+    const items = (manifest.items || []).filter(i => i.shortlisted);
+    countEl.textContent = items.length;
+    metaEl.textContent = items.length ? items.length + ' starred' : 'none yet';
+    list.innerHTML = '';
+    items.forEach(item => {
+      const li = document.createElement('li');
+      li.dataset.id = item.id;
+      if (item.id === activeId) li.classList.add('active');
+      const title = document.createElement('div');
+      title.className = 'title';
+      title.textContent = item.title || item.local_path?.split('/').pop() || item.id;
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      const cat = document.createElement('span');
+      cat.className = 'cat';
+      cat.textContent = (item.subcategory || item.category || '').toLowerCase();
+      meta.appendChild(cat);
+      if (item.duration) {
+        const dur = document.createElement('span');
+        dur.textContent = item.duration;
+        meta.appendChild(dur);
+      }
+      if (item.bpm) {
+        const bpm = document.createElement('span');
+        bpm.textContent = item.bpm + ' BPM';
+        meta.appendChild(bpm);
+      }
+      li.appendChild(title);
+      li.appendChild(meta);
+      li.addEventListener('click', () => {
+        const rel = (item.local_path || '').replace(/^public\/assets\//, '');
+        if (!rel) return;
+        const url = '/audio/' + rel.split('/').map(encodeURIComponent).join('/');
+        if (item.bpm && bpmInput) bpmInput.value = parseFloat(item.bpm).toFixed(2);
+        loadFromUrl(url, item.title);
+        activeId = item.id;
+        list.querySelectorAll('li').forEach(el => el.classList.toggle('active', el.dataset.id === activeId));
+        dock.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+      list.appendChild(li);
+    });
+  }
+
+  toggle.addEventListener('click', () => {
+    const open = dock.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) refresh();
+  });
+
+  // Close on outside click.
+  document.addEventListener('click', e => {
+    if (!dock.contains(e.target) && dock.classList.contains('open')) {
+      dock.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Initial load — populates the count badge so user sees "Shortlist 3" up-front.
+  refresh();
+
+  // Keep the active id in sync if the user arrived via ?src= from a starred item.
+  const params = new URLSearchParams(location.search);
+  const src = params.get('src');
+  if (src && manifest) {
+    const rel = decodeURIComponent(src.replace(/^\/audio\//, ''));
+    const item = (manifest.items || []).find(i => (i.local_path || '').endsWith(rel));
+    if (item) activeId = item.id;
+  }
+})();
+
+// Library handoff: if URL has ?src=<server-path>, auto-load it.
+//   ?title= overrides the filename shown.
+//   ?bpm=<n> pre-fills BPM (handy for SSL beds with known tempo).
+(function autoloadFromQuery() {
+  const params = new URLSearchParams(location.search);
+  const src = params.get('src');
+  if (!src) return;
+  const title = params.get('title');
+  const bpmParam = params.get('bpm');
+  if (bpmParam && bpmInput) {
+    const n = parseFloat(bpmParam);
+    if (isFinite(n) && n > 0) bpmInput.value = n.toFixed(2);
+  }
+  loadFromUrl(src, title);
+})();
 </script>
 </body>
 </html>

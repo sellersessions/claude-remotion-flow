@@ -10602,8 +10602,8 @@
       "approved_at": null,
       "used_in": [],
       "notes": "",
-      "shortlisted": false,
-      "shortlisted_at": null
+      "shortlisted": true,
+      "shortlisted_at": "2026-05-01T10:24:48.561Z"
     },
     {
       "id": "music-8c619dcadc",
@@ -12081,8 +12081,8 @@
       "approved_at": null,
       "used_in": [],
       "notes": "",
-      "shortlisted": false,
-      "shortlisted_at": null
+      "shortlisted": true,
+      "shortlisted_at": "2026-05-01T10:24:48.576Z"
     },
     {
       "id": "music-57ed9eb0f4",

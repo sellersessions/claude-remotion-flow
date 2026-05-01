@@ -4,22 +4,34 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SFX + Music Auditioner — SSL 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b0f14;
-    --panel: #141b24;
-    --panel-2: #1a2330;
-    --ink: #e6edf3;
-    --ink-muted: #8b9aaa;
-    --line: #243041;
-    --accent: #ffb11d;
-    --star: #ffb11d;
-    --chip-bg: #1f2836;
-    --chip-on: #ffb11d;
-    --chip-on-ink: #0b0f14;
-    --copy: #56a8ff;
-    --radius: 6px;
-    --font: -apple-system, "SF Pro Text", Inter, system-ui, sans-serif;
+    /* Aligned to Loop Cutter (claude-remotion-flow brand). */
+    --ss-purple: #461499;
+    --ss-purple-light: #753EF7;
+    --ss-deep: #0C0322;
+    --ss-deep-2: #130d2a;
+    --ss-card: #1a1a2e;
+    --ss-hover: #252040;
+    --ss-gold: #FBBF24;
+
+    --bg: var(--ss-deep);
+    --panel: var(--ss-deep-2);
+    --panel-2: var(--ss-card);
+    --ink: #FAFAFC;
+    --ink-muted: #B8B0D8;
+    --line: #2a1f4d;
+    --accent: var(--ss-gold);
+    --star: var(--ss-gold);
+    --chip-bg: var(--ss-card);
+    --chip-on: var(--ss-gold);
+    --chip-on-ink: var(--ss-deep);
+    --copy: var(--ss-purple-light);
+    --radius: 8px;
+    --font: "Plus Jakarta Sans", "Inter", -apple-system, system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 13px; line-height: 1.4; }
@@ -61,6 +73,7 @@
   button.act.star.on { background: var(--star); border-color: var(--star); color: var(--chip-on-ink); }
   button.act.copy:hover { color: var(--copy); border-color: var(--copy); }
   button.act.copy.flash { background: var(--copy); color: white; border-color: var(--copy); }
+  button.act.cut:hover { color: var(--accent); border-color: var(--accent); }
   .empty { padding: 80px 20px; text-align: center; color: var(--ink-muted); }
   .note { grid-column: 3 / -1; margin-top: 2px; }
   .note input { width: 100%; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); padding: 4px 8px; font-size: 11px; font-family: var(--font); }
@@ -366,6 +379,22 @@ function renderRow(item, idx) {
     if (ok) flashButton(copyBtn);
   };
   row.appendChild(copyBtn);
+
+  // Send to Cutter — opens /cutter/?src=<audio-url>&title=<title>&bpm=<bpm?>
+  // in a new tab. Cutter auto-loads the track and pre-fills BPM if known.
+  const cutBtn = document.createElement('button');
+  cutBtn.className = 'act cut';
+  cutBtn.textContent = '✂︎';
+  cutBtn.title = 'Send to Loop Cutter (new tab)';
+  cutBtn.onclick = (e) => {
+    e.stopPropagation();
+    const url = audioUrl(item);
+    if (!url) return;
+    const params = new URLSearchParams({ src: url, title: item.title || '' });
+    if (item.bpm) params.set('bpm', item.bpm);
+    window.open('/cutter/?' + params.toString(), '_blank');
+  };
+  row.appendChild(cutBtn);
 
   const noteDiv = document.createElement('div');
   noteDiv.className = 'note';
