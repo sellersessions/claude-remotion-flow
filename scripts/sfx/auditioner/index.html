@@ -35,8 +35,15 @@
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 13px; line-height: 1.4; }
-  /* F7: narrow row grid so title and player sit closer; ~100px breathing room each side at 1280px+ viewport. Ellipsis on .title triggers naturally now that 1fr has less slack to fill. */
+  /* F7: narrow row grid + align header/tray content to the same 1080px column.
+     Backgrounds still full-bleed (header/tray bars span the viewport); inner
+     content is centered in a .bar-inner wrapper that mirrors the row width. */
   .content { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  .bar-inner { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  /* Outer bars: keep vertical padding only, hand horizontal to .bar-inner. */
+  header { padding: 14px 0; }
+  .tray { padding: 8px 0; display: block; font-size: 12px; }
+  .tray .bar-inner { display: flex; gap: 10px; align-items: center; }
   header { position: sticky; top: 0; z-index: 10; background: var(--panel); border-bottom: 1px solid var(--line); padding: 14px 20px; }
   header h1 { margin: 0 0 4px; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
   header .meta { color: var(--ink-muted); font-size: 12px; }
@@ -100,35 +107,39 @@
 </head>
 <body>
 <header>
-  <h1>SFX + Music Auditioner <span class="save-indicator" id="saveIndicator"></span></h1>
-  <div class="meta" id="meta">loading…</div>
-  <div class="tabs" id="tabs"></div>
-  <div class="filters">
-    <div class="filter-group">
-      <label>Show</label>
-      <button class="chip on" data-status="all">all</button>
-      <button class="chip" data-status="shortlisted">⭐ shortlisted</button>
-      <button class="chip" data-status="unshortlisted">unshortlisted</button>
-    </div>
-    <div class="filter-group">
-      <label>Duration</label>
-      <button class="chip on" data-dur="all">any</button>
-      <button class="chip" data-dur="short">≤ 3s</button>
-      <button class="chip" data-dur="mid">3–15s</button>
-      <button class="chip" data-dur="long">15s+</button>
-    </div>
-    <div class="filter-group">
-      <label>Search</label>
-      <input id="search" type="search" placeholder="title, author, tag" style="background:var(--panel-2);border:1px solid var(--line);border-radius:4px;color:var(--ink);padding:4px 8px;font-size:12px;min-width:180px;">
+  <div class="bar-inner">
+    <h1>SFX + Music Auditioner <span class="save-indicator" id="saveIndicator"></span></h1>
+    <div class="meta" id="meta">loading…</div>
+    <div class="tabs" id="tabs"></div>
+    <div class="filters">
+      <div class="filter-group">
+        <label>Show</label>
+        <button class="chip on" data-status="all">all</button>
+        <button class="chip" data-status="shortlisted">⭐ shortlisted</button>
+        <button class="chip" data-status="unshortlisted">unshortlisted</button>
+      </div>
+      <div class="filter-group">
+        <label>Duration</label>
+        <button class="chip on" data-dur="all">any</button>
+        <button class="chip" data-dur="short">≤ 3s</button>
+        <button class="chip" data-dur="mid">3–15s</button>
+        <button class="chip" data-dur="long">15s+</button>
+      </div>
+      <div class="filter-group">
+        <label>Search</label>
+        <input id="search" type="search" placeholder="title, author, tag" style="background:var(--panel-2);border:1px solid var(--line);border-radius:4px;color:var(--ink);padding:4px 8px;font-size:12px;min-width:180px;">
+      </div>
     </div>
   </div>
 </header>
 <div class="tray empty" id="tray">
-  <span class="count-pill" id="trayCount">0</span>
-  <span id="trayLabel">nothing selected — tick boxes to stage for copy</span>
-  <button id="trayClear">Clear</button>
-  <button id="trayCopy" class="primary">Copy selection</button>
-  <button id="trayPromote">Promote to ⭐ shortlist</button>
+  <div class="bar-inner">
+    <span class="count-pill" id="trayCount">0</span>
+    <span id="trayLabel">nothing selected — tick boxes to stage for copy</span>
+    <button id="trayClear">Clear</button>
+    <button id="trayCopy" class="primary">Copy selection</button>
+    <button id="trayPromote">Promote to ⭐ shortlist</button>
+  </div>
 </div>
 <main class="content" id="content">
   <div class="empty">loading manifest…</div>
