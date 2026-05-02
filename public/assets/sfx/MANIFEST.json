@@ -9877,8 +9877,8 @@
       "approved_at": null,
       "used_in": [],
       "notes": "",
-      "shortlisted": false,
-      "shortlisted_at": null
+      "shortlisted": true,
+      "shortlisted_at": "2026-05-01T13:40:48.895Z"
     },
     {
       "id": "music-9abdaeecf3",

@@ -1,7 +1,7 @@
 # SFX + Music Library — sign-off sheet
 
-> Generated 2026-05-01 11:44:49 UTC from MANIFEST.json.
-> **377 files · 20 shortlisted** across 6 categories.
+> Generated 2026-05-01 13:40:48 UTC from MANIFEST.json.
+> **377 files · 21 shortlisted** across 6 categories.
 > Re-run `node scripts/sfx/render-library-md.mjs` after curation to refresh.
 
 ---
@@ -319,20 +319,20 @@
 | 57 | Old Mine Ambience | JoelFazhari | 10:03 | — | Film & special effects, Mine, Ambience,… |  |  |
 | 58 | Busy Street Ambience | aatreya_v | 28:45 | — | City, Ambience, Nature, Sound |  |  |
 
-## music (88 files · 2 shortlisted)
+## music (88 files · 3 shortlisted)
 
 ### tiktok-backing (84)
 
 | # | Title | Author | Duration | Mood | Tags | ⭐ | Notes |
 |---|-------|--------|----------|------|------|---|-------|
 | 1 | Lose Yourself 8 bar loop | — | 0:22 | — | — | ⭐ |  |
-| 2 | cornfield chase (theme from interstella… | — | 2:05 | — | — | ⭐ |  |
-| 3 | The Long Way Home logic edit | — | 0:53 | — | — |  |  |
-| 4 | Spooky Quiet Scary Atmosphere piano cov… | — | 1:07 | — | — |  |  |
-| 5 | Running Up That Hill (A Deal With God) … | — | 1:22 | — | — |  |  |
-| 6 | Mockingbird [TubeRipper.com] | — | 1:33 | — | — |  |  |
-| 7 | Skittlegirl Sound - Theme of Mysterious… | — | 1:34 | — | — |  |  |
-| 8 | Beat Automotivo Tan Tan Tan Viral - WZ … | — | 1:50 | — | — |  |  |
+| 2 | Beat Automotivo Tan Tan Tan Viral - WZ … | — | 1:50 | — | — | ⭐ |  |
+| 3 | cornfield chase (theme from interstella… | — | 2:05 | — | — | ⭐ |  |
+| 4 | The Long Way Home logic edit | — | 0:53 | — | — |  |  |
+| 5 | Spooky Quiet Scary Atmosphere piano cov… | — | 1:07 | — | — |  |  |
+| 6 | Running Up That Hill (A Deal With God) … | — | 1:22 | — | — |  |  |
+| 7 | Mockingbird [TubeRipper.com] | — | 1:33 | — | — |  |  |
+| 8 | Skittlegirl Sound - Theme of Mysterious… | — | 1:34 | — | — |  |  |
 | 9 | Wildest Dreams (Piano Version)  | — | 1:54 | — | — |  |  |
 | 10 | MurderCaust [TubeRipper.com] | — | 2:05 | — | — |  |  |
 | 11 | Hans Zimmer - Cornfield Chase (Interste… | — | 2:06 | — | — |  |  |

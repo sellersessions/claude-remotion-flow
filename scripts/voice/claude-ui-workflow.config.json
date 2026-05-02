@@ -14,7 +14,7 @@
     {
       "id": "scene-1-hook",
       "lines": [
-        { "id": "L1", "text": "As an Amazon seller — there may be a time you need a landing page, or redesign your Shopify site." },
+        { "id": "L1", "text": "Sometimes you need a landing page — or to redesign your Shopify site." },
         { "id": "L2", "text": "Right now — most tools are producing AI slop." },
         { "id": "L3", "text": "But you can control the variables." }
       ]
@@ -36,7 +36,7 @@
     {
       "id": "scene-4a-rules",
       "lines": [
-        { "id": "L1", "text": "Next stage — whilst the kettle is boiling — it runs through fifteen design databases." },
+        { "id": "L1", "text": "Next stage — whilst you wait — it runs through fifteen design databases." },
         { "id": "L2", "text": "One hundred and sixty-five rules — anti-AI-slop gates, UI and UX frameworks, conversion methodologies." },
         { "id": "L3", "text": "Claude automates seven of the ten stages." }
       ]
@@ -67,8 +67,8 @@
       "id": "scene-7-cta",
       "lines": [
         { "id": "L1", "text": "Pull the repo — and put Claude to work." },
-        { "id": "L2", "text": "People say pretty doesn't convert." },
-        { "id": "L3", "text": "Then tell that to the world's leading brands — who understand good design drives emotion and trust." }
+        { "id": "L2", "text": "Some say pretty doesn't convert." },
+        { "id": "L3", "text": "Yet the world's leading brands — know good design drives emotion and trust." }
       ]
     }
   ]
