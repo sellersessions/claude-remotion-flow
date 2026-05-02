@@ -10,7 +10,7 @@ Three explainers have shipped this way so far:
 - **FormatExplainer** — output formats + dimensions.
 - **StackExplainer** — the 18-plugin production stack.
 
-If you get stuck, read MASTER-LOG.md — Sessions 4 → 12 document every decision.
+If you get stuck, the README's `Audio Library`, `Voice Pipeline`, and `Live Mixer` sections cover the moving parts in detail.
 
 ---
 
@@ -104,8 +104,28 @@ Output lands at `scripts/music/output/<slug>-onsets.json`. Each entry has
 **What to do with onsets:** Feed them into `BEAT_SNAP_FRAMES` in the
 composition file. Use the Session 12 auto-snap helper if it exists.
 Or set them all to `null` if no onsets land within 25 frames of your
-natural scene starts (that's what StackExplainer did — see MASTER-LOG
-Session 11).
+natural scene starts (that's what StackExplainer did).
+
+---
+
+## Step 3.5 — Pick SFX with the Auditioner + Loop Cutter
+
+Before the composition gets wired, decide which SFX you want available.
+
+```bash
+npm run audition                 # localhost:4747
+                                 # localhost:4747/cutter for the cutter
+```
+
+The auditioner browses `MANIFEST.json` by category (transitions / stingers / risers / impacts / ambience / music). Click ✂︎ on any row to open it in the Loop Cutter for trimming, then `Save → Library` to write the cut clip back as a new manifest entry (auto-shortlisted). Toggle `shortlisted` on every clip you want available in TSX, then run:
+
+```bash
+node --strip-types scripts/sfx/shortlist-to-code.ts
+```
+
+That regenerates `src/explainer-shared/sfx-library.ts` — your composition imports typed constants like `SFX_TRANSITIONS.WHOOSH_CINEMATIC` from there. No string paths in the TSX.
+
+If the library is empty on a fresh clone, run `npm run library:fetch` first to rehydrate from the manifest's `cdn_url` entries.
 
 ---
 

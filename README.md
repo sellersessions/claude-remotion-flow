@@ -140,10 +140,12 @@ Claude will walk you through:
 
 1. **Clone the repo** into a chosen working directory.
 2. **Install Node dependencies** — `npm install` pulls 29 Remotion packages + supporting tooling.
-3. **Check ffmpeg** — installs via Homebrew (macOS), apt (Linux), or prompts for WSL (Windows). Remotion uses it internally for renders.
-4. **Optional: ElevenLabs API key** — paste once, stored in `.env`. Needed only if you want AI-generated voiceover.
-5. **Optional: Python + librosa** — sets up a venv for the onset-detection helper. Needed only if you want beat-sync against a music bed.
-6. **Start the Studio** — `npm run dev` opens `localhost:3000` with the shipped example compositions loaded.
+3. **Check ffmpeg + ffprobe** — installs via Homebrew (macOS), apt (Linux), or prompts for WSL (Windows). Remotion uses ffmpeg internally for renders; the manifest-doctor uses ffprobe to validate audio integrity.
+4. **Bootstrap the audio library** — `npm run library:fetch` downloads every catalogued SFX from its `cdn_url` into `public/assets/sfx/library/`. The MP3s themselves are gitignored — `MANIFEST.json` is the source of truth and is fully recoverable.
+5. **Optional: ElevenLabs API key** — copy `.env.example` to `.env`, paste your key. Needed only if you want AI-generated voiceover.
+6. **Optional: Python + librosa** — sets up a venv for the onset-detection helper. Needed only if you want beat-sync against a music bed.
+7. **Start the Studio** — `npm run dev` opens `localhost:3000` with the shipped example compositions loaded.
+8. **Start the Auditioner + Loop Cutter** — `npm run audition` opens both at `localhost:4747` (auditioner root, `/cutter` for the cutter).
 
 If the Studio opens and you can scrub the example compositions, the pipeline is working.
 
@@ -369,7 +371,7 @@ Explainer durations are **VO-driven** — `calculateMetadata` reads each scene's
 
 ### SFX — categorised + shortlistable
 
-SFX live under `public/assets/sfx/library/` organised by category. Source of truth is `public/assets/sfx/MANIFEST.json` — one entry per file with title, author, tags, license, and a `shortlisted` flag.
+SFX live under `public/assets/sfx/library/` organised by category. Source of truth is `public/assets/sfx/MANIFEST.json` — one entry per file with title, author, tags, license, `cdn_url`, and a `shortlisted` flag.
 
 | Category | Typical use |
 |---|---|
@@ -379,10 +381,24 @@ SFX live under `public/assets/sfx/library/` organised by category. Source of tru
 | `impacts` | booms, hits, crashes |
 | `ambience`, `music` | backdrops, drones |
 
+### Bootstrap your library on a fresh clone
+
+The MP3/WAV files are gitignored — only `MANIFEST.json` is tracked. Manifest entries carry the `cdn_url` they came from, so the catalogue is fully recoverable without re-running the scraper.
+
+```bash
+npm run library:fetch                # Download every cdn_url-backed entry into local_path
+npm run library:fetch -- --shortlisted-only   # Lighter: only shortlisted items
+npm run library:fetch -- --dry-run            # See what would be fetched first
+npm run library:doctor               # Verify: 0 missing / 0 empty / 0 unreadable
+```
+
+`library:fetch` is idempotent — it skips items that already exist with non-zero size. Re-run any time. Defaults to concurrency 6; tune with `--concurrency <n>`.
+
 **Audition + shortlist workflow:**
 
 ```bash
 npm run audition                                          # Local auditioner at localhost:4747
+                                                          # Loop Cutter at localhost:4747/cutter
 node --strip-types scripts/sfx/shortlist-to-code.ts       # Regenerates src/explainer-shared/sfx-library.ts
 npm run library:doctor                                    # Sweep the manifest: stat + ffprobe per item
 ```
@@ -409,7 +425,7 @@ The auditioner (`localhost:4747`) is the browse + curate surface for the SFX lib
 
 ### Loop Cutter — features
 
-The Loop Cutter (`localhost:4747/cutter`) is a DAW-style precision trimmer for music beds and SFX clips. Browser-only — Web Audio API + Canvas, no backend dependencies for the editing path itself.
+The Loop Cutter is a DAW-style precision trimmer for music beds and SFX clips. Same server as the auditioner — browse to **`localhost:4747/cutter`** or click the ✂︎ button on any auditioner row. Browser-only editing path (Web Audio API + Canvas); only the optional `Save → Library` round-trip touches the backend.
 
 | Feature | What it does |
 |---|---|
@@ -480,6 +496,8 @@ All tokens live in `src/explainer-shared/tokens.ts` — import from `./explainer
 | `npm run library:migrate` | Migrate MANIFEST.json to the latest schema |
 | `npm run library:render` | Render a human-readable library index |
 | `npm run library:doctor` | Sweep MANIFEST.json — stat + ffprobe per item. `--fix-prune --yes` to remove broken atomically. |
+| `npm run library:fetch` | Rehydrate the SFX library from `cdn_url`. Idempotent. `--shortlisted-only` / `--filter <q>` / `--dry-run` flags. |
+| `npm run library:index-music` | Index local music drops under `public/assets/music/<bed-collection>/` into MANIFEST.json. |
 
 ---
 
@@ -491,8 +509,11 @@ All tokens live in `src/explainer-shared/tokens.ts` — import from `./explainer
 | `scripts/music/detect-onsets.py` | librosa onset detector — ranks phrase starts in a music bed. |
 | `scripts/music/auto-snap.ts` | Auto-snap helper — emits a `BEAT_SNAP_FRAMES` literal from onsets + natural scene starts. |
 | `scripts/sfx/shortlist-to-code.ts` | Shortlist → code — regenerates `src/explainer-shared/sfx-library.ts` from MANIFEST.json shortlisted items. |
-| `scripts/sfx/pixabay-scrape.mjs` | SFX library scraper — pulls new items into `public/assets/sfx/inbox/`. |
+| `scripts/sfx/rehydrate-from-manifest.mjs` | Bootstraps the audio library on a fresh clone by fetching every item's `cdn_url` to `local_path`. |
+| `scripts/sfx/pixabay-scrape.mjs` | SFX library scraper for *new* items beyond the manifest — pulls into `public/assets/sfx/_inbox/`. Requires `playwright` + `npx playwright install chromium` (one-time) — only needed if you're growing the catalogue. |
 | `scripts/sfx/merge-inbox-to-library.mjs` | Promotes inbox items to the categorised library + indexes into MANIFEST.json. |
+| `scripts/sfx/manifest-doctor.mjs` | Stat + ffprobe sweep over MANIFEST.json. `--fix-prune --yes` removes broken items atomically (`.bak` + `.tmp` + rename). |
+| `scripts/sfx/index-music.mjs` | Indexes local music drops under `public/assets/music/<bed-collection>/` into MANIFEST.json. |
 
 ---
 
