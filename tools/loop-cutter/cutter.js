@@ -32,6 +32,7 @@ let barOffset = 0;           // anchor time in seconds (Bar 1 position)
 let anchorLocked = true;     // when locked, BPM/beats reflow grid around anchor; anchor itself is read-only
 let beatLock2 = null;        // { time, beatNumber } — second lock; when set, BPM is derived
 let bpmDerived = false;      // true when bpm came from beatLock2 (BPM input is read-only)
+let bpmUserConfirmed = false; // true once user has typed/tapped/derived BPM (any explicit confirmation)
 let snapMode = 'off';        // 'off' | 'beat' | 'bar'
 let zoomDrag = null;         // { x0, x1 } during drag-to-zoom
 let auditionSource = null;   // currently-playing audition BufferSource
@@ -143,6 +144,7 @@ async function loadFromArrayBuffer(arrayBuffer, name, category) {
   anchorLocked = true;
   beatLock2 = null;
   bpmDerived = false;
+  bpmUserConfirmed = false;
   inExplicit = false;
   applyAnchorLockUI();
   applyBpmDerivedUI();
@@ -562,6 +564,7 @@ function applyBpmFromInput() {
   const raw = parseFloat(bpmInput.value);
   if (!isFinite(raw)) return; // mid-typing or empty: keep last good bpm
   bpm = Math.max(20, Math.min(300, raw));
+  bpmUserConfirmed = true; // user typed a value — counts as explicit confirmation even if 120
   updateMarkerUI(); drawWaveform(); drawOverlay();
   updateStepProgress();
 }
@@ -654,6 +657,7 @@ function setBeatLock2(time, beatNumber) {
   bpm = 60 / beatDur;
   bpmInput.value = bpm.toFixed(2);
   bpmDerived = true;
+  bpmUserConfirmed = true;
   applyBpmDerivedUI();
   clearLockedBars();
   // C7 — once we have two reference beats, BAR snap is the most-likely-correct default.
@@ -717,7 +721,7 @@ function updateStepProgress() {
   if (!wrap) return;
   const has = !!audioBuffer;
   const s1 = has && barOffset > 0.001;
-  const s2 = has && (bpmDerived || tapTimes.length >= 4 || (s1 && bpm !== 120));
+  const s2 = has && (bpmUserConfirmed || bpmDerived || tapTimes.length >= 4);
   const s3 = has && lockedBars !== null;
   const cur = !has ? 0 : !s1 ? 1 : !s2 ? 2 : !s3 ? 3 : 0;
   [['1', s1], ['2', s2], ['3', s3]].forEach(([id, done]) => {
@@ -1227,7 +1231,8 @@ function applyLoopLength(bars) {
   const candidate = (ph > 0 && Math.abs(ph - inPoint) < 0.001) ? ph : inPoint;
   if (anchorLocked && (!inExplicit || Math.abs(candidate - barOffset) < 0.05)) {
     inPoint = barOffset;
-    inExplicit = true;
+    // Don't flip inExplicit here — chip click + auto-snap to anchor is not user-explicit IN.
+    // Subsequent chip clicks should keep re-anchoring IN until user explicitly places it.
   } else if (snapMode === 'beat') {
     inPoint = snapTime(candidate);
   } else if (snapMode === 'off') {
@@ -1280,6 +1285,7 @@ tapBtn.addEventListener('click', () => {
     const newBpm = Math.max(20, Math.min(300, 60000 / avg));
     bpm = Math.round(newBpm * 10) / 10;
     bpmInput.value = bpm.toFixed(1);
+    if (tapTimes.length >= 4) bpmUserConfirmed = true;
     // C5 — visible commit: flash the BPM input + status reads "BPM committed"
     bpmInput.classList.remove('tap-flash'); void bpmInput.offsetWidth; bpmInput.classList.add('tap-flash');
     updateMarkerUI(); drawWaveform(); drawOverlay();
