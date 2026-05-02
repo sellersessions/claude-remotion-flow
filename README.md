@@ -382,11 +382,49 @@ SFX live under `public/assets/sfx/library/` organised by category. Source of tru
 **Audition + shortlist workflow:**
 
 ```bash
-npm run audition                                          # Local auditioner at localhost:3334
+npm run audition                                          # Local auditioner at localhost:4747
 node --strip-types scripts/sfx/shortlist-to-code.ts       # Regenerates src/explainer-shared/sfx-library.ts
+npm run library:doctor                                    # Sweep the manifest: stat + ffprobe per item
 ```
 
 `sfx-library.ts` exports typed constants (`SFX_TRANSITIONS.WHOOSH_CINEMATIC`, etc.) plus a flat `SFX_SHORTLIST_BY_ID` index keyed by stable manifest IDs.
+
+### Auditioner — features
+
+The auditioner (`localhost:4747`) is the browse + curate surface for the SFX library. Local-only Node server, no external deps beyond stdlib, manifest is the source of truth.
+
+| Feature | What it does |
+|---|---|
+| **Category tabs** | Six top-level tabs (transitions / stingers / risers / impacts / ambience / music) with a Traktor-style 4px categorical stripe per row — colour matches between auditioner and Loop Cutter. |
+| **Music subcategory grouping** | Within Music, items group by `subcategory` (loops, beds, drones, etc.) so you can scan a single sub-bucket without filter gymnastics. |
+| **Per-tab search** | Search input scopes to the active tab — title / author / tag. Switch tabs to search elsewhere. Placeholder + tooltip surface the per-tab scope. |
+| **Status + duration filters** | Filter by status (`all` / `shortlisted` / `approved` / `rejected`) and duration band. Filters persist in `state.filter` and survive tab switches. |
+| **Sticky preview bar** | Top-of-page preview pinned across scrolls. Click any row to load it; play/pause stays in one spot regardless of list position. |
+| **Cutter handoff** | Each preview bar has a ✂︎ button — opens the Loop Cutter in a new tab with the file pre-loaded. Auditioner pauses its own preview via `BroadcastChannel('loop-cutter-sync')` so you don't get double-audio. |
+| **Staging tray** | Drop items into a tray to assemble a shortlist before committing. Empty tray collapses to a thin 4px strip — out of the way, but discoverable. |
+| **Inline notes (250ms autosave)** | Per-item notes field, debounced 250ms autosave to manifest with a header indicator. Notes persist across reloads. |
+| **Persistent selection** | Active row + tab + filter state restore from `localStorage` between sessions — pick up where you left off. |
+| **Manifest-doctor CLI** | `npm run library:doctor` walks the manifest, runs `stat` + `ffprobe` per item, reports missing / empty / unreadable. `--fix-prune --yes` removes broken items atomically (`.bak` + `.tmp` + rename). |
+| **Save-clip endpoint** | `POST /api/save-clip` accepts a base64 WAV from the Loop Cutter, writes under `public/assets/music/cuts/`, appends a manifest entry, regenerates `LIBRARY.md`, and auto-shortlists the new item. |
+
+### Loop Cutter — features
+
+The Loop Cutter (`localhost:4747/cutter`) is a DAW-style precision trimmer for music beds and SFX clips. Browser-only — Web Audio API + Canvas, no backend dependencies for the editing path itself.
+
+| Feature | What it does |
+|---|---|
+| **Drop / browse / handoff load** | Drop a file in, click to browse, or jump straight from the Auditioner ✂︎ button. AIFF, WAV, MP3 all decode through `AudioContext.decodeAudioData`. |
+| **DAW-style transport** | Space = play/pause where the playhead sits. Shift+Space = restart from anchor (Logic-style). Esc = stop and return playhead. Ruler-strip click = move anchor; waveform click = scrub. |
+| **IN / OUT marker rows** | One row per marker (IN / OUT / loop / fades), each with an auto-sized grid. Set with `i` / `o`, nudge with `[` `]` `{` `}` (1/30s frame increments), or type a timecode directly. |
+| **Loop toggle (`L`)** | Loops between IN and OUT for tight audition. Pure UI state — doesn't render anything yet. |
+| **BPM + bar grid** | Optional BPM input (clamps + syncs on blur), beats-per-bar selector, bar offset anchor. Renders bar lines on the waveform canvas so you can cut on the downbeat. |
+| **Anchor lock + set** | Lock the anchor to keep it pinned while scrubbing, or set anchor = current playhead. Anchor is the restart point for Shift+Space. |
+| **Zoom-to-region** | Drag-zoom over the waveform to focus on a 1-2s region. Esc cancels. The 36px Traktor-style overview lane keeps the full track visible while zoomed; click anywhere on the overview to scroll. |
+| **Categorical stripe** | 4px stripe on the track-identity strip sourced from the manifest — same colour as the auditioner so you always know which category you're working in. |
+| **Save back to library** | `Save → Library` renders IN→OUT to WAV, base64-encodes, posts to `/api/save-clip`. Server writes the file, appends manifest entry, regenerates `LIBRARY.md`, returns the new item. Auto-shortlisted — appears in the dock immediately. |
+| **Export loop** | Local download of the cut region without writing to the library — for one-off uses. |
+| **Auditioner sync** | When the cutter loads a file, it broadcasts `cutter-loaded` on `loop-cutter-sync`; the auditioner pauses its preview so audio doesn't stack across tabs. |
+| **Tooltips with positional opt-ins** | `data-tip` CSS tooltips wrap (max 320px), with `data-tip-align="right"` / `"left"` to keep right-edge controls on-screen. |
 
 ### Music beds
 
@@ -438,9 +476,10 @@ All tokens live in `src/explainer-shared/tokens.ts` — import from `./explainer
 | `npm run lint` | ESLint + TypeScript typecheck |
 | `npm run render:stack` | Render StackExplainer → `out/StackExplainer.mp4` |
 | `npm run render:treatment` | Render TreatmentExplainer → `out/TreatmentExplainer.mp4` |
-| `npm run audition` | Local SFX auditioner on `localhost:3334` (browse + shortlist) |
+| `npm run audition` | Local SFX auditioner + Loop Cutter on `localhost:4747` (browse + shortlist + cut) |
 | `npm run library:migrate` | Migrate MANIFEST.json to the latest schema |
 | `npm run library:render` | Render a human-readable library index |
+| `npm run library:doctor` | Sweep MANIFEST.json — stat + ffprobe per item. `--fix-prune --yes` to remove broken atomically. |
 
 ---
 
