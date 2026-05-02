@@ -447,7 +447,10 @@ def main() -> int:
     else:  # per-scene legacy
         for mp3 in files:
             raw_backup = raw_dir / mp3.name
-            if not raw_backup.exists():
+            # Refresh _raw if master is newer (per-line regen via --only writes
+            # new bytes to master; without this check, post-process would
+            # silently overwrite master with the stale _raw take).
+            if not raw_backup.exists() or mp3.stat().st_mtime > raw_backup.stat().st_mtime:
                 shutil.copy2(mp3, raw_backup)
                 print(f"  [backup] {mp3.name} → _raw/")
 

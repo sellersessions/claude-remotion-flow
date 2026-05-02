@@ -30,9 +30,8 @@ for id in "${ids[@]}"; do
   cp "$src" "$DEST/"
 done
 
-if [[ -f "$VO_DIR/_listen-through.mp3" ]]; then
-  cp "$VO_DIR/_listen-through.mp3" "$DEST/"
-fi
+# Pass folders are pure delta — only the regen'd line files.
+# Master listen-through stays in vo-dir for on-demand cohesion check.
 
 # Strip xattrs so previous Finder tags don't bleed into the new pass.
 for f in "$DEST"/*.mp3; do

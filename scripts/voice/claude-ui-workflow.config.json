@@ -14,7 +14,7 @@
     {
       "id": "scene-1-hook",
       "lines": [
-        { "id": "L1", "text": "Sometimes you need a landing page — or to redesign your Shopify site." },
+        { "id": "L1", "text": "Designing a landing page — or refactoring a Shopify store — used to take weeks." },
         { "id": "L2", "text": "Right now — most tools are producing AI slop." },
         { "id": "L3", "text": "But you can control the variables." }
       ]
@@ -36,7 +36,7 @@
     {
       "id": "scene-4a-rules",
       "lines": [
-        { "id": "L1", "text": "Next stage — whilst you wait — it runs through fifteen design databases." },
+        { "id": "L1", "text": "Next stage — it runs through fifteen design databases." },
         { "id": "L2", "text": "One hundred and sixty-five rules — anti-AI-slop gates, UI and UX frameworks, conversion methodologies." },
         { "id": "L3", "text": "Claude automates seven of the ten stages." }
       ]
@@ -59,16 +59,14 @@
       "id": "scene-6-time",
       "lines": [
         { "id": "L1", "text": "Depending on how much time you spend tweaking in Stitch — the process end-to-end, outside of revisions, takes around ten minutes." },
-        { "id": "L2", "text": "In Stitch you can spend hours — or minutes." },
-        { "id": "L3", "text": "Design is subjective — best to get it right for your business." }
+        { "id": "L2", "text": "In Stitch you can spend hours — or minutes." }
       ]
     },
     {
       "id": "scene-7-cta",
       "lines": [
         { "id": "L1", "text": "Pull the repo — and put Claude to work." },
-        { "id": "L2", "text": "Some say pretty doesn't convert." },
-        { "id": "L3", "text": "Yet the world's leading brands — know good design drives emotion and trust." }
+        { "id": "L3", "text": "The world's leading brands invest in design." }
       ]
     }
   ]
