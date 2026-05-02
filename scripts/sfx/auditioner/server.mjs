@@ -164,9 +164,19 @@ const server = createServer(async (req, res) => {
       return serveFile(res, INDEX_HTML, MIME['.html']);
     }
 
-    // Loop Cutter mounted at /cutter/ — single-file HTML in tools/loop-cutter.
+    // Loop Cutter mounted at /cutter/ — index + sibling assets in tools/loop-cutter.
     if (req.method === 'GET' && (pathname === '/cutter' || pathname === '/cutter/' || pathname === '/cutter/index.html')) {
       return serveFile(res, CUTTER_HTML, MIME['.html']);
+    }
+    if (req.method === 'GET' && pathname.startsWith('/cutter/')) {
+      const rel = decodeURIComponent(pathname.slice('/cutter/'.length)).split('?')[0];
+      // whitelist: only css/js siblings, no traversal
+      if (!/^[\w.\-]+\.(css|js|map)$/.test(rel)) {
+        res.writeHead(404); return res.end('not found');
+      }
+      const filePath = join(PROJECT_ROOT, 'tools/loop-cutter', rel);
+      const contentType = MIME[extname(filePath).toLowerCase()] || 'application/octet-stream';
+      return serveFile(res, filePath, contentType);
     }
 
     if ((req.method === 'GET' || req.method === 'HEAD') && pathname.startsWith('/audio/')) {
