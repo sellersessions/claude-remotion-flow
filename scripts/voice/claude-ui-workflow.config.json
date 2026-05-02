@@ -14,30 +14,27 @@
     {
       "id": "scene-1-hook",
       "lines": [
-        { "id": "L1", "text": "Designing a landing page — or refactoring a Shopify store — used to take weeks." },
-        { "id": "L2", "text": "Right now — most tools are producing AI slop." },
-        { "id": "L3", "text": "But you can control the variables." }
+        { "id": "L1", "text": "Designing a landing page — or refactoring a Shopify store — used to take weeks." }
       ]
     },
     {
       "id": "scene-2-turn",
       "lines": [
-        { "id": "L1", "text": "What if you could have agency-quality design — without waiting three weeks — and without paying five to ten grand." }
+        { "id": "L1", "text": "What if you could have agency-quality design — without waiting three weeks." }
       ]
     },
     {
       "id": "scene-3-intake",
       "lines": [
         { "id": "L1", "text": "To get started — drop in your chosen URL." },
-        { "id": "L2", "text": "It captures your design system — fonts, brand colours, voice." },
-        { "id": "L3", "text": "Locked down — whilst you make a cup of tea." }
+        { "id": "L2", "text": "It captures your design system — fonts, brand colours, voice." }
       ]
     },
     {
       "id": "scene-4a-rules",
       "lines": [
         { "id": "L1", "text": "Next stage — it runs through fifteen design databases." },
-        { "id": "L2", "text": "One hundred and sixty-five rules — anti-AI-slop gates, UI and UX frameworks, conversion methodologies." },
+        { "id": "L2", "text": "One hundred and sixty-five rules — anti-AI gates, UI and UX frameworks, conversion methodologies." },
         { "id": "L3", "text": "Claude automates seven of the ten stages." }
       ]
     },
@@ -45,28 +42,27 @@
       "id": "scene-4b-stitch",
       "lines": [
         { "id": "L1", "text": "Then you take the prompt — hand it to Google Stitch — and out come high-quality designs." },
-        { "id": "L2", "text": "Claude picks it up — and refactors all the drifts for a controlled output." }
+        { "id": "L2", "text": "Claude picks it up — and refactors all the drifts." }
       ]
     },
     {
       "id": "scene-5-proof",
       "lines": [
         { "id": "L1", "text": "Re Tech UK — Databrill — and The Push Pull Agency." },
-        { "id": "L2", "text": "All cleared the gates at high rates." }
+        { "id": "L2", "text": "All cleared at high rates." }
       ]
     },
     {
       "id": "scene-6-time",
       "lines": [
-        { "id": "L1", "text": "Depending on how much time you spend tweaking in Stitch — the process end-to-end, outside of revisions, takes around ten minutes." },
-        { "id": "L2", "text": "In Stitch you can spend hours — or minutes." }
+        { "id": "L1", "text": "The process end-to-end — outside of revisions — takes around ten minutes." },
+        { "id": "L2", "text": "Leaving you more time to spend in Stitch." }
       ]
     },
     {
       "id": "scene-7-cta",
       "lines": [
-        { "id": "L1", "text": "Pull the repo — and put Claude to work." },
-        { "id": "L3", "text": "The world's leading brands invest in design." }
+        { "id": "L1", "text": "Pull the repo — and put Claude to work." }
       ]
     }
   ]

@@ -201,6 +201,10 @@ export type ChapterMetadataConfig = {
   cardBefore: readonly (ChapterCardSpec | null)[];
   beatSnapFrames: readonly (number | null)[];
   logPrefix: string;
+  // Visuals lead the chapter audio by this many frames so FadeUp entrances
+  // are crisp before VO speaks. Last scene's visual is extended by the same
+  // amount so audio finishes on-screen, not into FadeToBlack.
+  audioLeadFrames?: number;
 };
 
 const chapterTimingsCache = new Map<string, ChapterTiming[]>();
@@ -216,7 +220,8 @@ export function chapterFallbackDurationInFrames(
     config.fallbackSceneDurations.reduce((s, d) => s + d, 0) +
     cardCount * cardDurationFrames -
     (config.fallbackSceneDurations.length + cardCount - 1) * TRANS_FRAMES +
-    POST_ROLL_FRAMES
+    POST_ROLL_FRAMES +
+    (config.audioLeadFrames ?? 0)
   );
 }
 
@@ -278,6 +283,7 @@ export function makeChapterCalculateMetadata(
     const cardDurations: number[] = [];
     const sceneDurations: number[] = [];
 
+    const audioLeadFrames = config.audioLeadFrames ?? 0;
     config.sceneIds.forEach((id, i) => {
       const timing = timings![i];
       if (!timing || timing.sceneId !== id) {
@@ -290,10 +296,13 @@ export function makeChapterCalculateMetadata(
       const prevEndSec = i === 0 ? 0 : timings![i - 1].endSec;
       // Card duration = silence between previous scene end (or 0) and this scene start.
       cardDurations.push(Math.max(0, Math.round((startSec - prevEndSec) * FPS)));
-      // Scene duration = non-silent region; extend last scene to stem end.
+      // Scene duration = non-silent region; extend last scene to stem end + audioLeadFrames
+      // so the (later-shifted) audio still finishes on-screen, not into FadeToBlack.
       const isLast = i === config.sceneIds.length - 1;
       const sceneEndSec = isLast ? stemFrames! / FPS : endSec;
-      const sceneFrames = Math.max(1, Math.round((sceneEndSec - startSec) * FPS));
+      const sceneFrames =
+        Math.max(1, Math.round((sceneEndSec - startSec) * FPS)) +
+        (isLast ? audioLeadFrames : 0);
       // Clip-fit guard: clamp scene visual to natural source-clip length,
       // last frame holds for any remainder. Audio still plays through.
       const clipMax = config.clipDurationFrames[i];
@@ -305,8 +314,8 @@ export function makeChapterCalculateMetadata(
       sceneDurations.push(sceneFrames);
     });
 
-    // visualFrames = stem total; cards + scenes sum to stemFrames by construction.
-    const visualFrames = stemFrames!;
+    // visualFrames = stem total + audioLeadFrames (last scene extended by lead).
+    const visualFrames = stemFrames! + audioLeadFrames;
     const totalFrames = PRE_ROLL_FRAMES + visualFrames + POST_ROLL_FRAMES;
 
     return {

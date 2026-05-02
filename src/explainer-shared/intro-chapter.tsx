@@ -29,6 +29,7 @@ import { type ChapterCardSpec } from "./timeline";
 import {
   ChapterCard,
   FadeToBlack,
+  PosterFrame,
   SceneBG,
   SceneExit,
 } from "./components";
@@ -75,6 +76,12 @@ export type IntroChapterFactoryConfig = {
   cardDurationFrames?: number;
   voVolume?: number;            // single-stem VO playback gain (default 0.65)
   musicBed?: string;            // optional staticFile path to a music bed
+  // Static branded title card behind everything. Frame 0 of the rendered mp4
+  // becomes this — what GitHub / web embeds use as the thumbnail.
+  posterFrame?: { eyebrow: string; title: React.ReactNode };
+  // Visuals lead the chapter audio by this many frames so FadeUp entrances
+  // settle before VO speaks. Last scene is extended by the same amount.
+  audioLeadFrames?: number;
 };
 
 const SourceVideoScene: React.FC<{
@@ -146,7 +153,8 @@ export type IntroChapterFactoryResult = {
 export function makeIntroChapter(
   factoryConfig: IntroChapterFactoryConfig,
 ): IntroChapterFactoryResult {
-  const { slug, scenes, sourceMp4, musicBed } = factoryConfig;
+  const { slug, scenes, sourceMp4, musicBed, posterFrame } = factoryConfig;
+  const audioLeadFrames = factoryConfig.audioLeadFrames ?? 0;
   const voDir = `assets/voice/generated/${slug}`;
   const chapterMp3 = `${voDir}/chapter.mp3`;
   const timingsJson = `${voDir}/chapter.timings.json`;
@@ -172,6 +180,7 @@ export function makeIntroChapter(
     cardBefore,
     beatSnapFrames: scenes.map(() => null),
     logPrefix: slug,
+    audioLeadFrames,
   };
 
   const fallback = chapterFallbackDurationInFrames(metadataConfig, cardDurationFrames);
@@ -231,6 +240,20 @@ export function makeIntroChapter(
 
     return (
       <>
+        {/* Persistent gradient behind everything so inter-scene gaps don't
+            expose the layer below (would otherwise flash the poster title). */}
+        <SceneBG />
+
+        {/* Static poster — only during pre-roll. Frame 0 of the rendered mp4
+            becomes this (the GitHub / web-embed thumbnail). Disappears at
+            PRE_ROLL_FRAMES; from then on scenes own the foreground, with the
+            persistent SceneBG above filling any inter-scene gap. */}
+        {posterFrame && (
+          <Sequence durationInFrames={PRE_ROLL_FRAMES} name="poster">
+            <PosterFrame eyebrow={posterFrame.eyebrow} title={posterFrame.title} />
+          </Sequence>
+        )}
+
         {/* Intro whoosh — peaks as the first card/scene fades in. */}
         <Sequence durationInFrames={SFX_INTRO_LEN_FRAMES} name="SFX-intro">
           <Audio src={staticFile(SFX_INTRO)} volume={sfxIntroVolume} />
@@ -247,9 +270,10 @@ export function makeIntroChapter(
         </Sequence>
 
         {/* Single-stem voiceover — one consistent room, one limiter pass.
-            No VO_PRE_PAD: the stem has its own leading silence. */}
+            Shifted later by audioLeadFrames so visual FadeUp entrances settle
+            before VO speaks; last scene was extended in metadata to match. */}
         <Sequence
-          from={visualStart}
+          from={visualStart + audioLeadFrames}
           durationInFrames={stemFrames}
           name="VO-chapter"
         >
