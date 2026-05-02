@@ -133,6 +133,15 @@ async function loadFromArrayBuffer(arrayBuffer, name, category) {
   } catch(e) {
     setStatus('error', 'Failed to decode audio: ' + e.message); return;
   }
+  // C10 — tell any open auditioner tab(s) to pause their preview so we're not
+  // fighting two playback sources. Channel name is shared with the auditioner.
+  try {
+    if (typeof BroadcastChannel !== 'undefined') {
+      const ch = new BroadcastChannel('loop-cutter-sync');
+      ch.postMessage({ type: 'cutter-loaded', name });
+      ch.close();
+    }
+  } catch (e) { /* environments without BroadcastChannel: silent no-op */ }
   duration = audioBuffer.duration;
   inPoint = 0;
   outPoint = duration;
@@ -570,6 +579,13 @@ function applyBpmFromInput() {
 }
 bpmInput.addEventListener('input', applyBpmFromInput);
 bpmInput.addEventListener('change', applyBpmFromInput);
+// NIT — sync the displayed value to the clamped value on blur so 12000 doesn't
+// stay in the box after we silently clamped to 300 internally.
+bpmInput.addEventListener('blur', () => {
+  const raw = parseFloat(bpmInput.value);
+  if (!isFinite(raw)) return;
+  if (raw !== bpm) bpmInput.value = (Math.round(bpm * 100) / 100).toString();
+});
 function applyBeatsFromInput() {
   const raw = parseInt(beatsPerBarInput.value, 10);
   if (!isFinite(raw)) return;

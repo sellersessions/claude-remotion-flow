@@ -284,7 +284,10 @@ input[type=range] { cursor: pointer; }
   background: linear-gradient(180deg, rgba(250,248,255,0.88) 0%, rgba(250,248,255,0.96) 18%, rgba(250,248,255,1) 100%);
   box-shadow: 0 -8px 24px rgba(70,20,153,0.10);
 }
-.controls-row .markers-card  { order: 1; }
+/* LAYOUT — Loop Points reads first (most-edited surface), Transport gets centre
+   stage, Render sits last. Loop Points used to flex:1 and eat Transport's space;
+   now all three cards sit at intrinsic widths so the dock centres as a unit. */
+.controls-row .markers-card   { order: 1; }
 .controls-row .transport-card { order: 2; }
 .controls-row .export-card    { order: 3; }
 
@@ -342,11 +345,15 @@ input[type=range] { cursor: pointer; }
 
 /* ── Markers Card ─────────────────────── */
 .markers-card {
-  padding: 14px 16px; flex: 1;
-  display: flex; flex-direction: column; gap: 12px; min-width: 320px;
+  padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  min-width: 360px; max-width: 460px;
   align-self: flex-start;
 }
-.marker-row { display: grid; grid-template-columns: auto 1fr auto auto auto; gap: 7px; align-items: center; }
+/* LAYOUT — 6 explicit columns (was 5) so the × clear button stays inline next to
+   the back-arrow ← instead of wrapping to its own row. The OUT row uses a
+   width:30px spacer in the 4th slot since OUT has no audition button. */
+.marker-row { display: grid; grid-template-columns: auto 1fr auto auto auto auto; gap: 7px; align-items: center; }
 .marker-label {
   font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px;
   white-space: nowrap; padding: 5px 9px; border-radius: 999px;
@@ -430,7 +437,11 @@ kbd {
   background: linear-gradient(180deg, #2a1f4d 0%, #1a1238 100%);
   border: 1px solid rgba(117,62,247,0.35);
   color: var(--ink); font-size: 11px; font-family: var(--font-body); font-weight: 500;
-  white-space: nowrap; pointer-events: none;
+  /* F4 — long data-tip strings used to clip at viewport edges. Allow wrapping at
+     a 320px cap and let `width: max-content` keep short tips at intrinsic width. */
+  white-space: normal; width: max-content; max-width: 320px;
+  text-align: center; line-height: 1.4;
+  pointer-events: none;
   opacity: 0; transition: opacity var(--transition), transform var(--transition);
   z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(117,62,247,0.15);
 }
@@ -446,6 +457,16 @@ kbd {
 }
 [data-tip-pos="below"]::after { bottom: auto; top: calc(100% + 8px); }
 [data-tip-pos="below"]::before { bottom: auto; top: calc(100% + 2px); border-top-color: transparent; border-bottom-color: #1a1238; }
+/* F4 — opt-in alignment for tooltips on triggers near the right edge. Anchors
+   the tip to the trigger's right edge so it grows leftward instead of off-screen. */
+[data-tip-align="right"]::after { left: auto; right: 0; transform: translateX(0) translateY(4px); }
+[data-tip-align="right"]:hover::after { transform: translateX(0) translateY(0); }
+[data-tip-align="right"]::before { left: auto; right: 12px; transform: translateX(0) translateY(4px); }
+[data-tip-align="right"]:hover::before { transform: translateX(0) translateY(0); }
+[data-tip-align="left"]::after { left: 0; right: auto; transform: translateX(0) translateY(4px); }
+[data-tip-align="left"]:hover::after { transform: translateX(0) translateY(0); }
+[data-tip-align="left"]::before { left: 12px; right: auto; transform: translateX(0) translateY(4px); }
+[data-tip-align="left"]:hover::before { transform: translateX(0) translateY(0); }
 
 /* ── Scrollbar ─────────────────────────── */
 ::-webkit-scrollbar { width: 8px; height: 8px; }

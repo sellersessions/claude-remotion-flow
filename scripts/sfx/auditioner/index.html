@@ -73,8 +73,13 @@
   .filter-group label { color: var(--ink-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; margin-right: 4px; }
   .chip { background: var(--chip-bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--ink); cursor: pointer; font-size: 11px; }
   .chip.on { background: var(--chip-on); color: var(--chip-on-ink); border-color: var(--chip-on); }
-  .tray { position: sticky; top: 0; z-index: 9; background: var(--panel-2); border-bottom: 1px solid var(--line); padding: 8px 20px; display: flex; gap: 10px; align-items: center; font-size: 12px; }
-  .tray.empty { opacity: 0.55; }
+  .tray { position: sticky; top: 0; z-index: 9; background: var(--panel-2); border-bottom: 1px solid var(--line); padding: 8px 20px; display: flex; gap: 10px; align-items: center; font-size: 12px; transition: padding 200ms ease, opacity 200ms ease; }
+  /* A2 — when nothing staged, collapse to a thin hint strip. Hide the count pill
+     (always reads 0) and the disabled buttons; keep only the prompt text so the
+     bar stops competing with the row list above. */
+  .tray.empty { padding: 4px 20px; opacity: 0.55; font-size: 11px; }
+  .tray.empty .count-pill,
+  .tray.empty button { display: none; }
   .tray .count-pill { background: var(--accent); color: var(--chip-on-ink); border-radius: 999px; padding: 2px 10px; font-weight: 600; font-variant-numeric: tabular-nums; }
   .tray button { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); color: var(--ink); padding: 4px 10px; font-size: 12px; cursor: pointer; }
   .tray button:hover:not(:disabled) { background: var(--chip-bg); }
@@ -206,7 +211,7 @@
       </div>
       <div class="filter-group">
         <label>Search</label>
-        <input id="search" type="search" placeholder="title, author, tag" style="background:var(--panel-2);border:1px solid var(--line);border-radius:4px;color:var(--ink);padding:4px 8px;font-size:12px;min-width:180px;">
+        <input id="search" type="search" placeholder="title, author, tag (current tab)" title="Searches within the active category tab only. Switch tabs to search elsewhere." style="background:var(--panel-2);border:1px solid var(--line);border-radius:4px;color:var(--ink);padding:4px 8px;font-size:12px;min-width:200px;">
       </div>
     </div>
   </div>
@@ -410,6 +415,10 @@ function wirePreviewBar() {
   previewBar.cutter().onclick = () => {
     const item = state.nowPlayingId ? findById(state.nowPlayingId) : null;
     if (!item) return;
+    // C10 — pause our own audio before handing off so the cutter doesn't have to
+    // shout over us. The BroadcastChannel listener (below) catches the case where
+    // the cutter is opened from a different tab.
+    if (!audio.paused) audio.pause();
     const url = audioUrl(item);
     const params = new URLSearchParams({ src: url, title: item.title || '' });
     if (item.bpm) params.set('bpm', item.bpm);
@@ -420,6 +429,19 @@ function wirePreviewBar() {
     if (!item) return;
     await copyToClipboard(barePath(item));
   };
+}
+
+// C10 — cross-tab sync. When the cutter loads a track it broadcasts here; we
+// pause so the user isn't fighting two playback sources. Channel name is shared
+// with cutter.js. Guarded for environments without BroadcastChannel.
+if (typeof BroadcastChannel !== 'undefined') {
+  const ch = new BroadcastChannel('loop-cutter-sync');
+  ch.addEventListener('message', e => {
+    if (e?.data?.type === 'cutter-loaded') {
+      const audio = document.getElementById('pbAudio');
+      if (audio && !audio.paused) audio.pause();
+    }
+  });
 }
 
 // ── Overflow menu: only one open at a time ─────────────────────
@@ -595,6 +617,9 @@ function renderRow(item, idx) {
       e.stopPropagation();
       const action = btn.dataset.action;
       if (action === 'cutter') {
+        // C10 — same pause-before-handoff as the preview bar button.
+        const audio = previewBar.audio();
+        if (audio && !audio.paused) audio.pause();
         const url = audioUrl(item);
         if (url) {
           const params = new URLSearchParams({ src: url, title: item.title || '' });
@@ -617,6 +642,7 @@ function renderRow(item, idx) {
   noteInput.type = 'text';
   noteInput.placeholder = 'notes (optional)…';
   noteInput.value = item.notes || '';
+  noteInput.title = 'Persists to manifest (auto-saves 250ms after you stop typing — watch the header indicator).';
   noteInput.oninput = () => scheduleSave(item, { notes: noteInput.value });
   noteDiv.appendChild(noteInput);
   row.appendChild(noteDiv);
