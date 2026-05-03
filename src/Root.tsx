@@ -71,6 +71,12 @@ import {
   calculateMetadata as claudeUiWorkflowExplainerCalculateMetadata,
   FALLBACK_DURATION_IN_FRAMES as claudeUiWorkflowExplainerFallbackDuration,
 } from "./ClaudeUiWorkflowExplainer";
+import {
+  ClaudeVideoEditingFlowExplainer,
+  claudeVideoEditingFlowExplainerSchema,
+  calculateMetadata as claudeVideoEditingFlowExplainerCalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as claudeVideoEditingFlowExplainerFallbackDuration,
+} from "./ClaudeVideoEditingFlowExplainer";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -255,6 +261,22 @@ export const RemotionRoot: React.FC = () => {
         schema={claudeUiWorkflowExplainerSchema}
         defaultProps={{
           musicHigh: 0.10,
+          musicDuck: 0,
+          sfxIntroVolume: 0.55,
+          sfxOutroVolume: 0.55,
+        }}
+      />
+      <Composition
+        id="ClaudeVideoEditingFlowExplainer"
+        component={ClaudeVideoEditingFlowExplainer}
+        calculateMetadata={claudeVideoEditingFlowExplainerCalculateMetadata}
+        durationInFrames={claudeVideoEditingFlowExplainerFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={claudeVideoEditingFlowExplainerSchema}
+        defaultProps={{
+          musicHigh: 0.06,
           musicDuck: 0,
           sfxIntroVolume: 0.55,
           sfxOutroVolume: 0.55,
