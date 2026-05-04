@@ -15,15 +15,15 @@
 **Treatment-driven, Claude-controlled, beat-synced.**
 
 <!-- VIDEOS START -->
-### Walkthroughs
+### Watch the Workflow
 
-<video src="https://github.com/user-attachments/assets/3da20bdd-eaea-4e96-9a10-a15f2e6de9e7" controls muted></video>
+<video src="https://github.com/user-attachments/assets/7a094771-e07b-4f0d-bc4e-bdb51b47574f" controls muted></video>
 
-**The stack tour.** Remotion, Claude, treatment files, ducking, beat sync. What's under the hood.
+**Loom 5 — The Workflow (7:08).** End-to-end, treatment to render. Start here if you want the whole picture.
 
-<video src="https://github.com/user-attachments/assets/758c1b79-dd45-4228-972d-5e9c89586ad7" controls muted></video>
+<video src="https://github.com/user-attachments/assets/9d9c4cb4-b86e-4579-a3a9-407338d13e7c" controls muted></video>
 
-**Treatment-driven flow.** How a treatment doc becomes a rendered MP4, end to end.
+**Loom 4 — The Process (6:33).** The meta-walkthrough: how the pipeline thinks, what it ducks, where the seams live.
 <!-- VIDEOS END -->
 
 > **New here?** The end-to-end recipe lives in [HOW-TO-SHIP-AN-EXPLAINER.md](./HOW-TO-SHIP-AN-EXPLAINER.md) — six steps from treatment to MP4.
@@ -178,6 +178,10 @@ npm run lint           # ESLint + TypeScript typecheck
 ```
 
 Select a composition from the Studio dropdown. Scrub the timeline, pause on any frame, hot-reload on code changes. Live mixer sliders (`musicHigh`, `musicDuck`, `sfxIntroVolume`, `sfxOutroVolume`) surface in the right-hand Props panel — drag during playback and the render updates frame-by-frame.
+
+<video src="https://github.com/user-attachments/assets/9594e592-9ff8-4b62-b990-76c8d816192c" controls muted></video>
+
+**Loom 1 — Remotion UI (2:16).** A tour of the Studio interface itself: composition list, timeline scrub, props panel, hot-reload loop. Watch this once before you open the Studio for the first time.
 
 ---
 
@@ -365,6 +369,18 @@ The repo ships with three example compositions you can study, modify, or use as 
 
 Explainer durations are **VO-driven** — `calculateMetadata` reads each scene's MP3 and sizes the scene to `max(VO + padding, fallback)`. Re-generate the VO and the comp length adjusts automatically.
 
+### Examples in motion
+
+These two are the rendered output of the example compositions above — what the pipeline actually ships.
+
+<video src="https://github.com/user-attachments/assets/3da20bdd-eaea-4e96-9a10-a15f2e6de9e7" controls muted></video>
+
+**StackExplainer — the stack tour.** Remotion, Claude, treatment files, ducking, beat sync. What's under the hood.
+
+<video src="https://github.com/user-attachments/assets/758c1b79-dd45-4228-972d-5e9c89586ad7" controls muted></video>
+
+**TreatmentExplainer — treatment-driven flow.** How a treatment doc becomes a rendered MP4, end to end.
+
 ---
 
 ## Audio Library
@@ -423,6 +439,10 @@ The auditioner (`localhost:4747`) is the browse + curate surface for the SFX lib
 | **Manifest-doctor CLI** | `npm run library:doctor` walks the manifest, runs `stat` + `ffprobe` per item, reports missing / empty / unreadable. `--fix-prune --yes` removes broken items atomically (`.bak` + `.tmp` + rename). |
 | **Save-clip endpoint** | `POST /api/save-clip` accepts a base64 WAV from the Loop Cutter, writes under `public/assets/music/cuts/`, appends a manifest entry, regenerates `LIBRARY.md`, and auto-shortlists the new item. |
 
+<video src="https://github.com/user-attachments/assets/d7aa7ec6-e6cd-4f9a-b643-604323109686" controls muted></video>
+
+**Loom 2 — Audition Library (2:44).** Browse, filter, shortlist. How the auditioner turns a 100-track SFX dump into a curated short-list ready to wire into compositions.
+
 ### Loop Cutter — features
 
 The Loop Cutter is a DAW-style precision trimmer for music beds and SFX clips. Same server as the auditioner — browse to **`localhost:4747/cutter`** or click the ✂︎ button on any auditioner row. Browser-only editing path (Web Audio API + Canvas); only the optional `Save → Library` round-trip touches the backend.
@@ -441,6 +461,10 @@ The Loop Cutter is a DAW-style precision trimmer for music beds and SFX clips. S
 | **Export loop** | Local download of the cut region without writing to the library — for one-off uses. |
 | **Auditioner sync** | When the cutter loads a file, it broadcasts `cutter-loaded` on `loop-cutter-sync`; the auditioner pauses its preview so audio doesn't stack across tabs. |
 | **Tooltips with positional opt-ins** | `data-tip` CSS tooltips wrap (max 320px), with `data-tip-align="right"` / `"left"` to keep right-edge controls on-screen. |
+
+<video src="https://github.com/user-attachments/assets/7f7dd0d6-d28c-4600-8957-9870dff27415" controls muted></video>
+
+**Loom 3 — Loop Cutter (9:14).** DAW-style precision trimming for music beds. IN/OUT markers, bar-grid snapping, BPM detection, save-back to library. The deepest tour — covers every transport key and the chip-driven loop builder.
 
 ### Music beds
 
@@ -559,6 +583,8 @@ This repo ships with two siblings: same author, same operating principles, diffe
 |---|---|
 | [`claude-video-editing-flow`](https://github.com/sellersessions/claude-video-editing-flow) | Selection-led short-form cuts. Drop a video, tick candidates in markdown, render. |
 | [`claude-ui-workflow`](https://github.com/sellersessions/claude-ui-workflow) | Design intelligence pipeline. 10 stages from brand brief to production UI. |
+
+> **Note:** The five walkthroughs above were all cut using [`claude-video-editing-flow`](https://github.com/sellersessions/claude-video-editing-flow). Word-precise trim doctrine, transcript-driven cut sheets, BandLab mastering hand-off — see that repo for the editor that produced these MP4s.
 
 All three are designed to run alongside [`ClaudeFlow-Agent`](https://github.com/sellersessions/ClaudeFlow-Agent), the personal AI operating system that ties them together.
 
