@@ -14,6 +14,10 @@
 **Programmatic video production pipeline.**
 **Treatment-driven, Claude-controlled, beat-synced.**
 
+[![Watch demo](https://img.shields.io/badge/▶-Watch_demo-FBBF24?style=for-the-badge&labelColor=1a1625)](#watch-the-workflow)
+[![Quick Start](https://img.shields.io/badge/⚡-Quick_Start-22d3ee?style=for-the-badge&labelColor=1a1625)](#quick-start-once-installed)
+[![Companion repos](https://img.shields.io/badge/🛠-Companion_repos-753EF7?style=for-the-badge&labelColor=1a1625)](#companion-repos)
+
 <!-- VIDEOS START -->
 ### See It In Action
 
@@ -90,7 +94,10 @@ graph TD
     style SHIP fill:none,stroke-width:1px,color:#e8e8e8
 ```
 
-### The Treatment System (3 Layers)
+<details>
+<summary><b>The Treatment System (3 Layers)</b> — how intent becomes buildable code</summary>
+
+<br/>
 
 Every video follows three layers. Layer 1 captures intent. Layer 2 gives it structure. Layer 3 makes it buildable.
 
@@ -117,9 +124,14 @@ graph LR
 | **Hook-Hold-Payoff** | Social retention | Hook 3s → Hold 17s → Payoff 10s |
 | **Energy Map** | Audio drives the edit | Intro → Build → Drop → Groove → Resolve |
 
+</details>
+
 ---
 
-## Ten Things You Can Do With It
+<details>
+<summary><b>Ten Things You Can Do With It</b> — patterns the same engine renders</summary>
+
+<br/>
 
 The pipeline is treatment-driven — the same engine renders any of these. Differences live in the Creative Brief + skeleton choice.
 
@@ -137,6 +149,8 @@ The pipeline is treatment-driven — the same engine renders any of these. Diffe
 | 10 | **Per-subject reel template** | Short 4–10s intro reel per team member, speaker, or artist. One TSX, data-driven by a JSON/CSV feed. |
 
 Each pattern starts with a Creative Brief, picks a skeleton, writes a treatment, and renders. The engine doesn't change — your inputs do.
+
+</details>
 
 ---
 
@@ -159,7 +173,10 @@ Claude will walk you through:
 
 If the Studio opens and you can scrub the example compositions, the pipeline is working.
 
-### Manual install (if you prefer)
+<details>
+<summary><b>Manual install</b> — if you prefer to skip Claude Code</summary>
+
+<br/>
 
 | Tool | Purpose | Install |
 |------|---------|---------| 
@@ -176,6 +193,8 @@ Once the Studio is running, say to Claude:
 
 Claude walks the 3-layer treatment interview, writes the TSX, and you scrub the result in Studio. Render when signed off.
 
+</details>
+
 ---
 
 ## Quick Start (once installed)
@@ -189,13 +208,18 @@ npm run lint           # ESLint + TypeScript typecheck
 
 Select a composition from the Studio dropdown. Scrub the timeline, pause on any frame, hot-reload on code changes. Live mixer sliders (`musicHigh`, `musicDuck`, `sfxIntroVolume`, `sfxOutroVolume`) surface in the right-hand Props panel — drag during playback and the render updates frame-by-frame.
 
+<img src="https://github.com/user-attachments/assets/e8f0e3bb-b10c-456f-a09f-7d2d688ed430" alt="Loom 1 teaser — Remotion UI" width="100%">
+
 <video src="https://github.com/user-attachments/assets/9594e592-9ff8-4b62-b990-76c8d816192c" controls muted></video>
 
 **Loom 1 — Remotion UI (2:16).** A tour of the Studio interface itself: composition list, timeline scrub, props panel, hot-reload loop. Watch this once before you open the Studio for the first time.
 
 ---
 
-## How it works
+<details>
+<summary><b>How it works</b> — Treatment → Code → Feedback loop</summary>
+
+<br/>
 
 ### 1. Write a Treatment
 
@@ -238,9 +262,14 @@ The treatment maps directly to Remotion code:
 
 Scrub in Studio → give timecode feedback ("at frame 72 the flare is too bright") → Claude edits the TSX → Studio hot-reloads → re-scrub. Only render MP4 when signed off.
 
+</details>
+
 ---
 
-## Voice Pipeline (optional)
+<details>
+<summary><b>Voice Pipeline</b> — ElevenLabs cloned VO, regenerated on script change <i>(optional)</i></summary>
+
+<br/>
 
 One config file per composition, one MP3 per scene. Bring your own ElevenLabs voice — paste the voice ID into a preset file, lock your stability / similarity / speed, and reuse across every video you ship.
 
@@ -269,9 +298,14 @@ graph LR
 - One idea per line in the script file — the MP3 output naturally breathes.
 - Lock a preset once you've A/B/C-tested your voice. Reuse across every composition for consistency.
 
+</details>
+
 ---
 
-## Audio Beat-Sync (optional)
+<details>
+<summary><b>Audio Beat-Sync</b> — librosa onsets + auto-snap helper <i>(optional)</i></summary>
+
+<br/>
 
 Python / librosa detects phrase-level onsets in a music bed. The auto-snap helper picks the ones that land within a safe window of each natural scene start and emits a paste-ready `BEAT_SNAP_FRAMES` literal.
 
@@ -294,9 +328,14 @@ graph LR
     style META fill:none,stroke-width:1px,color:#e8e8e8
 ```
 
+</details>
+
 ---
 
-## What if...
+<details>
+<summary><b>What if...</b> — common edge cases (multiple ratios, audio-first, 3D, web embed)</summary>
+
+<br/>
 
 ### ...I don't know what video I want?
 
@@ -328,9 +367,14 @@ Use `@remotion/layout-utils` (`fitText`, `measureText`) to auto-scale text per r
 - **Three.js** (`@remotion/three`) — Full 3D scenes. Heavy — only when a reel genuinely needs it.
 - **Rive** (`@remotion/rive`) — Interactive animations with state machines.
 
+</details>
+
 ---
 
-## Directory Structure
+<details>
+<summary><b>Directory Structure</b> — repo layout reference</summary>
+
+<br/>
 
 ```
 claude-remotion-flow/
@@ -364,6 +408,8 @@ claude-remotion-flow/
 ├── HOW-TO-SHIP-AN-EXPLAINER.md     # End-to-end cookbook
 └── package.json                    # 29 packages, Remotion pinned to 4.0.448
 ```
+
+</details>
 
 ---
 
@@ -419,7 +465,10 @@ npm run library:doctor                                    # Sweep the manifest: 
 
 `sfx-library.ts` exports typed constants (`SFX_TRANSITIONS.WHOOSH_CINEMATIC`, etc.) plus a flat `SFX_SHORTLIST_BY_ID` index keyed by stable manifest IDs.
 
-### Auditioner — features
+<details>
+<summary><b>Auditioner — features</b> (11 capabilities, full table)</summary>
+
+<br/>
 
 The auditioner (`localhost:4747`) is the browse + curate surface for the SFX library. Local-only Node server, no external deps beyond stdlib, manifest is the source of truth.
 
@@ -437,11 +486,18 @@ The auditioner (`localhost:4747`) is the browse + curate surface for the SFX lib
 | **Manifest-doctor CLI** | `npm run library:doctor` walks the manifest, runs `stat` + `ffprobe` per item, reports missing / empty / unreadable. `--fix-prune --yes` removes broken items atomically (`.bak` + `.tmp` + rename). |
 | **Save-clip endpoint** | `POST /api/save-clip` accepts a base64 WAV from the Loop Cutter, writes under `public/assets/music/cuts/`, appends a manifest entry, regenerates `LIBRARY.md`, and auto-shortlists the new item. |
 
+</details>
+
+<img src="https://github.com/user-attachments/assets/eb508e70-1d35-463f-a0c7-f36e0cb270ad" alt="Loom 2 teaser — Audition Library" width="100%">
+
 <video src="https://github.com/user-attachments/assets/d7aa7ec6-e6cd-4f9a-b643-604323109686" controls muted></video>
 
 **Loom 2 — Audition Library (2:44).** Browse, filter, shortlist. How the auditioner turns a 100-track SFX dump into a curated short-list ready to wire into compositions.
 
-### Loop Cutter — features
+<details>
+<summary><b>Loop Cutter — features</b> (12 capabilities, full table)</summary>
+
+<br/>
 
 The Loop Cutter is a DAW-style precision trimmer for music beds and SFX clips. Same server as the auditioner — browse to **`localhost:4747/cutter`** or click the ✂︎ button on any auditioner row. Browser-only editing path (Web Audio API + Canvas); only the optional `Save → Library` round-trip touches the backend.
 
@@ -459,6 +515,10 @@ The Loop Cutter is a DAW-style precision trimmer for music beds and SFX clips. S
 | **Export loop** | Local download of the cut region without writing to the library — for one-off uses. |
 | **Auditioner sync** | When the cutter loads a file, it broadcasts `cutter-loaded` on `loop-cutter-sync`; the auditioner pauses its preview so audio doesn't stack across tabs. |
 | **Tooltips with positional opt-ins** | `data-tip` CSS tooltips wrap (max 320px), with `data-tip-align="right"` / `"left"` to keep right-edge controls on-screen. |
+
+</details>
+
+<img src="https://github.com/user-attachments/assets/99004a8c-f324-4026-b0ae-0e71d89820aa" alt="Loom 3 teaser — Loop Cutter" width="100%">
 
 <video src="https://github.com/user-attachments/assets/7f7dd0d6-d28c-4600-8957-9870dff27415" controls muted></video>
 
@@ -480,7 +540,10 @@ Every explainer is wrapped in a pre-roll + post-roll envelope with a whoosh intr
 
 ---
 
-## Design Tokens
+<details>
+<summary><b>Design Tokens</b> — colors, fonts, easing, safe-area, canvas size</summary>
+
+<br/>
 
 All tokens live in `src/explainer-shared/tokens.ts` — import from `./explainer-shared` anywhere in `src/`. Override per composition or swap globally to rebrand.
 
@@ -503,9 +566,14 @@ All tokens live in `src/explainer-shared/tokens.ts` — import from `./explainer
 
 **Safe-area rule:** fill the canvas, don't top-align. Scene bodies stretch to near `SAFE_INSET_*` on all sides — let content drift slightly over the edge rather than clustering in the upper third.
 
+</details>
+
 ---
 
-## npm Scripts
+<details>
+<summary><b>npm Scripts</b> — full reference (10 scripts)</summary>
+
+<br/>
 
 | Script | What it does |
 |---|---|
@@ -521,9 +589,14 @@ All tokens live in `src/explainer-shared/tokens.ts` — import from `./explainer
 | `npm run library:fetch` | Rehydrate the SFX library from `cdn_url`. Idempotent. `--shortlisted-only` / `--filter <q>` / `--dry-run` flags. |
 | `npm run library:index-music` | Index local music drops under `public/assets/music/<bed-collection>/` into MANIFEST.json. |
 
+</details>
+
 ---
 
-## Helper Scripts
+<details>
+<summary><b>Helper Scripts</b> — Python + TypeScript utilities (9 scripts)</summary>
+
+<br/>
 
 | Script | Purpose |
 |---|---|
@@ -537,9 +610,14 @@ All tokens live in `src/explainer-shared/tokens.ts` — import from `./explainer
 | `scripts/sfx/manifest-doctor.mjs` | Stat + ffprobe sweep over MANIFEST.json. `--fix-prune --yes` removes broken items atomically (`.bak` + `.tmp` + rename). |
 | `scripts/sfx/index-music.mjs` | Indexes local music drops under `public/assets/music/<bed-collection>/` into MANIFEST.json. |
 
+</details>
+
 ---
 
-## Live Mixer
+<details>
+<summary><b>Live Mixer</b> — 4 props, drag-scrub during playback</summary>
+
+<br/>
 
 Each explainer's schema exposes four mixer props as live sliders in the Studio Props panel:
 
@@ -554,9 +632,14 @@ Drag any slider during playback — the render updates live, no code changes nee
 
 Remotion renders numeric schema props as `InputDragger` (drag-scrub). Step increments come from `.multipleOf()` on the Zod schema — the shipped examples use `0.05` for ~20 meaningful steps across the `0–1` range.
 
+</details>
+
 ---
 
-## Build Timeline
+<details>
+<summary><b>Build Timeline</b> — sessions 1-22, what shipped when</summary>
+
+<br/>
 
 | Milestone | What |
 |---|---|
@@ -570,6 +653,8 @@ Remotion renders numeric schema props as `InputDragger` (drag-scrub). Step incre
 | Session 20 | Loop Cutter v2 (DJ chip-row workflow) + Seller Sessions rebrand pass + Wave 1 Loom strip-back. |
 | Session 21 | `SOURCE-OF-TRUTH.md` consolidation (882 lines, ducking dead globally) + `ClaudeUiWorkflowExplainer` end-to-end build. |
 | Session 22 | UmbrellaTutorial audio finish: Loom VO loudnormed (-25.8 to -15.9 LUFS) + `HOUSE_DEFAULT` bed at 0.10 inline + two unnatural Loom welds cut surgically (-5.62s) + render (4:38, 35 MB). |
+
+</details>
 
 ---
 
