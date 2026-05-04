@@ -15,7 +15,17 @@
 **Treatment-driven, Claude-controlled, beat-synced.**
 
 <!-- VIDEOS START -->
-### Watch the Workflow
+### See It In Action
+
+<video src="https://github.com/user-attachments/assets/3da20bdd-eaea-4e96-9a10-a15f2e6de9e7" controls muted></video>
+
+**Production Engine — StackExplainer.** Remotion, Claude, treatment files, ducking, beat sync. What's under the hood.
+
+<video src="https://github.com/user-attachments/assets/758c1b79-dd45-4228-972d-5e9c89586ad7" controls muted></video>
+
+**Video Brief — TreatmentExplainer.** How a treatment doc becomes a rendered MP4, end to end.
+
+### Tutorials
 
 <video src="https://github.com/user-attachments/assets/7a094771-e07b-4f0d-bc4e-bdb51b47574f" controls muted></video>
 
@@ -152,7 +162,7 @@ If the Studio opens and you can scrub the example compositions, the pipeline is 
 ### Manual install (if you prefer)
 
 | Tool | Purpose | Install |
-|------|---------|---------|
+|------|---------|---------| 
 | Node.js 18+ | Runs Remotion | nodejs.org / `brew install node` / `apt install nodejs` |
 | `ffmpeg` | Video encoding under the hood | `brew install ffmpeg` (macOS) / `apt install ffmpeg` (Linux) |
 | ElevenLabs API key *(optional)* | Cloned-voice VO | Paste into `.env` as `ELEVENLABS_API_KEY` |
@@ -368,18 +378,6 @@ The repo ships with three example compositions you can study, modify, or use as 
 | `FormatExplainer` | `FormatExplainer.tsx` | ~37s | Cinematic event opener, Energy Map skeleton |
 
 Explainer durations are **VO-driven** — `calculateMetadata` reads each scene's MP3 and sizes the scene to `max(VO + padding, fallback)`. Re-generate the VO and the comp length adjusts automatically.
-
-### Examples in motion
-
-These two are the rendered output of the example compositions above — what the pipeline actually ships.
-
-<video src="https://github.com/user-attachments/assets/3da20bdd-eaea-4e96-9a10-a15f2e6de9e7" controls muted></video>
-
-**StackExplainer — the stack tour.** Remotion, Claude, treatment files, ducking, beat sync. What's under the hood.
-
-<video src="https://github.com/user-attachments/assets/758c1b79-dd45-4228-972d-5e9c89586ad7" controls muted></video>
-
-**TreatmentExplainer — treatment-driven flow.** How a treatment doc becomes a rendered MP4, end to end.
 
 ---
 
