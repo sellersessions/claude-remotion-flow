@@ -46,3 +46,7 @@ _captures/
 MASTER-LOG.md
 README.personal.md
 
+
+# Large mastering pipeline media — distribute via gh release, not git
+public/assets/loom-batch/
+public/assets/loom-batch-mastered/

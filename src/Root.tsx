@@ -77,6 +77,13 @@ import {
   calculateMetadata as claudeVideoEditingFlowExplainerCalculateMetadata,
   FALLBACK_DURATION_IN_FRAMES as claudeVideoEditingFlowExplainerFallbackDuration,
 } from "./ClaudeVideoEditingFlowExplainer";
+import {
+  LoomWalkthrough,
+  loomWalkthroughSchema,
+  calculateMetadata as loomWalkthroughCalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as loomWalkthroughFallbackDuration,
+  LOOM_DEFAULT_MIX,
+} from "./LoomWalkthrough";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -279,6 +286,112 @@ export const RemotionRoot: React.FC = () => {
           musicHigh: 0.06,
           musicDuck: 0,
           sfxIntroVolume: 0.55,
+          sfxOutroVolume: 0.55,
+        }}
+      />
+      <Composition
+        id="LoomRemotionUiWalkthrough"
+        component={LoomWalkthrough}
+        calculateMetadata={loomWalkthroughCalculateMetadata}
+        durationInFrames={loomWalkthroughFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={loomWalkthroughSchema}
+        defaultProps={{
+          sourceMp4: "assets/loom-batch/loom-1-remotion-ui.mp4",
+          masteredAudio: "assets/loom-batch-mastered/loom-1-remotion-ui.wav",
+          eyebrow: "Loom 1",
+          title: "Remotion UI",
+          durationSeconds: 131.435,
+          musicHigh: 0.24,
+          musicDuck: 0.04,
+          sfxIntroVolume: 0.45,
+          sfxOutroVolume: 0.55,
+        }}
+      />
+      <Composition
+        id="LoomAuditionLibraryWalkthrough"
+        component={LoomWalkthrough}
+        calculateMetadata={loomWalkthroughCalculateMetadata}
+        durationInFrames={loomWalkthroughFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={loomWalkthroughSchema}
+        defaultProps={{
+          sourceMp4: "assets/loom-batch/loom-2-audition-library.mp4",
+          masteredAudio:
+            "assets/loom-batch-mastered/loom-2-audition-library.wav",
+          eyebrow: "Loom 2",
+          title: "Audition Library",
+          durationSeconds: 159.445,
+          musicHigh: 0.24,
+          musicDuck: 0.04,
+          sfxIntroVolume: 0.45,
+          sfxOutroVolume: 0.55,
+        }}
+      />
+      <Composition
+        id="LoomLoopCutterWalkthrough"
+        component={LoomWalkthrough}
+        calculateMetadata={loomWalkthroughCalculateMetadata}
+        durationInFrames={loomWalkthroughFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={loomWalkthroughSchema}
+        defaultProps={{
+          sourceMp4: "assets/loom-batch/loom-3-loop-cutter.mp4",
+          masteredAudio: "assets/loom-batch-mastered/loom-3-loop-cutter.wav",
+          eyebrow: "Loom 3",
+          title: "Loop Cutter",
+          durationSeconds: 549.12,
+          musicHigh: 0.24,
+          musicDuck: 0.04,
+          sfxIntroVolume: 0.45,
+          sfxOutroVolume: 0.55,
+        }}
+      />
+      <Composition
+        id="LoomProcessMetaWalkthrough"
+        component={LoomWalkthrough}
+        calculateMetadata={loomWalkthroughCalculateMetadata}
+        durationInFrames={loomWalkthroughFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={loomWalkthroughSchema}
+        defaultProps={{
+          sourceMp4: "assets/loom-batch/loom-4-process-meta.mp4",
+          masteredAudio: "assets/loom-batch-mastered/loom-4-process-meta.wav",
+          eyebrow: "Loom 4",
+          title: "The Process",
+          durationSeconds: 387.866,
+          musicHigh: 0.24,
+          musicDuck: 0.04,
+          sfxIntroVolume: 0.45,
+          sfxOutroVolume: 0.55,
+        }}
+      />
+      <Composition
+        id="LoomTheWorkflowWalkthrough"
+        component={LoomWalkthrough}
+        calculateMetadata={loomWalkthroughCalculateMetadata}
+        durationInFrames={loomWalkthroughFallbackDuration}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={loomWalkthroughSchema}
+        defaultProps={{
+          sourceMp4: "assets/loom-batch/loom-5-the-workflow.mp4",
+          masteredAudio: "assets/loom-batch-mastered/loom-5-the-workflow.wav",
+          eyebrow: "Loom 5",
+          title: "The Workflow",
+          durationSeconds: 422.997,
+          musicHigh: 0.24,
+          musicDuck: 0.04,
+          sfxIntroVolume: 0.45,
           sfxOutroVolume: 0.55,
         }}
       />

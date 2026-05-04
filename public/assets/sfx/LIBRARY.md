@@ -1,6 +1,6 @@
 # SFX + Music Library — sign-off sheet
 
-> Generated 2026-05-02 13:33:43 UTC from MANIFEST.json.
+> Generated 2026-05-03 18:25:10 UTC from MANIFEST.json.
 > **377 files · 22 shortlisted** across 6 categories.
 > Re-run `node scripts/sfx/render-library-md.mjs` after curation to refresh.
 

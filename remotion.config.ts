@@ -7,4 +7,8 @@ import { Config } from "@remotion/cli/config";
 
 Config.setVideoImageFormat("jpeg");
 Config.setOverwriteOutput(true);
-Config.setCrf(23);
+// CRF is not valid for wav/mp3/aac codecs — skip when AUDIO_ONLY=1 is set
+// for audio-only renders (e.g. WAV exports for external mastering).
+if (!process.env.AUDIO_ONLY) {
+  Config.setCrf(23);
+}
