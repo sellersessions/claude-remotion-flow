@@ -14,7 +14,7 @@
 **Programmatic video production pipeline.**
 **Treatment-driven, Claude-controlled, beat-synced.**
 
-[![Watch demo](https://img.shields.io/badge/▶-Watch_demo-FBBF24?style=for-the-badge&labelColor=1a1625)](#watch-the-workflow)
+[![Watch demo](https://img.shields.io/badge/▶-Watch_demo-FBBF24?style=for-the-badge&labelColor=1a1625)](#see-it-in-action)
 [![Quick Start](https://img.shields.io/badge/⚡-Quick_Start-22d3ee?style=for-the-badge&labelColor=1a1625)](#quick-start-once-installed)
 [![Companion repos](https://img.shields.io/badge/🛠-Companion_repos-753EF7?style=for-the-badge&labelColor=1a1625)](#companion-repos)
 
