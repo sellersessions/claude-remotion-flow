@@ -14,6 +14,9 @@
 **Programmatic video production pipeline.**
 **Treatment-driven, Claude-controlled, beat-synced.**
 
+> [!NOTE]
+> **TL;DR.** Write a treatment doc, Claude generates Remotion code, scrub in Studio, render MP4. No timeline. No keyframes. No After Effects.
+
 [![Watch demo](https://img.shields.io/badge/▶-Watch_demo-FBBF24?style=for-the-badge&labelColor=1a1625)](#see-it-in-action)
 [![Quick Start](https://img.shields.io/badge/⚡-Quick_Start-22d3ee?style=for-the-badge&labelColor=1a1625)](#quick-start-once-installed)
 [![Companion repos](https://img.shields.io/badge/🛠-Companion_repos-753EF7?style=for-the-badge&labelColor=1a1625)](#companion-repos)
@@ -40,7 +43,8 @@
 **Loom 4 — The Process (6:33).** The meta-walkthrough: how the pipeline thinks, what it ducks, where the seams live.
 <!-- VIDEOS END -->
 
-> **New here?** The end-to-end recipe lives in [HOW-TO-SHIP-AN-EXPLAINER.md](./HOW-TO-SHIP-AN-EXPLAINER.md) — six steps from treatment to MP4.
+> [!TIP]
+> **New here?** The end-to-end recipe lives in [HOW-TO-SHIP-AN-EXPLAINER.md](./HOW-TO-SHIP-AN-EXPLAINER.md) — six steps from treatment to MP4. If you only have time for one video, watch **Loom 5 — The Workflow** above.
 
 ---
 
@@ -93,6 +97,114 @@ graph TD
     style RENDER fill:none,stroke-width:1px,color:#e8e8e8
     style SHIP fill:none,stroke-width:1px,color:#e8e8e8
 ```
+
+### How the parts connect
+
+The whole repo is one connected graph. Treatment is the spec, every other part exists to render it.
+
+<p align="center">
+  <img src="assets/system-graph.svg" alt="Claude Remotion Flow system graph: Treatment hub at the centre, six clusters (Authoring, Code, Output, Beat-sync, Voice, Audio) arranged around it with animated spokes" width="100%">
+</p>
+
+<sub>Animated SVG. Each spoke pulses from the Treatment hub outward: that's the actual data flow. Six clusters, each a sub-system. Authoring drafts the spec, Code renders it, Voice / Audio / Beat-sync feed sound, Output ships the MP4.</sub>
+
+<details>
+<summary><b>Detailed wiring (Mermaid)</b>: every named file, every arrow</summary>
+
+<br/>
+
+```mermaid
+%%{init: {'theme': 'dark', 'themeVariables': {'nodeTextColor': '#e8e8e8', 'primaryTextColor': '#e8e8e8', 'secondaryTextColor': '#cccccc', 'tertiaryTextColor': '#cccccc', 'clusterBkg': 'transparent', 'clusterBorder': '#8b949e', 'lineColor': '#8b949e'}}}%%
+flowchart LR
+    subgraph AUTH["📝 Authoring"]
+      direction TB
+      L1["Creative Brief"]
+      L2["Story Skeleton"]
+      L3["Treatment Doc"]
+      L1 --> L2 --> L3
+    end
+
+    subgraph CODE["⚛️ Code"]
+      direction TB
+      COMP["Composition.tsx"]
+      SCENES["Scenes"]
+      MIXER["Mixer Props"]
+      TOKENS["Design Tokens"]
+      COMP --> SCENES
+    end
+
+    subgraph AUDIO["🔊 Audio Library"]
+      direction TB
+      SFX["MANIFEST.json"]
+      AUDN["Auditioner"]
+      CUTR["Loop Cutter"]
+      MBED["Music Beds"]
+    end
+
+    subgraph VOICE["🎤 Voice"]
+      direction TB
+      VCFG["Voice Configs"]
+      ELLAB["ElevenLabs API"]
+      VOMP3["Generated MP3s"]
+      VCFG --> ELLAB --> VOMP3
+    end
+
+    subgraph BEAT["🎵 Beat-sync"]
+      direction TB
+      ONSET["librosa Onsets"]
+      SNAP["Auto-snap"]
+      ONSET --> SNAP
+    end
+
+    subgraph OUT["🚀 Output"]
+      direction TB
+      STUD["Studio Preview"]
+      REND["Render"]
+      MP4["MP4"]
+      REND --> MP4
+    end
+
+    L3 ==> COMP
+    L3 ==> VCFG
+    SFX --> COMP
+    MBED --> COMP
+    MBED --> ONSET
+    SNAP --> COMP
+    VOMP3 --> COMP
+    AUDN -.-> SFX
+    CUTR -.-> SFX
+    MIXER -.-> COMP
+    TOKENS -.-> COMP
+    COMP --> STUD
+    COMP --> REND
+
+    style L1 fill:none,stroke:#22d3ee,stroke-width:1px,color:#e8e8e8
+    style L2 fill:none,stroke:#22d3ee,stroke-width:1px,color:#e8e8e8
+    style L3 fill:none,stroke:#22d3ee,stroke-width:2px,color:#e8e8e8
+    style COMP fill:none,stroke:#753EF7,stroke-width:2px,color:#e8e8e8
+    style SCENES fill:none,stroke:#753EF7,stroke-width:1px,color:#e8e8e8
+    style MIXER fill:none,stroke:#753EF7,stroke-width:1px,color:#e8e8e8
+    style TOKENS fill:none,stroke:#753EF7,stroke-width:1px,color:#e8e8e8
+    style SFX fill:none,stroke:#FBBF24,stroke-width:2px,color:#e8e8e8
+    style AUDN fill:none,stroke:#FBBF24,stroke-width:1px,color:#e8e8e8
+    style CUTR fill:none,stroke:#FBBF24,stroke-width:1px,color:#e8e8e8
+    style MBED fill:none,stroke:#FBBF24,stroke-width:1px,color:#e8e8e8
+    style VCFG fill:none,stroke:#22d3ee,stroke-width:1px,color:#e8e8e8
+    style ELLAB fill:none,stroke:#22d3ee,stroke-width:1px,color:#e8e8e8
+    style VOMP3 fill:none,stroke:#22d3ee,stroke-width:2px,color:#e8e8e8
+    style ONSET fill:none,stroke:#FBBF24,stroke-width:1px,color:#e8e8e8
+    style SNAP fill:none,stroke:#FBBF24,stroke-width:2px,color:#e8e8e8
+    style STUD fill:none,stroke:#00B894,stroke-width:1px,color:#e8e8e8
+    style REND fill:none,stroke:#00B894,stroke-width:1px,color:#e8e8e8
+    style MP4 fill:none,stroke:#00B894,stroke-width:2px,color:#e8e8e8
+
+    linkStyle 6,7,9,10,11,12 stroke:#753EF7,stroke-width:2px
+    linkStyle 13,14,15,16 stroke:#8b949e,stroke-width:1px,stroke-dasharray:3 3
+```
+
+Solid lines = data flow into the rendered MP4. Dotted lines = configuration/curation. Treatment Doc is the only entry point — every other arrow downstream of it.
+
+</details>
 
 <details>
 <summary><b>The Treatment System (3 Layers)</b> — how intent becomes buildable code</summary>
@@ -443,7 +555,8 @@ SFX live under `public/assets/sfx/library/` organised by category. Source of tru
 
 ### Bootstrap your library on a fresh clone
 
-The MP3/WAV files are gitignored — only `MANIFEST.json` is tracked. Manifest entries carry the `cdn_url` they came from, so the catalogue is fully recoverable without re-running the scraper.
+> [!IMPORTANT]
+> **MP3/WAV files are gitignored — `MANIFEST.json` is the source of truth.** Manifest entries carry the `cdn_url` they came from, so the catalogue is fully recoverable on any clone with one command. Never check audio binaries into git.
 
 ```bash
 npm run library:fetch                # Download every cdn_url-backed entry into local_path
@@ -526,7 +639,10 @@ The Loop Cutter is a DAW-style precision trimmer for music beds and SFX clips. S
 
 ### Music beds
 
-Drop your own into `public/assets/music/<your-bed-collection>/`. Rule: never reuse a bed across videos in the same series. The onset detector (`scripts/music/detect-onsets.py`) ranks phrase-level beats per bed so you can beat-sync without ear-balling timestamps.
+> [!IMPORTANT]
+> **Never reuse a music bed across videos in the same series.** Each bed defines the energy curve of its video — repeats break the cadence and make the series feel template-y.
+
+Drop your own into `public/assets/music/<your-bed-collection>/`. The onset detector (`scripts/music/detect-onsets.py`) ranks phrase-level beats per bed so you can beat-sync without ear-balling timestamps.
 
 ### SFX bookends — the cinematic envelope
 
