@@ -24,23 +24,23 @@
 <!-- VIDEOS START -->
 ### See It In Action
 
-<video src="https://github.com/user-attachments/assets/3da20bdd-eaea-4e96-9a10-a15f2e6de9e7" controls muted></video>
+> Click any frame to play on the live site. (GitHub's mobile player drops `<video>` tags - posters here send you to the same files hosted on Netlify.)
 
-**Production Engine - StackExplainer.** Remotion, Claude, treatment files, ducking, beat sync. What's under the hood.
+<a href="https://pipeline-proof.netlify.app/explainers.html"><img src="assets/posters/explainer-remotion-flow.jpg" alt="Production Engine - StackExplainer poster" width="100%"></a>
 
-<video src="https://github.com/user-attachments/assets/758c1b79-dd45-4228-972d-5e9c89586ad7" controls muted></video>
+**Production Engine - StackExplainer.** Remotion, Claude, treatment files, ducking, beat sync. What's under the hood. ▶ [Watch on pipeline-proof](https://pipeline-proof.netlify.app/explainers.html)
 
-**Video Brief - TreatmentExplainer.** How a treatment doc becomes a rendered MP4, end to end.
+**Video Brief - TreatmentExplainer.** How a treatment doc becomes a rendered MP4, end to end. ▶ [Watch on pipeline-proof](https://pipeline-proof.netlify.app/explainers.html) (same content as Loom 5 below).
 
 ### Tutorials
 
-<video src="https://github.com/user-attachments/assets/7a094771-e07b-4f0d-bc4e-bdb51b47574f" controls muted></video>
+<a href="https://pipeline-proof.netlify.app/walkthroughs.html#loom-5"><img src="assets/posters/loom-5.jpg" alt="Loom 5 - The Workflow poster" width="100%"></a>
 
-**Loom 5 - The Workflow (7:08).** End-to-end, treatment to render. Start here if you want the whole picture.
+**Loom 5 - The Workflow (7:08).** End-to-end, treatment to render. Start here if you want the whole picture. ▶ [Watch on pipeline-proof](https://pipeline-proof.netlify.app/walkthroughs.html#loom-5)
 
-<video src="https://github.com/user-attachments/assets/9d9c4cb4-b86e-4579-a3a9-407338d13e7c" controls muted></video>
+<a href="https://pipeline-proof.netlify.app/walkthroughs.html#loom-4"><img src="assets/posters/loom-4.jpg" alt="Loom 4 - The Process poster" width="100%"></a>
 
-**Loom 4 - The Process (6:33).** The meta-walkthrough: how the pipeline thinks, what it ducks, where the seams live.
+**Loom 4 - The Process (6:33).** The meta-walkthrough: how the pipeline thinks, what it ducks, where the seams live. ▶ [Watch on pipeline-proof](https://pipeline-proof.netlify.app/walkthroughs.html#loom-4)
 <!-- VIDEOS END -->
 
 > [!TIP]
@@ -320,11 +320,9 @@ npm run lint           # ESLint + TypeScript typecheck
 
 Select a composition from the Studio dropdown. Scrub the timeline, pause on any frame, hot-reload on code changes. Live mixer sliders (`musicHigh`, `musicDuck`, `sfxIntroVolume`, `sfxOutroVolume`) surface in the right-hand Props panel - drag during playback and the render updates frame-by-frame.
 
-<img src="https://github.com/user-attachments/assets/e8f0e3bb-b10c-456f-a09f-7d2d688ed430" alt="Loom 1 teaser - Remotion UI" width="100%">
+<a href="https://pipeline-proof.netlify.app/walkthroughs.html#loom-1"><img src="assets/posters/loom-1.jpg" alt="Loom 1 - Remotion UI poster" width="100%"></a>
 
-<video src="https://github.com/user-attachments/assets/9594e592-9ff8-4b62-b990-76c8d816192c" controls muted></video>
-
-**Loom 1 - Remotion UI (2:16).** A tour of the Studio interface itself: composition list, timeline scrub, props panel, hot-reload loop. Watch this once before you open the Studio for the first time.
+**Loom 1 - Remotion UI (2:16).** A tour of the Studio interface itself: composition list, timeline scrub, props panel, hot-reload loop. Watch this once before you open the Studio for the first time. ▶ [Watch on pipeline-proof](https://pipeline-proof.netlify.app/walkthroughs.html#loom-1)
 
 ---
 
@@ -601,11 +599,9 @@ The auditioner (`localhost:4747`) is the browse + curate surface for the SFX lib
 
 </details>
 
-<img src="https://github.com/user-attachments/assets/eb508e70-1d35-463f-a0c7-f36e0cb270ad" alt="Loom 2 teaser - Audition Library" width="100%">
+<a href="https://pipeline-proof.netlify.app/walkthroughs.html#loom-2"><img src="assets/posters/loom-2.jpg" alt="Loom 2 - Audition Library poster" width="100%"></a>
 
-<video src="https://github.com/user-attachments/assets/d7aa7ec6-e6cd-4f9a-b643-604323109686" controls muted></video>
-
-**Loom 2 - Audition Library (2:44).** Browse, filter, shortlist. How the auditioner turns a 100-track SFX dump into a curated short-list ready to wire into compositions.
+**Loom 2 - Audition Library (2:44).** Browse, filter, shortlist. How the auditioner turns a 100-track SFX dump into a curated short-list ready to wire into compositions. ▶ [Watch on pipeline-proof](https://pipeline-proof.netlify.app/walkthroughs.html#loom-2)
 
 <details>
 <summary><b>Loop Cutter - features</b> (12 capabilities, full table)</summary>
@@ -631,11 +627,9 @@ The Loop Cutter is a DAW-style precision trimmer for music beds and SFX clips. S
 
 </details>
 
-<img src="https://github.com/user-attachments/assets/99004a8c-f324-4026-b0ae-0e71d89820aa" alt="Loom 3 teaser - Loop Cutter" width="100%">
+<a href="https://pipeline-proof.netlify.app/walkthroughs.html#loom-3"><img src="assets/posters/loom-3.jpg" alt="Loom 3 - Loop Cutter poster" width="100%"></a>
 
-<video src="https://github.com/user-attachments/assets/7f7dd0d6-d28c-4600-8957-9870dff27415" controls muted></video>
-
-**Loom 3 - Loop Cutter (9:14).** DAW-style precision trimming for music beds. IN/OUT markers, bar-grid snapping, BPM detection, save-back to library. The deepest tour - covers every transport key and the chip-driven loop builder.
+**Loom 3 - Loop Cutter (9:14).** DAW-style precision trimming for music beds. IN/OUT markers, bar-grid snapping, BPM detection, save-back to library. The deepest tour - covers every transport key and the chip-driven loop builder. ▶ [Watch on pipeline-proof](https://pipeline-proof.netlify.app/walkthroughs.html#loom-3)
 
 ### Music beds
 
