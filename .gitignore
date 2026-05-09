@@ -50,3 +50,10 @@ README.personal.md
 # Large mastering pipeline media — distribute via gh release, not git
 public/assets/loom-batch/
 public/assets/loom-batch-mastered/
+
+# Pipeline-proof + retech-showcase demo source media — large mp4/wav, recoverable
+public/assets/pipeline-proof/
+public/assets/retech-showcase/
+
+# Local Netlify folder
+.netlify/

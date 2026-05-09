@@ -84,6 +84,18 @@ import {
   FALLBACK_DURATION_IN_FRAMES as loomWalkthroughFallbackDuration,
   LOOM_DEFAULT_MIX,
 } from "./LoomWalkthrough";
+import {
+  PipelineProofDemo16,
+  pipelineProofDemo16Schema,
+  calculateMetadata as pipelineProofDemo16CalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as pipelineProofDemo16FallbackDuration,
+} from "./PipelineProofDemo16";
+import {
+  RetechShowcase45,
+  retechShowcase45Schema,
+  calculateMetadata as retechShowcase45CalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as retechShowcase45FallbackDuration,
+} from "./RetechShowcase45";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -394,6 +406,28 @@ export const RemotionRoot: React.FC = () => {
           sfxIntroVolume: 0.45,
           sfxOutroVolume: 0.55,
         }}
+      />
+      <Composition
+        id="PipelineProofDemo16"
+        component={PipelineProofDemo16}
+        calculateMetadata={pipelineProofDemo16CalculateMetadata}
+        durationInFrames={pipelineProofDemo16FallbackDuration}
+        fps={30}
+        width={1080}
+        height={1920}
+        schema={pipelineProofDemo16Schema}
+        defaultProps={{}}
+      />
+      <Composition
+        id="RetechShowcase45"
+        component={RetechShowcase45}
+        calculateMetadata={retechShowcase45CalculateMetadata}
+        durationInFrames={retechShowcase45FallbackDuration}
+        fps={30}
+        width={1280}
+        height={720}
+        schema={retechShowcase45Schema}
+        defaultProps={{}}
       />
     </>
   );
