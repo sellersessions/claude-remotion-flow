@@ -55,5 +55,8 @@ public/assets/loom-batch-mastered/
 public/assets/pipeline-proof/
 public/assets/retech-showcase/
 
+# SSL 2026 day timelapse source mp4 (81 MB, recoverable from sibling event-ops repo)
+public/assets/ssl-2026-timelapse/
+
 # Local Netlify folder
 .netlify/

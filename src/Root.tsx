@@ -96,6 +96,12 @@ import {
   calculateMetadata as retechShowcase45CalculateMetadata,
   FALLBACK_DURATION_IN_FRAMES as retechShowcase45FallbackDuration,
 } from "./RetechShowcase45";
+import {
+  Ssl2026Timelapse,
+  ssl2026TimelapseSchema,
+  calculateMetadata as ssl2026TimelapseCalculateMetadata,
+  FALLBACK_DURATION_IN_FRAMES as ssl2026TimelapseFallbackDuration,
+} from "./Ssl2026Timelapse";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -428,6 +434,20 @@ export const RemotionRoot: React.FC = () => {
         height={720}
         schema={retechShowcase45Schema}
         defaultProps={{}}
+      />
+      <Composition
+        id="Ssl2026Timelapse"
+        component={Ssl2026Timelapse}
+        calculateMetadata={ssl2026TimelapseCalculateMetadata}
+        durationInFrames={ssl2026TimelapseFallbackDuration}
+        fps={25}
+        width={1920}
+        height={1080}
+        schema={ssl2026TimelapseSchema}
+        defaultProps={{
+          audioSrc:
+            "assets/music/tiktok-grabs/2026-05-11/mastered-versions/realasethic - original sound - 7622502420559531295.wav",
+        }}
       />
     </>
   );
