@@ -1,0 +1,20 @@
+# TikTok URLs pulled from WhatsApp self-chat 2026-05-11 14:58-15:10 BST
+# Used by pull-tiktok-music.py to extract backing tracks for SFX Auditioner audition pass.
+https://vm.tiktok.com/ZNRsWa8Jy/
+https://vm.tiktok.com/ZNRsWgXR5/
+https://vm.tiktok.com/ZNRsWsuWG/
+https://vm.tiktok.com/ZNRsW4tFF/
+https://vm.tiktok.com/ZNRsWxxd4/
+https://vm.tiktok.com/ZNRsWHg45/
+https://vm.tiktok.com/ZNRsWuW51/
+https://vm.tiktok.com/ZNRsW5KYr/
+https://vm.tiktok.com/ZNRsW1EFe/
+https://vm.tiktok.com/ZNRsnKbw5/
+https://vm.tiktok.com/ZNRsnwBsm/
+https://vm.tiktok.com/ZNRsWBjns/
+https://vm.tiktok.com/ZNRsnKAP5/
+https://vm.tiktok.com/ZNRsWB4RC/
+https://vm.tiktok.com/ZNRsWMcbT/
+https://vm.tiktok.com/ZNRsnoNgG/
+https://vm.tiktok.com/ZNRsWSmUx/
+https://vm.tiktok.com/ZNRsWYDDK/
